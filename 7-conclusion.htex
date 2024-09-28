@@ -10,6 +10,5 @@ This section usually summarizes the entire paper including the conclusions drawn
 
 \section{Future Work}
 
-On top of that, you could discuss future work (and make clear why that is future work, i.e., by which observations did they get justified?).
-
-Note that future work in scientific papers is often not mentioned at all or just in a very few sentences within the conclusion. That should not stop you from putting some effort in. This will (also) show the examiner(s)/supervisor(s) how well you understood the topic or how engaged you are.
+- asynchronus messages; confluence property
+- Progress for EPP

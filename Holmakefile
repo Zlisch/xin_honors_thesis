@@ -1,0 +1,85 @@
+CAKEDIR = /Users/mac/honors/cakeml
+CHOREODIR = /Users/mac/honors/choreo
+
+HOLHEAP = heap
+
+# Where to find your theories
+INCLUDES = $(CHOREODIR)/semantics/proofs
+
+# The topmost theory in your development
+HEAPDEPS = \
+  $(CHOREODIR)/semantics/proofs/deadlockFreedomTheory.uo
+
+# The pretty-printing library
+MAIN = ppLib
+
+all: mainfile.pdf
+.PHONY: all
+
+RAWCHAPS = 0-abstract 0-acknowledgements 0-declaration 0-titlepage \
+   1-introduction 2-background 3-relatedWork 4-richerLang 5-strongNormalisation \
+   6-enrichedChor 7-conclusion 8-test
+CHAPS = $(patsubst %,%.tex,$(RAWCHAPS))
+
+# This rule processes the munger commands and produces plain-ish LaTeX
+thesis.tex : thesis.htex psi-macros.sty munge.exe overrides
+	./munge.exe -w60 -m';' overrides < $< > $@
+
+# Define explicit rules for generating .tex files from .htex files
+0-abstract.tex: 0-abstract.htex munge.exe overrides
+	./munge.exe -w60 -m';' overrides < $< > $@
+
+0-acknowledgements.tex: 0-acknowledgements.htex munge.exe overrides
+	./munge.exe -w60 -m';' overrides < $< > $@
+
+0-declaration.tex: 0-declaration.htex munge.exe overrides
+	./munge.exe -w60 -m';' overrides < $< > $@
+
+0-titlepage.tex: 0-titlepage.htex munge.exe overrides
+	./munge.exe -w60 -m';' overrides < $< > $@
+
+1-introduction.tex: 1-introduction.htex munge.exe overrides
+	./munge.exe -w60 -m';' overrides < $< > $@
+
+2-background.tex: 2-background.htex munge.exe overrides
+	./munge.exe -w60 -m';' overrides < $< > $@
+
+3-relatedWork.tex: 3-relatedWork.htex munge.exe overrides
+	./munge.exe -w60 -m';' overrides < $< > $@
+
+4-richerLang.tex: 4-richerLang.htex munge.exe overrides
+	./munge.exe -w60 -m';' overrides < $< > $@
+
+5-strongNormalisation.tex: 5-strongNormalisation.htex munge.exe overrides
+	./munge.exe -w60 -m';' overrides < $< > $@
+
+6-enrichedChor.tex: 6-enrichedChor.htex munge.exe overrides
+	./munge.exe -w60 -m';' overrides < $< > $@
+
+7-conclusion.tex: 7-conclusion.htex munge.exe overrides
+	./munge.exe -w60 -m';' overrides < $< > $@
+
+8-test.tex: 8-test.htex munge.exe overrides
+	./munge.exe -w60 -m';' overrides < $< > $@
+
+# 8-test.tex: 8-test.htex munge.exe overrides
+# 	./munge.exe -w60  -m';' overrides < $<  > $@
+
+# thesis.pdf : thesis.tex holtexbasic.sty thesis.bib
+mainfile.pdf : mainfile.tex bib.bib holtexbasic.sty $(CHAPS)
+	latexmk -pdf mainfile
+
+# Builds the munge tool with the HOL state on ppTheory
+munge.exe : $(MAIN).uo ppTheory.uo
+	$(protect $(HOLDIR)/bin/mkmunge.exe) $(MAIN)
+
+# Style files for the hol commands
+holtexbasic.sty: $(HOLDIR)/src/TeX/holtexbasic.sty
+	$(CP) $< $@
+
+heap: $(HEAPDEPS)
+	$(protect $(HOLDIR)/bin/buildheap) -o $@ $(HEAPDEPS)
+
+pdf: mainfile.pdf
+
+EXTRA_CLEANS = heap munge.exe 

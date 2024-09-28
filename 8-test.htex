@@ -1,0 +1,12 @@
+\chapter{Test}
+
+We define what it is for a choreograph to be well-formed with the \HOLtm{chorTypecheckOK G Th c} relation.
+
+This is a theorem:
+\begin{HOLmath}
+\HOLthm{deadlockFreedom.chor_progress}
+\end{HOLmath}
+
+The transition relation looks like \HOLtm{eval_exp clk E exp}
+
+new test

@@ -1,37 +1,23 @@
 \contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
 \contentsline {chapter}{\numberline {2}Background}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Choreography as a Programming Diagram}{3}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Interactive Theorem Proving}{3}{section.2.2}%
 \contentsline {chapter}{\numberline {3}Related Work}{5}{chapter.3}%
-\contentsline {chapter}{\numberline {4}Reasonable Title for Main Content}{7}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Abstract Advice}{7}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Building the PDF}{8}{section.4.2}%
-\contentsline {chapter}{\numberline {5}General Rules and Writing Advice}{9}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Capitalization Rules}{9}{section.5.1}%
-\contentsline {section}{\numberline {5.2}General Notes on Increasing Appearance -- Don't be Careless!}{10}{section.5.2}%
-\contentsline {section}{\numberline {5.3}Bibliography / References}{11}{section.5.3}%
-\contentsline {section}{\numberline {5.4}How to Cite Papers}{12}{section.5.4}%
-\contentsline {section}{\numberline {5.5}How to Provide Definitions and Theorems.}{13}{section.5.5}%
-\contentsline {chapter}{\numberline {6}Some Rules on how to use \LaTeX {} Correctly}{17}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Special Care with Dots that don't end Sentences}{17}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Use the right Dashes}{18}{section.6.2}%
-\contentsline {section}{\numberline {6.3}Use the right Quotation Marks}{18}{section.6.3}%
-\contentsline {section}{\numberline {6.4}Variables Names}{18}{section.6.4}%
-\contentsline {section}{\numberline {6.5}Using Graphics/Plots/Tables/Pictures correctly}{19}{section.6.5}%
-\contentsline {section}{\numberline {6.6}Tables}{20}{section.6.6}%
-\contentsline {section}{\numberline {6.7}Colored Links}{20}{section.6.7}%
-\contentsline {section}{\numberline {6.8}Math environments}{21}{section.6.8}%
-\contentsline {section}{\numberline {6.9}Algorithms}{21}{section.6.9}%
-\contentsline {section}{\numberline {6.10}Further \LaTeX {} Issues or Questions?}{22}{section.6.10}%
-\contentsline {chapter}{\numberline {7}Some Information on Marking}{23}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Write-up Quality}{23}{section.7.1}%
-\contentsline {section}{\numberline {7.2}Factors Independent of Write-Up}{25}{section.7.2}%
-\contentsline {chapter}{\numberline {8}Evaluation}{27}{chapter.8}%
-\contentsline {section}{\numberline {8.1}Benchmark Set}{27}{section.8.1}%
-\contentsline {section}{\numberline {8.2}Evaluated Software}{27}{section.8.2}%
-\contentsline {section}{\numberline {8.3}Hardware Setup}{28}{section.8.3}%
-\contentsline {section}{\numberline {8.4}Empirical Results}{28}{section.8.4}%
-\contentsline {chapter}{\numberline {9}Concluding Remarks}{31}{chapter.9}%
-\contentsline {section}{\numberline {9.1}Conclusion}{31}{section.9.1}%
-\contentsline {section}{\numberline {9.2}Future Work}{31}{section.9.2}%
-\contentsline {chapter}{\numberline {A}Appendix: Explanation on Appendices}{33}{appendix.A}%
-\contentsline {chapter}{\numberline {B}Appendix: Explanation on Page Borders}{35}{appendix.B}%
+\contentsline {chapter}{\numberline {4}The Environment Model}{7}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Syntax}{7}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Semantics}{7}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Typing}{7}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Syntax}{7}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Typing Rules}{7}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}Main Properties}{7}{subsection.4.3.3}%
+\contentsline {subsection}{\numberline {4.3.4}Type Soundness}{8}{subsection.4.3.4}%
+\contentsline {chapter}{\numberline {5}Strong Normalisation}{9}{chapter.5}%
+\contentsline {chapter}{\numberline {6}The Enriched Choreography}{11}{chapter.6}%
+\contentsline {chapter}{\numberline {7}Concluding Remarks}{13}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Conclusion}{13}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Future Work}{13}{section.7.2}%
+\contentsline {chapter}{\numberline {8}Test}{15}{chapter.8}%
+\contentsline {chapter}{\numberline {A}Appendix: Explanation on Appendices}{17}{appendix.A}%
+\contentsline {chapter}{\numberline {B}Appendix: Explanation on Page Borders}{19}{appendix.B}%
+\contentsline {chapter}{Bibliography}{21}{section*.1}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

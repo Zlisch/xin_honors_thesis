@@ -1,0 +1,15 @@
+.hollogs
+.HOLMK
+.holobjs
+.vscode
+heap
+*.bbl
+*.blg
+*.brf
+*.fdb_latexmk
+*.fls
+mainfile.log
+mainfile.out
+munge.exe
+*.sig
+mainfile.toc
