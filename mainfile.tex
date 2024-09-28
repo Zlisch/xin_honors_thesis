@@ -99,10 +99,10 @@ citecolor   = blue
 \begin{document}
 
 \pagenumbering{roman}
-\input{0-titlepage}                               % define your title page
-\input{0-declaration}                             % includes the declaration of authorship
-\input{0-acknowledgements}                        % optional acknowledgements
-\input{0-abstract}                                % your abstract
+\input{out_tex/0-titlepage}                               % define your title page
+\input{out_tex/0-declaration}                             % includes the declaration of authorship
+\input{out_tex/0-acknowledgements}                        % optional acknowledgements
+\input{out_tex/0-abstract}                                % your abstract
 
 % table of contents (nothing to do for you)
 \renewcommand{\contentsname}{Table of Contents}   % would otherwise just be "Contents",
@@ -110,15 +110,15 @@ citecolor   = blue
 \pagenumbering{arabic}
 
 % actual report content
-\input{1-introduction}                  % introduction
-\input{2-background}                    % background/framework
-\input{3-relatedWork}                   % related work
-\input{4-richerLang}                     % about thesis structure and compilation
-\input{5-strongNormalisation}                 % general writing advice
-\input{6-enrichedChor}                   % latex advice
+\input{out_tex/1-introduction}                  % introduction
+\input{out_tex/2-background}                    % background/framework
+\input{out_tex/3-relatedWork}                   % related work
+\input{out_tex/4-richerLang}                     % about thesis structure and compilation
+\input{out_tex/5-strongNormalisation}                 % general writing advice
+\input{out_tex/6-enrichedChor}                   % latex advice
 
-\input{7-conclusion}                    % conclusion
-\input{8-test}
+\input{out_tex/7-conclusion}                    % conclusion
+\input{out_tex/8-test}
 \appendix
 \input{z-appendix-1}                    % appendix 1
 \input{z-appendix-2}                    % appendix 2

@@ -13,3 +13,5 @@ mainfile.out
 munge.exe
 *.sig
 mainfile.toc
+out_tex
+*.synctex.gz

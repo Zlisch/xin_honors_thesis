@@ -9,4 +9,4 @@ This is a theorem:
 
 The transition relation looks like \HOLtm{eval_exp clk E exp}
 
-new test
+new tests tex
