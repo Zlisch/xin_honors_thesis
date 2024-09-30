@@ -28,21 +28,78 @@ While most choreography languages focus on the message exchange behaviours,
 few pay attention to the local computation happening in the 
 individual endpoint. It is shown by \cite{hirsch_pirouette_2022} that as 
 long as the local language exhibits type preservation and 
-progress, the choreography is deadlock free by design. Thus 
-when studying message exchange behaviours for choreography such as 
-multiparty sessions, asynchrony, and parallelism one can safely assume 
-good behaviours of local computation \citep{montesi_compositional_2013, cruz2017core, carbone_deadlock-freedom-by-design_2013}.
-But when it comes to 
+progress, the choreography inherits these properties as well. Thus, when 
+analyzing message exchange behaviors in choreography---such as multiparty 
+sessions, asynchrony, and parallelism---one can safely assume good behaviours 
+of local computation \citep{montesi_compositional_2013, cruz2017core, carbone_deadlock-freedom-by-design_2013}.
+But when it comes to writing the choreography program that implements concrete system 
+behaviours, if local computation is ever required by the system, one must describe 
+the inputs and outputs of local computations. Current work either delegate this part to 
+an assumed well-behaved external implementation, for example, Kalas~\cite{pohjola_kalas_2022} and Pirouette~\cite{hirsch_pirouette_2022},
+or provide a basic framework where only natural numbers are considered, as in Core Choreography (CC)~\cite{cruz2017core}.
+This makes writing choregraphy program with local computation implementation  
+an unpleasant experience. For example, a choreography program where client performs
+local computation based on the input from server and then send its result back in Kalas will look like:
 
-Plan for the introduction:
-- what is a choreography, why is it desired (what brings to the idea of choreography): 
-what is deadlock-free; also deadlock freedom by design
-- CC: minimal design, not implementation-specific, foundamental model for studying choreography, elegant
-- What is Kalas and what it does well; what it can be impoved and why interesting
-- how different choreographies handle local computations and why a simplification is desired
-- research question
+\begin{center}
+  \begin{tabular}{rl}
+    \texttt{1.} & $\commprefix{\mathtt{server}}{var}{\mathtt{client}}{\mathit{x}}{}$; \\
+    \texttt{2.} & $\letin{\mathit{v}@\mathtt{client} = \mathtt{fun}(\mathit{x})}{}$ \\
+    \texttt{3.} & $\commprefix{\mathtt{client}}{v}{\mathtt{server}}{\mathit{result}}{}$; \\
+  \end{tabular}
+\end{center}
+\label{ex:compute1}
 
-- Contribution
-- contreibution: simple typing system for choreography???
+The processes in Kalas only communicate with strings, so in the external implementation of $\mathtt{fun}(\mathit{x})$
+one has to convert the string value stored in $\mathit{x}$ to its desired data type first, 
+and perform the computation based on the converted value. The result is then
+converted back to string before updating the client process variable $\mathit{v}$.
 
-- Thesis Structure
+Thus this thesis extends Kalas, a verified choregraphy language with machine-checked 
+end-to-end compilation, with a simple language of expressions
+over types such as integers, strings and booleans. We ensure that the extended Kalas 
+has important properties such as type preservation and progress. Using the extended
+Kalas, the previous choregraphy where client computes the factorial of input integer 
+can be written as:
+
+\begin{center}
+  \begin{tabular}{rl}
+    \texttt{1.} & $\commprefix{\mathtt{server}}{var}{\mathtt{client}}{\mathit{x}}{}$; \\
+    \texttt{2.} & $\letin{\mathit{v}@\mathtt{client} = \textbf{case }\mathtt{NumOf}x \textbf{ of}}{}$ \\
+    \texttt{3.} & $\commprefix{\mathtt{client}}{v}{\mathtt{server}}{\mathit{result}}{}$; \\
+    \texttt{4.} & $\commprefix{\mathtt{client}}{v}{\mathtt{server}}{\mathit{result}}{}$; \\
+    \texttt{5.} & $\commprefix{\mathtt{client}}{v}{\mathtt{server}}{\mathit{result}}{}$; \\
+  \end{tabular}
+\end{center}
+\label{ex:compute2}
+
+This thesis provides three main contributions. 
+\begin{itemize}
+  \item The first contribution is an environment language with functional big step semantics. 
+  We also provide a typing system. The language is implemented using the HOL4 proof assistant \cite{slind2008brief}.
+  We give type soundness proof for the proposed semantics and typing rules.
+ 
+  \item The second contribution is the strong normalisation proof for our environment 
+  language model. It is essentially the strong normalisation proof for a simply-typed 
+  lambda calculus, but we define the logic relation based on environment semantics.
+
+  \item The third contribution is the enriched Kalas. Besides common data types such as 
+  integer, string, and boolean, we also add function, pair, and sum types to the choregraphy. \
+  Common operators for our data types are included, such as addition, modulo, and negation.
+  Integer-string convertor is implemented as well for the integration with Kalas. Last but 
+  not least, we prove the enriched Kalas exhibits type preservation and progress using HOL4.
+
+\end{itemize}
+
+% Plan for the introduction:
+% - what is a choreography, why is it desired (what brings to the idea of choreography): 
+% what is deadlock-free; also deadlock freedom by design
+% - CC: minimal design, not implementation-specific, fundamental model for studying choreography, elegant
+% - What is Kalas and what it does well; what it can be improved and why interesting
+% - how different choreographies handle local computations and why a simplification is desired
+% - research question
+
+% - Contribution
+% - contreibution: simple typing system for choreography???
+
+% - Thesis Structure

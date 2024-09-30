@@ -10,6 +10,7 @@
 - properties: clock increment (cases on result) (and clock decrement)
 - closure: issues with dynamic environment, so we use lexical environment;
 do we explain restrciting to fv(e) and how?
+- exceptions
 
 \section{Typing}\label{sec:envTyping}
 

@@ -1,18 +1,9 @@
 @inproceedings{pohjola_kalas_2022,
-	title = {Kalas: A Verified, End-To-End Compiler for a Choreographic Language},
-	rights = {https://creativecommons.org/licenses/by/4.0/legalcode},
-	url = {https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ITP.2022.27},
-	doi = {10.4230/LIPIcs.ITP.2022.27},
-	shorttitle = {Kalas},
-	abstract = {Choreographies are an abstraction for globally describing deadlock-free communicating systems. A choreography can be compiled into multiple endpoints preserving the global behavior, providing a path for concrete system implementations. Of course, the soundness of this approach hinges on the correctness of the compilation function. In this paper, we present a verified compiler for Kalas, a choreographic language. Its machine-checked end-to-end proof of correctness ensures all generated endpoints adhere to the system description, preserving the top-level communication guarantees. This work uses the verified {CakeML} compiler and Hol4 proof assistant, allowing for concrete executable implementations and statements of correctness at the machine code level for multiple architectures.},
-	eventtitle = {13th International Conference on Interactive Theorem Proving ({ITP} 2022)},
-	booktitle = {{DROPS}-{IDN}/v2/document/10.4230/{LIPIcs}.{ITP}.2022.27},
-	publisher = {Schloss Dagstuhl – Leibniz-Zentrum für Informatik},
-	author = {Pohjola, Johannes Åman and Gómez-Londoño, Alejandro and Shaker, James and Norrish, Michael},
-	urldate = {2024-09-22},
-	date = {2022},
-	langid = {english},
-	file = {Full Text PDF:/Users/mac/Zotero/storage/5VL6PJNQ/Pohjola et al. - 2022 - Kalas A Verified, End-To-End Compiler for a Chore.pdf:application/pdf},
+	title={Kalas: A verified, end-to-end compiler for a choreographic language},
+  	author={Pohjola, Johannes {\AA}man and G{\'o}mez-Londo{\~n}o, Alejandro and Shaker, James and Norrish, Michael},
+  	booktitle={13th International Conference on Interactive Theorem Proving (ITP 2022)},
+  	year={2022},
+  	organization={Schloss-Dagstuhl-Leibniz Zentrum f{\"u}r Informatik}
 }
 
 @inproceedings{thiemann_intrinsically-typed_2019,
@@ -29,6 +20,7 @@
 	author = {Thiemann, Peter},
 	urldate = {2024-09-22},
 	date = {2019-10-07},
+	year = {2019},
 	file = {Full Text PDF:/Users/mac/Zotero/storage/CAA9GSK7/Thiemann - 2019 - Intrinsically-Typed Mechanized Semantics for Sessi.pdf:application/pdf},
 }
 
@@ -43,7 +35,7 @@
 	publisher = {Springer},
 	author = {Caires, Luís and Pfenning, Frank},
 	editor = {Gastin, Paul and Laroussinie, François},
-	date = {2010},
+	year = {2010},
 	langid = {english},
 	keywords = {Label Transition System, Linear Logic, Parallel Composition, Sequent Calculus, Type System},
 	file = {Full Text PDF:/Users/mac/Zotero/storage/6XDIUDG3/Caires and Pfenning - 2010 - Session Types as Intuitionistic Linear Proposition.pdf:application/pdf},
@@ -60,6 +52,7 @@
 	author = {Hallal, Rayan and Jaber, Mohamad and Abdallah, Rasha},
 	urldate = {2024-09-23},
 	date = {2018-07},
+	year = {2018},
 	keywords = {Computational modeling, Computer science, Electronic mail, Process control, Protocols, Semantics, Syntactics},
 	file = {IEEE Xplore Abstract Record:/Users/mac/Zotero/storage/FMNA83I3/8514427.html:text/html;IEEE Xplore Full Text PDF:/Users/mac/Zotero/storage/E4IJGQZG/Hallal et al. - 2018 - From Global Choreography to Efficient Distributed .pdf:application/pdf},
 }
@@ -79,7 +72,7 @@
 	abstract = {Choreographies are descriptions of distributed systems where the developer gives a global view of how messages are exchanged by endpoint nodes (endpoints for short), instead of separately defining the behaviour of each endpoint. They have a significant impact on the quality of software, as they offer a concise view of the message flows enacted by a system. For this reason, in the last decade choreographies have been used in the development of programming languages, giving rise to a programming paradigm that in this dissertation we refer to as Choreographic Programming.Recent studies show that choreographies have potential as foundations for the development of safe distributed software. The key idea is that since choreographies abstract from the single input/output actions of endpoints, they avoid typical safety problems such as deadlocks and race conditions; the concrete implementation of each endpoint described in a choreography can then be automatically generated, ensuring that such implementations are safe by construction. However, current formal models for choreographies do not deal with critical aspects of distributed programming, such as asynchrony, mobility, modularity, and multiparty sessions; it remains thus unclear whether choreographies can still guarantee safety when dealing with such nontrivial features.This {PhD} dissertation argues for the suitability of choreographic programming as a paradigm for the development of safe distributed systems. We proceed by investigating its foundations and application. To this aim, we provide three main contributions.The first contribution is the development of a formal model for choreographic programming that supports asynchrony, mobility, modularity, and multiparty sessions. In the model, choreographies are projected to distributed endpoint code in terms of the π-calculus. Projection preserves the expected safety properties of choreographies, among which freedom from deadlocks and race conditions.The second contribution is the development of Linear Connection Logic ({LCL}), an extension of linear logic. We propose a Curry-Howard correspondence between {LCL} and a calculus of choreographies, proving that: (i) proofs in {LCL} correspond to choreographies; and (ii) proof transformations in {LCL} yield procedures for compiling choreographies to endpoint programs and vice versa. The latter result, known as round-trip development, contributes to the open problem of extracting choreographies from existing endpoint programs.The third contribution is the implementation of a prototype framework for choreographic programming, called Chor. Chor provides an Integrated Development Environment ({IDE}) for programming with choreographies, equipped with a type checker for verifying their correctness based on our formal development. Programs in Chor can be compiled to executable endpoint code in Jolie, a language for distributed programming. We use Chor for evaluating choreographic programming against a series of use cases.},
 	publisher = {{IT}-Universitetet i København},
 	author = {Montesi, Fabrizio},
-	date = {2014},
+	year = {2014},
 }
 
 @inproceedings{montesi_compositional_2013,
@@ -93,7 +86,7 @@
 	publisher = {Springer},
 	author = {Montesi, Fabrizio and Yoshida, Nobuko},
 	editor = {D’Argenio, Pedro R. and Melgratti, Hernán},
-	date = {2013},
+	year = {2013},
 	langid = {english},
 	keywords = {External Process, Parallel Composition, Service Process, Session Type, Typing Judgement},
 	file = {Full Text PDF:/Users/mac/Zotero/storage/5VSAWNYV/Montesi and Yoshida - 2013 - Compositional Choreographies.pdf:application/pdf},
@@ -110,7 +103,7 @@
 	publisher = {Springer},
 	author = {Bettini, Lorenzo and Coppo, Mario and D’Antoni, Loris and De Luca, Marco and Dezani-Ciancaglini, Mariangiola and Yoshida, Nobuko},
 	editor = {van Breugel, Franck and Chechik, Marsha},
-	date = {2008},
+	year = {2008},
 	langid = {english},
 	keywords = {Action Type, Message Type, Operational Semantic, Type System, Typing Rule},
 	file = {Full Text PDF:/Users/mac/Zotero/storage/Z6TYBWTR/Bettini et al. - 2008 - Global Progress in Dynamically Interleaved Multipa.pdf:application/pdf},
@@ -129,6 +122,7 @@
 	author = {Hirsch, Andrew K. and Garg, Deepak},
 	urldate = {2024-09-24},
 	date = {2022-01-12},
+	year = {2022},
 	file = {Full Text PDF:/Users/mac/Zotero/storage/M8FJQ7DL/Hirsch and Garg - 2022 - Pirouette higher-order typed functional choreogra.pdf:application/pdf},
 }
 
@@ -143,7 +137,7 @@
 	publisher = {Springer International Publishing},
 	author = {Cruz-Filipe, Luís and Graversen, Eva and Lugović, Lovro and Montesi, Fabrizio and Peressotti, Marco},
 	editor = {Seidl, Helmut and Liu, Zhiming and Pasareanu, Corina S.},
-	date = {2022},
+	year = {2022},
 	langid = {english},
 	keywords = {Choreographies, Concurrency, Lambda calculus, Type systems},
 	file = {Full Text PDF:/Users/mac/Zotero/storage/QBTLGMLP/Cruz-Filipe et al. - 2022 - Functional Choreographic Programming.pdf:application/pdf},
@@ -162,6 +156,7 @@
 	author = {Needham, Roger M. and Schroeder, Michael D.},
 	urldate = {2024-09-25},
 	date = {1978-12-01},
+	year = {1978},
 	file = {Full Text PDF:/Users/mac/Zotero/storage/MHFB9PZ4/Needham and Schroeder - 1978 - Using encryption for authentication in large netwo.pdf:application/pdf},
 }
 
@@ -177,7 +172,15 @@
 	number = {1},
 	journaltitle = {{SIGPLAN} Not.},
 	author = {Carbone, Marco and Montesi, Fabrizio},
-	urldate = {2024-09-25},
-	date = {2013-01-23},
+	year = {2013},
 	file = {Full Text PDF:/Users/mac/Zotero/storage/LQTTRFHV/Carbone and Montesi - 2013 - Deadlock-freedom-by-design multiparty asynchronou.pdf:application/pdf},
+}
+
+@inproceedings{slind2008brief,
+  title={A brief overview of HOL4},
+  author={Slind, Konrad and Norrish, Michael},
+  booktitle={International Conference on Theorem Proving in Higher Order Logics},
+  pages={28--32},
+  year={2008},
+  organization={Springer}
 }

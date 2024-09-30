@@ -1,10 +1,52 @@
 \chapter{Related Work}\label{chap:relatedWork}
+Choreography language model can ensure deadlock freedom without using a typing system. 
+The property is typically proven through structural induction on the choreography's 
+semantics, where an applicable rule always enables reduction, or reduction 
+follows by inductive hypothesis. Typing system in this case might still be desired since
+it can discipline choreography in other ways such as correct protocol implementation or
+ensuring deadlock freedom for EPP.
+
+When the local computation is involved in choreography, since we cannot solve the halting 
+problem in semantics by deciding whether the local computation will terminate, a typing system 
+for the choreography is desired to re-establish the deadlock freedom property. To the best of
+our knowledge, the closet work to this discussion is Pirouette by \cite{hirsch_pirouette_2022}.
+They assume a substitution model with small-step semantics for the local language, and based on 
+a set of admissible typing rules for the sake of providing a reasoning ground, their 
+results show that type preservation and progress property for local language implies the preservation
+and progress for the choreography language adopting it. Their progress result aligns with our results,
+but our local language adopts big-step semantics and thus preservation for choreography
+requires strong normalisation from local language rather than type preservation.
+
+Pirouette is a higher-order functional choreography language, where it has three forms of values:
+local value, local function that takes local value inputs and outputs a choregraphy, and global
+function that takes choregraphy and outputs choregraphy. This makes choregraphy has return value on
+which its typing system is built on. On the other hand, since neither Kalas or the enriched Kalas has 
+return values, our typing system mainly checks for the well-formedness of a choreography within the 
+typing environment and if any local computation is involved, we discipline it with its own typing
+system in a localised typing environment. Pirouette types its local values in a similar projected
+typing environment, which contains bindings from variables to types in a specific location.
+
+There is also an interesting observation between Pirouette and Kalas in terms of how asychronous 
+behaviours are controlled. Pirouette uses a set of blocked locations to disallow a branching from 
+current choregraphy in which multiple attempts to write to one target local variable may occur
+in different orders, wheras Kalas uses an action label to record previous communication to 
+disallow a branching where the target local variable is appear in the label.
+% - it allows local computation in many places, but we only restrict it to let (since other place message 
+% exchange is sufficient)
+% - Kalas has similar handling to their blocked locations
+
+Another state-of-art function choregraphy language ...
+
+Other choreography languages ...
+
 - (deadlock freedom/ type soundness) typing of choreography
 - CC, Kalas, CC M do not have typing system, deadlock freedom for closed choreography idirectly follows the semantics, where the local computation is always assumed terminated
 - When deadlock freedom does not directly follows from the choreography semantics, such as the compositional choreography proposed in (Yoshida), typing system is used to ensure progress 
 - others, Channel Choreographies (ChC) in (Fabrizio Montesi thesis) uses typing system for checking protocal Correctness
 
 - local procedure in choreography
+
+- exceptions
 
 - functional big-step semantics
 
