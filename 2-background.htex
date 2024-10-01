@@ -1,11 +1,15 @@
 \chapter{Background}\label{chap:background}
 
 \section{Choreography as a Programming Diagram}
+- how choregraphy can be applied real examples
 - choreography semantics and basic results ?
+- a choregraphy diagram
 
 \section{Interactive Theorem Proving}
 - this work is done in HOL4 so maybe start from this and think how to introduce stuff
 - Kalas is kind of both a choreography language and implemented in HOL
+
+\section{Kalas}
 
 % This section should explain all the technical background that is important for being able to read your report. Recall that your report must be completely self-contained, so you should only assume ``mathematical understanding'', but no specific knowledge. All such knowledge should be provided here, e.g., the formalization and vocabulary of the research areas in which your work resides.
 

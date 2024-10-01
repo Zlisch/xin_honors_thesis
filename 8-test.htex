@@ -9,36 +9,36 @@ This is a theorem:
 
 The transition relation looks like \HOLtm{eval_exp clk E exp}
 
-\newcommand{\rulelabel}[2]{\raisebox{#1}{\mbox{\textsc{#2}}}\;}
-\begin{table*}[tb]
+% \newcommand{\rulelabel}[2]{\raisebox{#1}{\mbox{\textsc{#2}}}\;}
+% \begin{table*}[tb]
 
-\[\def\arraystretch{3.2}\qquad\begin{array}{c}
+% \[\def\arraystretch{3.2}\qquad\begin{array}{c}
 
-% \rulelabel{2.5ex}{Com}\HOLthm[rule,conj1,width=2000,C/c]{chorSem.trans_rules}
-% \\
-% \rulelabel{2ex}{Com-S}\HOLthm[rule,α/alpha,C/c,C'/c',width=2000]{chorSem.trans_com_swap}
-% \\
-% \rulelabel{2ex}{Com-A}\HOLthm[rule,width=2000,C/c,C'/c',α/alpha]{chorSem.trans_com_async}
+% % \rulelabel{2.5ex}{Com}\HOLthm[rule,conj1,width=2000,C/c]{chorSem.trans_rules}
+% % \\
+% % \rulelabel{2ex}{Com-S}\HOLthm[rule,α/alpha,C/c,C'/c',width=2000]{chorSem.trans_com_swap}
+% % \\
+% % \rulelabel{2ex}{Com-A}\HOLthm[rule,width=2000,C/c,C'/c',α/alpha]{chorSem.trans_com_async}
 
-% \\
-% \rulelabel{3ex}{Sel}\HOLthm[rule,conj2,width=2000,C/c]{chorSem.trans_rules}
-% \\
-% \rulelabel{3ex}{Let}\HOLthm[rule,width=2000,C/c]{pp.better_trans_let}
-% \\
-% \rulelabel{2.5ex}{If-T}\HOLthm[rule,width=2000,C1/c1,C2/c2]{chorSem.trans_if_true}\\
-% \rulelabel{2ex}{Fix}\HOLthm[rule,width=2000,X/dn,C/c]{chorSem.trans_fix}
-%\inferrule*[left=\textsc{If-F}]
-%    {s(p,v) \neq \top}
-%    {\provtrans{s \rhd \ifthel{v @ p}{C_1}{C_2}}
-%           {\tau_p}
-%           {\epsilon}
-%           {s \rhd C_2}
-%    }
-\end{array}\]
-\caption{\rm \chorlang{} semantics: communication rules.
-  The function $\mathrm{wv}(\alpha)$ returns the variable (if any) that is
-modified by $\alpha$.
-}
+% % \\
+% % \rulelabel{3ex}{Sel}\HOLthm[rule,conj2,width=2000,C/c]{chorSem.trans_rules}
+% % \\
+% % \rulelabel{3ex}{Let}\HOLthm[rule,width=2000,C/c]{pp.better_trans_let}
+% % \\
+% % \rulelabel{2.5ex}{If-T}\HOLthm[rule,width=2000,C1/c1,C2/c2]{chorSem.trans_if_true}\\
+% % \rulelabel{2ex}{Fix}\HOLthm[rule,width=2000,X/dn,C/c]{chorSem.trans_fix}
+% %\inferrule*[left=\textsc{If-F}]
+% %    {s(p,v) \neq \top}
+% %    {\provtrans{s \rhd \ifthel{v @ p}{C_1}{C_2}}
+% %           {\tau_p}
+% %           {\epsilon}
+% %           {s \rhd C_2}
+% %    }
+% \end{array}\]
+% \caption{\chorlang{} semantics: communication rules.
+%   The function $\mathrm{wv}(\alpha)$ returns the variable (if any) that is
+% modified by $\alpha$.
+% }
 
-\label{table:chorsem1}
-\end{table*}
+% \label{table:chorsem1}
+% \end{table*}

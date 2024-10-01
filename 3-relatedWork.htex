@@ -1,4 +1,18 @@
 \chapter{Related Work}\label{chap:relatedWork}
+% maybe 3 sections for choregraphy models: functional; (implementation for real use;) core models; exceptions
+- we discuss in terms of how local computation is considered and how important properties such as
+type preservbationa dn progress is influenced by those decisions
+
+\section{Choreography Models}
+\subsection{Core Models}
+Choreography language model can ensure deadlock freedom without using a typing system. 
+The property is typically proven through structural induction on the choreography's 
+semantics, where an applicable rule always enables reduction, or reduction 
+follows by inductive hypothesis. Typing system in this case might still be desired since
+it can discipline choreography in other ways such as correct protocol implementation or
+ensuring deadlock freedom for EPP.
+
+\subsection{Typing System for Choreography}
 Choreography language model can ensure deadlock freedom without using a typing system. 
 The property is typically proven through structural induction on the choreography's 
 semantics, where an applicable rule always enables reduction, or reduction 
@@ -26,17 +40,27 @@ typing environment and if any local computation is involved, we discipline it wi
 system in a localised typing environment. Pirouette types its local values in a similar projected
 typing environment, which contains bindings from variables to types in a specific location.
 
-There is also an interesting observation between Pirouette and Kalas in terms of how asychronous 
+There is also an interesting observation between Pirouette and Kalas in terms of how asynchronous 
 behaviours are controlled. Pirouette uses a set of blocked locations to disallow a branching from 
 current choregraphy in which multiple attempts to write to one target local variable may occur
-in different orders, wheras Kalas uses an action label to record previous communication to 
+in different orders, whereas Kalas uses an action label to record previous communication to 
 disallow a branching where the target local variable is appear in the label.
-% - it allows local computation in many places, but we only restrict it to let (since other place message 
-% exchange is sufficient)
-% - Kalas has similar handling to their blocked locations
+% maybe an example illustration
 
-Another state-of-art function choregraphy language ...
+Another state-of-art functional choregraphy language Chor$\lambda$ by \cite{filipe_functional_2022}
+uses a different approach than Pirouette, where choreographies are interpreted as terms in 
+$\lambda$-calculus. They are not concerned with how the local values are computed and assume the
+presence of a local value for communications happening in the choregraphy. This contributes to a very different
+typing system than Pirouette: their local environment is not obtained from global environment by any
+means of projection, instead local value types are annotated with the associated roles and are embedded
+in types bound to choregraphy names in a typing environment. Type preservation and progress follow 
+typing and semantics rules of Chor$\lambda$.
 
+
+- compositonal choregraphy ..
+
+\subsection{Undecided Title But There Will Be One}
+% choreography in implementation? how they deal with local computations
 Other choreography languages ...
 
 - (deadlock freedom/ type soundness) typing of choreography
@@ -48,6 +72,7 @@ Other choreography languages ...
 
 - exceptions
 
+\section{Undecided Title But There Will Be One}
 - functional big-step semantics
 
 - SN for STLC; strong normalisation for languages of environmental semantics

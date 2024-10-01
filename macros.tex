@@ -197,7 +197,8 @@
 \newcommand{\fixc}[2]{\ensuremath{\mu #1. #2}}
 \newcommand{\fixcall}[1]{#1}
 \newcommand{\ifthen}[2]{\mbox{\iftok{} \ensuremath{#1} \thentok{} \ensuremath{#2}}}
-\newcommand{\letin}[1]{\mbox{\rm\ensuremath{\textbf{let } #1 \textbf{ in }}}}
+% \newcommand{\letin}[1]{\mbox{\rm\ensuremath{\textbf{let } #1 \textbf{ in }}}}
+\newcommand{\letin}[1]{\mbox{\textrm{\textbf{let }}\ensuremath{#1}\textrm{\textbf{ in }}}}
 \newcommand{\letrecin}[2]{\mbox{\rm\ensuremath{\textbf{letrec } #1 \textbf{ in }
 #2}}}
 \newcommand{\closure}[2]{\mbox{\rm\ensuremath{\textbf{Cl } #1 \textbf{ in }

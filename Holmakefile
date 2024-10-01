@@ -16,24 +16,15 @@ MAIN = ppLib
 all: mainfile.pdf
 .PHONY: all
 
-RAWCHAPS = 0-abstract 0-acknowledgements 0-declaration 0-titlepage \
-   1-introduction 2-background 3-relatedWork 4-richerLang 5-strongNormalisation \
-   6-enrichedChor 7-conclusion 8-test
-CHAPS = $(patsubst %,out_tex/%.tex,$(RAWCHAPS))
+# RAWCHAPS = 0-abstract 0-acknowledgements 0-declaration 0-titlepage \
+#    1-introduction 2-background 3-relatedWork 4-richerLang 5-strongNormalisation \
+#    6-enrichedChor 7-conclusion 8-test
+NO_PREFIX_CHAPS = 0-abstract 0-acknowledgements 0-declaration 0-titlepage
+PREFIXED_CHAPS = 1-introduction 2-background 3-relatedWork 4-richerLang 5-strongNormalisation \
+                 6-enrichedChor 7-conclusion 8-test
+CHAPS = $(patsubst %,%.tex,$(NO_PREFIX_CHAPS)) $(patsubst %,out_tex/%.tex,$(PREFIXED_CHAPS))
 
 # Define explicit rules for generating .tex files from .htex files
-out_tex/0-abstract.tex: 0-abstract.htex munge.exe overrides
-	./munge.exe -w60 -m';' overrides < $< > $@
-
-out_tex/0-acknowledgements.tex: 0-acknowledgements.htex munge.exe overrides
-	./munge.exe -w60 -m';' overrides < $< > $@
-
-out_tex/0-declaration.tex: 0-declaration.htex munge.exe overrides
-	./munge.exe -w60 -m';' overrides < $< > $@
-
-out_tex/0-titlepage.tex: 0-titlepage.htex munge.exe overrides
-	./munge.exe -w60 -m';' overrides < $< > $@
-
 out_tex/1-introduction.tex: 1-introduction.htex munge.exe overrides
 	./munge.exe -w60 -m';' overrides < $< > $@
 
@@ -60,7 +51,7 @@ out_tex/8-test.tex: 8-test.htex munge.exe overrides
 
 # thesis.pdf : thesis.tex holtexbasic.sty thesis.bib
 mainfile.pdf : mainfile.tex bib.bib holtexbasic.sty $(CHAPS)
-	latexmk -pdf mainfile
+	latexmk -pdf mainfile.tex
 
 # Builds the munge tool with the HOL state on ppTheory
 munge.exe : $(MAIN).uo ppTheory.uo
