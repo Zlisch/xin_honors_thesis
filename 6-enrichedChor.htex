@@ -1,3 +1,14 @@
 \chapter{The Enriched Choreography}\label{chap:enrichedChor}
 
+\section{Syntax}\label{sec:enrichedSyntax}
+
+\section{Semantics}\label{sec:enrichedSemantics}
 - exceptions
+
+\section{Typing}\label{sec:enrichedTyping}
+
+\subsection{Typing Rules}\label{subsec:enrichedTypingRules}
+
+\subsection{Main Properties}\label{subsec:enrichedTypingProperties}
+
+\subsection{Type Soundness}\label{subsec:enrichedTypingSoundness}

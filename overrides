@@ -202,4 +202,4 @@ normalise_queues 0 {}
 FEMPTY 1 \ensuremath{\emptyset}
 (ctcok1) 1 ,
 (ctcok2) 1 \ensuremath{\vdash}
-(ctcok3) 1 \ensuremath{\Box}
+(ctcok3) 1 \ensuremath{\checkmark}

@@ -1,92 +1,98 @@
 \chapter{Related Work}\label{chap:relatedWork}
 % maybe 3 sections for choregraphy models: functional; (implementation for real use;) core models; exceptions
-- we discuss in terms of how local computation is considered and how important properties such as
-type preservbationa dn progress is influenced by those decisions
+% - we discuss in terms of how local computation is considered and how important properties such as
+% type preservation and progress is influenced by those decisions
+some intro ..
 
 \section{Choreography Models}
-\subsection{Core Models}
-Choreography language model can ensure deadlock freedom without using a typing system. 
-The property is typically proven through structural induction on the choreography's 
-semantics, where an applicable rule always enables reduction, or reduction 
-follows by inductive hypothesis. Typing system in this case might still be desired since
-it can discipline choreography in other ways such as correct protocol implementation or
-ensuring deadlock freedom for EPP.
+some intro ..
 
 \subsection{Typing System for Choreography}
 Choreography language model can ensure deadlock freedom without using a typing system. 
 The property is typically proven through structural induction on the choreography's 
 semantics, where an applicable rule always enables reduction, or reduction 
-follows by inductive hypothesis. Typing system in this case might still be desired since
-it can discipline choreography in other ways such as correct protocol implementation or
-ensuring deadlock freedom for EPP.
+follows by inductive hypothesis \citep{carbone_deadlock-freedom-by-design_2013, cruz2017core, pohjola_kalas_2022}. 
+Typing system in this case might still be desired since it can discipline choreography in 
+other ways such as correct protocol implementation.
 
-When the local computation is involved in choreography, since we cannot solve the halting 
+Channel Choreography (ChC) by \cite{carbone_deadlock-freedom-by-design_2013} is a rich 
+choregraphy language where a choreography program consists of where a program consists of roles, threads, 
+and sessions that implement communication protocols. Deadlock freedom is guaranteed by its 
+semantics, while the typing system ensures correct protocol implementation by sessions. 
+The typing context includes three components: a service environment $\Gamma$, which stores 
+global types for public channels specifying session execution and local expressions (annotated 
+with threads); a thread environment $\Theta$, which tracks the roles of threads in each session; and a 
+session environment $\Delta$, which stores the types of active sessions.
+
+It ensures that a well-typed choreography, with public channels specified by $\Gamma$ and 
+threads assuming roles in $\Theta$, maintains disciplined sessions governed by $\Delta$. 
+Additionally, runtime typing introduces a delegation environment to handle changes in 
+typing context due to asynchrony or parallelism, ensuring the program adheres to the protocol 
+during execution.
+
+When local computation is involved in the choreography, since we cannot solve the halting 
 problem in semantics by deciding whether the local computation will terminate, a typing system 
-for the choreography is desired to re-establish the deadlock freedom property. To the best of
-our knowledge, the closet work to this discussion is Pirouette by \cite{hirsch_pirouette_2022}.
-They assume a substitution model with small-step semantics for the local language, and based on 
-a set of admissible typing rules for the sake of providing a reasoning ground, their 
-results show that type preservation and progress property for local language implies the preservation
-and progress for the choreography language adopting it. Their progress result aligns with our results,
-but our local language adopts big-step semantics and thus preservation for choreography
-requires strong normalisation from local language rather than type preservation.
+is desired to reassert deadlock freedom. To the best of our knowledge, the closet work to this 
+discussion is Pirouette by \cite{hirsch_pirouette_2022}. They assume a substitution model with 
+small-step semantics for the local language. Based on a set of admissible typing rules for 
+the sake of providing a reasoning ground, their results show that type preservation and progress 
+in the local language ensure the same for the choreography language. Their progress result aligns 
+with our results, but our local language adopts big-step semantics and thus preservation for 
+choreography requires strong normalisation from local language rather than type preservation.
 
-Pirouette is a higher-order functional choreography language, where it has three forms of values:
-local value, local function that takes local value inputs and outputs a choregraphy, and global
-function that takes choregraphy and outputs choregraphy. This makes choregraphy has return value on
-which its typing system is built on. On the other hand, since neither Kalas or the enriched Kalas has 
+Pirouette is a higher-order functional choreography language with three value types: local 
+values, local functions (mapping local values to choreographies), and global functions 
+(mapping choreographies to choreographies). This structure enables choreographies to return 
+values, forming the basis of its typing system. On the other hand, since neither Kalas or the enriched Kalas has 
 return values, our typing system mainly checks for the well-formedness of a choreography within the 
 typing environment and if any local computation is involved, we discipline it with its own typing
 system in a localised typing environment. Pirouette types its local values in a similar projected
-typing environment, which contains bindings from variables to types in a specific location.
+typing environment, binding variables to types at a specific location.
+% maybe an example
 
-There is also an interesting observation between Pirouette and Kalas in terms of how asynchronous 
-behaviours are controlled. Pirouette uses a set of blocked locations to disallow a branching from 
-current choregraphy in which multiple attempts to write to one target local variable may occur
-in different orders, whereas Kalas uses an action label to record previous communication to 
-disallow a branching where the target local variable is appear in the label.
-% maybe an example illustration
+% There is also an interesting observation between Pirouette and Kalas in terms of how asynchronous 
+% behaviours are controlled. Pirouette uses a set of blocked locations to disallow a branching from 
+% current choregraphy in which multiple attempts to write to one target local variable may occur
+% in different orders, whereas Kalas uses an action label to record previous communication to 
+% disallow a branching where the target local variable is appear in the label.
+% might be incorrect
 
-Another state-of-art functional choregraphy language Chor$\lambda$ by \cite{filipe_functional_2022}
+Another state-of-art functional choregraphy language Chor$\lambda$ by \cite{cruz-filipe_functional_2022}
 uses a different approach than Pirouette, where choreographies are interpreted as terms in 
-$\lambda$-calculus. They are not concerned with how the local values are computed and assume the
-presence of a local value for communications happening in the choregraphy. This contributes to a very different
-typing system than Pirouette: their local environment is not obtained from global environment by any
-means of projection, instead local value types are annotated with the associated roles and are embedded
-in types bound to choregraphy names in a typing environment. Type preservation and progress follow 
-typing and semantics rules of Chor$\lambda$.
+$\lambda$-calculus. Chor$\lambda$ assumes local values for communications, without focusing 
+on how they are computed. This results in a distinct typing system: local value types are 
+annotated with roles and are part of the global types, rather than being projected from 
+a global environment. Type preservation and progress follow from Chor$\lambda$'s typing 
+and semantic rules.
 
-
-- compositonal choregraphy ..
-
-\subsection{Undecided Title But There Will Be One}
+\subsection{Implementation and Handling Exceptions}
 % choreography in implementation? how they deal with local computations
-Other choreography languages ...
+% Other choreography languages ... and exceptions ...
+- Choral: an object-oriented choregraphy implemented as a java library \citep{giallorenzo2024choral}. 
+It treats choregraphy as class and EPP as generating role classes from the choregraphy
+implementation. It also offloads the local computation to Java. Higher-order functional
+choreography models such as Pirouette and Chor$\lambda$ can be viewed as formal model candidates for it.
+Its type checker is similar to the typing system in ChC where it has types for public channels
+where roles for sender and receiver are specified as well as the type of messages being communicated
+an it also has local types annotated with roles.
 
-- (deadlock freedom/ type soundness) typing of choreography
-- CC, Kalas, CC M do not have typing system, deadlock freedom for closed choreography idirectly follows the semantics, where the local computation is always assumed terminated
-- When deadlock freedom does not directly follows from the choreography semantics, such as the compositional choreography proposed in (Yoshida), typing system is used to ensure progress 
-- others, Channel Choreographies (ChC) in (Fabrizio Montesi thesis) uses typing system for checking protocal Correctness
+In terms of communication failure which may raise an exception when a role is trying to perform operation
+based on reading from the place where a received message has not arrived yet, Choral implements the failure 
+model in RC by \cite{montesi2017choreographies}, using recover strategies such as capped attempts or 
+timer within java try-catch block.
 
-- local procedure in choreography
+- RC, a model where communication failure is considered, recover strategy for senders and receivers, either 
+while loop until received (exactly once delivery for setting 1), or with a timer or capped tries (best efforts);
+typing system to ensure almost once delivery (and exactly one delivery where message won't be lost);
+they use configuration where sender and receiver have stacks and it is initially false, with payload value,
+or ticked meaning no longer in the stack (sent/received) to implement send/received and the failure rules for
+semantics and typings; we do not consider message sending failure, but we do have exception caused by 
+local computation failure (e.g. division by zero) or bad message value type (not a string), and we
+record the exception using transition labels. But we do not consider any recover strategy and always
+transits the choregraphy into a termination state (nil)
 
-- exceptions
-
-\section{Undecided Title But There Will Be One}
+\section{Some Title}
 - functional big-step semantics
 
 - SN for STLC; strong normalisation for languages of environmental semantics
 
-% This chapter reviews the work that is most related to the research questions investigated by you in this work. Please note that there are various options on \emph{where} you include it.
-
-% \begin{itemize}
-%   \item You could include it \emph{here} (i.e., where you see it right now in the template). Since it's after the formal definitions (Chapter~\ref{chap:background}), you can explain what the other works have done on some level of detail, yet you need to keep in mind that you did not yet explain your own contributions (except abstractly in the abstract), which slightly limits the level of technical detail on which you can compare these approaches here.
-  
-%   \item You could also make it a subsection of Chapter~\ref{chap:background}. This choice might also depend on the length of this chapter. Is it worth its own full chapter?
-
-%   \item Alternatively, you might include this chapter after the main part of your report, i.e., right before Chapter~\ref{chap:conclusion}. When you do this, you can go into more technical detail since the readers will have read your entire work, so they know exactly what you've done and you can therefore discuss differences (like pros/cons etc.) in more detail.
-
-%   \item When you take a look at scientific papers (preferably at top-tier venues), you might notice that not every single paper has a related work section. This is because in principle related works might also be addressed/positioned in the introduction or in the main part of the work. But since this is not a ``standardized scientific publication'', it is very strongly advised that you devote its own section to related work as done in this template.
-% \end{itemize}
-
-% If you prefer any of the latter two options, discuss this with your supervisor(s).

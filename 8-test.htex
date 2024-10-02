@@ -9,6 +9,33 @@ This is a theorem:
 
 The transition relation looks like \HOLtm{eval_exp clk E exp}
 
+\begin{theorem}\label{thm:test}
+    some text here
+    \begin{enumerate}
+      \item (Operational completeness) If \HOLtm{chorTypecheckOK G Th c} then there exist \dots
+      \item  (Operational soundness) If \HOLtm{eval_exp clk E exp} then there exist \dots
+    \end{enumerate}
+\end{theorem}
+
+\begin{definition}[\textsf{Kalas} syntax]\emph{Choreographies} in \textsf{Kalas}, ranged
+    over by $C$, are inductively defined by the grammar
+  %
+    \begin{center}
+    \begin{tabular}{rcllcll}
+    %   $C$ & ::=
+    %     &  $\HOLtm{Com p1 v1 p2 v2 C}$ & (com)
+    %     &  & $\HOLtm{Sel p1 b p2 C}$ & (sel) \\
+    %     &  & $\HOLtm{IfThen v p C1 C2}$ & (if)
+    %     &  & $\HOLtm{Let v p f vecv C}$ & (let) \\
+    %     &  & $\HOLtm{chorLang$Fix X C}$ & (fix)
+    %     &  & $\HOLtm{Call X}$ & (var) \\
+    %     &  & $\HOLtm{chorLang$Nil}$ & (nil)
+    %     &  &  &
+    \end{tabular}
+  \end{center}
+  \label{def:kalas}
+\end{definition}
+
 % \newcommand{\rulelabel}[2]{\raisebox{#1}{\mbox{\textsc{#2}}}\;}
 % \begin{table*}[tb]
 
