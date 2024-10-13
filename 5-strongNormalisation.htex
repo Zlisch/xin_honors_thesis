@@ -1,1 +1,20 @@
 \chapter{Strong Normalisation}\label{chap:strongNormalisation}
+
+- why it is necessary - the halting problem discussion.
+
+- our language is deterministic with the clock lemma, so strong normalisation is the same as
+weak normalisation
+
+- issue with directly proving: not strong enough IH for the applied term for app case,
+the applied term may get bigger, cause the e from closure value may be bigger;
+same issue for a substitution model in \citep{pierce2002types}
+- so sn_v says for a closure to be in sn_v, for any v (argument to function) that 
+in sn_v ("halts"), the evaluation of function body applying v halts
+
+
+- induction on typing rules/types (e.g. from t',t to t->t')
+
+- fn case: sn_e for a function expression of function types, transforms into 
+sn_v funcion types function value (closure) by rewriting the evaluation;
+which is satisfied by IH --- 1. IH says for every dynamic environment that
+nicely matches the updated typing environment, sn_e t' e

@@ -65,7 +65,7 @@ annotated with roles and are part of the global types, rather than being project
 a global environment. Type preservation and progress follow from Chor$\lambda$'s typing 
 and semantic rules.
 
-\subsection{Implementation and Handling Exceptions}
+\subsection{Handling Exceptions}
 % choreography in implementation? how they deal with local computations
 % Other choreography languages ... and exceptions ...
 - Choral: an object-oriented choregraphy implemented as a java library \citep{giallorenzo2024choral}. 
@@ -92,7 +92,10 @@ record the exception using transition labels. But we do not consider any recover
 transits the choregraphy into a termination state (nil)
 
 \section{Some Title}
-- functional big-step semantics
+- functional big-step semantics \cite{owens2016functional}
 
-- SN for STLC; strong normalisation for languages of environmental semantics
+- STLC; language with environment semantics
+- our typing is not unique
+
+- SN for STLC; Weak and strong SN in terms of non-deterministic; my language is deterministic
 

@@ -7,6 +7,33 @@ val HIDE_def = Define `HIDE x = x`
 
 val _ = remove_ovl_mapping "S" {Name = "S", Thy = "combin"}
 
+(*
+Theorem better_trans_let:
+  OPT_MMAP (λv. FLOOKUP s (v,p)) varvec = SOME valvec ⇒
+  trans (s, Let v p e c) (LLet v p f varvec, [])
+        (s |+ ((v,p), f valvec), c)
+Proof
+  strip_tac >>
+  ‘EVERY IS_SOME (MAP (FLOOKUP s) (MAP (λv. (v,p)) varvec))’
+    by (pop_assum mp_tac >> qid_spec_tac ‘valvec’ >> Induct_on ‘varvec’ >>
+        simp[OPT_MMAP_def, PULL_EXISTS]) >>
+  drule_then (qspecl_then [‘v’, ‘f’, ‘c’] strip_assume_tac)
+             chorSemTheory.trans_let >>
+  ‘MAP (THE o FLOOKUP s) (MAP (λv. (v,p)) varvec) = valvec’
+    suffices_by (strip_tac >> gs[]) >>
+  last_x_assum mp_tac >> rpt (pop_assum kall_tac) >>
+  qid_spec_tac ‘valvec’ >> Induct_on ‘varvec’ >>
+  simp[OPT_MMAP_def, PULL_EXISTS]
+QED
+*)
+Theorem better_trans_letval =
+        chorSemTheory.trans_letval |> Q.SPECL [‘v’, ‘s’, ‘x’, ‘p’, ‘e’, ‘c’, ‘cl’]
+                                   |> REWRITE_RULE [localise_fdom]
+
+Theorem better_trans_letexn =
+        chorSemTheory.trans_letexn |> Q.SPECL [‘s’, ‘x’, ‘p’, ‘e’, ‘c’, ‘cl’, ‘exn’]
+                                   |> REWRITE_RULE [localise_fdom] 
+
 Theorem better_lcong_reord =
   chorSemTheory.lcong_reord |> Q.SPECL [‘[]’, ‘[]’, ‘α’, ‘β’]
                             |> REWRITE_RULE [DISJOINT_DEF, APPEND_NIL, APPEND]
@@ -32,6 +59,11 @@ fun stdrule (n,f,els) =
   add_rule{term_name = n, fixity = f, pp_elements = els,
            paren_style = OnlyIfNecessary,
            block_style = (AroundEachPhrase, (PP.CONSISTENT, 0))}
+
+(*
+val _ = stdrule ("BinOp", Infixl 500,
+                 [TOK "ws", TM, TOK "ws"]);
+*)
 
 Overload LENSUPD = “λfm k v. fm |+ (k,v)”
 
@@ -83,7 +115,19 @@ val _ = stdrule ("chortrans", Closefix,
 val _ = add_rule {term_name =  "chorTypecheckOK", fixity = Suffix 451,
                   paren_style=  OnlyIfNecessary, 
                   block_style = (AroundEachPhrase, (PP.CONSISTENT,0)),
-                  pp_elements = [TOK "(ctcok1)", TM, TOK "(ctcok2)", TM, TOK "(ctcok3)"]}
+                  pp_elements = [TOK "comma", TM, TOK "vdash", TM, TOK "checkmark"]}
+
+(*
+val _ = stdrule ("localise", Prefix 501,
+                 [TOK "(localise1)", TM, TOK "comma", TM, TOK "(localise3)"]);
+*)
+val _ = stdrule ("free_vars", Prefix 501,
+                 [TOK "(fvs1)", TM, TOK "fvs2"]);
+               
+val _ = add_rule {term_name =  "typecheck", fixity = Suffix 451,
+                  paren_style=  OnlyIfNecessary, 
+                  block_style = (AroundEachPhrase, (PP.CONSISTENT,0)),
+                  pp_elements = [TOK "vdash_s", TM, TOK "colon"]}
 
 val _ = add_rule {term_name = "LCom", fixity = Infixr 400,
                   paren_style = IfNotTop{realonly=false},

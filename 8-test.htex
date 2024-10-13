@@ -4,7 +4,19 @@ We define what it is for a choreograph to be well-formed with the \HOLtm{chorTyp
 
 This is a theorem:
 \begin{HOLmath}
-\HOLthm{deadlockFreedom.chor_progress}
+\HOLthm{deadlockFreedom.chor_progress_lemma}
+\end{HOLmath}
+
+\begin{HOLmath}
+\HOLthm{deadlockFreedom.chor_preservation_lemma}
+\end{HOLmath}
+
+\begin{HOLmath}
+\HOLthm{envSem.type_soundness}
+\end{HOLmath}
+
+\begin{HOLmath}
+\HOLthm{typeSN.richerLang_sn}
 \end{HOLmath}
 
 The transition relation looks like \HOLtm{eval_exp clk E exp}
@@ -22,50 +34,128 @@ The transition relation looks like \HOLtm{eval_exp clk E exp}
   %
     \begin{center}
     \begin{tabular}{rcllcll}
-    %   $C$ & ::=
-    %     &  $\HOLtm{Com p1 v1 p2 v2 C}$ & (com)
-    %     &  & $\HOLtm{Sel p1 b p2 C}$ & (sel) \\
-    %     &  & $\HOLtm{IfThen v p C1 C2}$ & (if)
-    %     &  & $\HOLtm{Let v p f vecv C}$ & (let) \\
-    %     &  & $\HOLtm{chorLang$Fix X C}$ & (fix)
-    %     &  & $\HOLtm{Call X}$ & (var) \\
-    %     &  & $\HOLtm{chorLang$Nil}$ & (nil)
-    %     &  &  &
+      $C$ & ::=
+        &  $\HOLtm{Com p1 v1 p2 v2 C}$ & \textit{(com)} \\
+        &  & $\HOLtm{Let v p e C}$ & \textit{(let)} \\
+        &  & \dots
+
+        % &  $\HOLtm{Com p1 v1 p2 v2 C}$ & \mathit{(com)}
+        % &  & $\HOLtm{Sel p1 b p2 C}$ & (sel) \\
+        % &  & $\HOLtm{IfThen v p C1 C2}$ & (if)
+        % &  & $\HOLtm{Let v p e C}$ & (let) \\
+        % &  & $\HOLtm{chorLang$Fix X C}$ & (fix)
+        % &  & $\HOLtm{Call X}$ & (var) \\
+        % &  & $\HOLtm{chorLang$Nil}$ & (nil)
+        &  &  &
     \end{tabular}
   \end{center}
   \label{def:kalas}
 \end{definition}
 
-% \newcommand{\rulelabel}[2]{\raisebox{#1}{\mbox{\textsc{#2}}}\;}
-% \begin{table*}[tb]
+\begin{definition}[\richerlang syntax] Expressions in \richerlang, ranged
+  over by $e$, are inductively defined by the grammar
+%
+  \begin{center}
+  \begin{tabular}{rcllcll}
+    $e$ & ::=
+      &  $\HOLtm{Var x}$ & \textit{(var)} \\
+      &  & $\HOLtm{BinOp bop e1 e2}$ & \textit{(bop)} \\
+      &  & $\HOLtm{Uop uop e}$ & \textit{(uop)} \\
+      &  & $\HOLtm{If bg e1 e2}$ & \textit{(if)} \\
+      &  & $\HOLtm{Let x e1 e2}$ & \textit{(let)} \\
+      &  & $\HOLtm{Fn x e}$ & \textit{(fn)} \\
+      &  & $\HOLtm{App e1 e2}$ & \textit{(app)} \\
+      &  & $\HOLtm{Case e x e1 y e2}$ & \textit{(case)}
 
-% \[\def\arraystretch{3.2}\qquad\begin{array}{c}
 
-% % \rulelabel{2.5ex}{Com}\HOLthm[rule,conj1,width=2000,C/c]{chorSem.trans_rules}
-% % \\
-% % \rulelabel{2ex}{Com-S}\HOLthm[rule,α/alpha,C/c,C'/c',width=2000]{chorSem.trans_com_swap}
-% % \\
-% % \rulelabel{2ex}{Com-A}\HOLthm[rule,width=2000,C/c,C'/c',α/alpha]{chorSem.trans_com_async}
+      % &  $\HOLtm{Var x}$ & (var)
+      % &  & $\HOLtm{StrLit s}$ & (str) \\
+      % &  & $\HOLtm{IntLit n}$ & (int)
+      % &  & $\HOLtm{BoolLit b}$ & (bool) \\
+      % &  & $\HOLtm{BinOp bop e1 e2}$ & (bop)
+      % &  & $\HOLtm{Uop uop e}$ & (uop) \\
+      % &  & $\HOLtm{If bg e1 e2}$ & (if)
+      % &  & $\HOLtm{Let x e1 e2}$ & (let) \\
+      % &  & $\HOLtm{Fn x e}$ & (fn) 
+      % &  & $\HOLtm{App e1 e2}$ & (app) \\
+      % &  & $\HOLtm{Case e x e1 y e2}$ & (case)
+      &  &  &
+  \end{tabular}
+\end{center}
+\label{def:kalas}
+\end{definition}
 
-% % \\
-% % \rulelabel{3ex}{Sel}\HOLthm[rule,conj2,width=2000,C/c]{chorSem.trans_rules}
-% % \\
-% % \rulelabel{3ex}{Let}\HOLthm[rule,width=2000,C/c]{pp.better_trans_let}
-% % \\
-% % \rulelabel{2.5ex}{If-T}\HOLthm[rule,width=2000,C1/c1,C2/c2]{chorSem.trans_if_true}\\
-% % \rulelabel{2ex}{Fix}\HOLthm[rule,width=2000,X/dn,C/c]{chorSem.trans_fix}
-% %\inferrule*[left=\textsc{If-F}]
-% %    {s(p,v) \neq \top}
-% %    {\provtrans{s \rhd \ifthel{v @ p}{C_1}{C_2}}
-% %           {\tau_p}
-% %           {\epsilon}
-% %           {s \rhd C_2}
-% %    }
-% \end{array}\]
-% \caption{\chorlang{} semantics: communication rules.
-%   The function $\mathrm{wv}(\alpha)$ returns the variable (if any) that is
-% modified by $\alpha$.
-% }
+\[
+T ::= \HOLtm{intT} \mid \HOLtm{strT} \mid \HOLtm{boolT} \mid 
+\HOLtm{fnT t1 t2} \mid \HOLtm{pairT t1 t2} \mid \HOLtm{sumT t1 t2}\\
+\]
 
-% \label{table:chorsem1}
-% \end{table*}
+\begin{HOLmath}
+  \HOLthm[def,conj1]{typeSN.sn_v_def} \\
+  \HOLthm[def,conj2]{typeSN.sn_v_def} \\
+\end{HOLmath}
+
+\begin{HOLmath}
+  \HOLthm[def,conj1]{envSem.eval_exp_def} \\
+  \HOLthm[def,conj9]{envSem.eval_exp_def} \\
+  \HOLthm[def,conj10]{envSem.eval_exp_def} \\
+\end{HOLmath}
+
+\newcommand{\rulelabel}[2]{\raisebox{#1}{\mbox{\textsc{#2}}}\;}
+\begin{table*}[tb]
+
+\[\def\arraystretch{3.2}\qquad\begin{array}{c}
+
+\rulelabel{2.5ex}{Com}\HOLthm[rule,conj1,width=2000,C/c]{chorSem.trans_rules}
+\\
+\rulelabel{2.5ex}{T-Var}\HOLthm[rule,width=2000]{richerLang.typecheck_var}
+\\
+\rulelabel{2.5ex}{T-Fn}\HOLthm[rule,width=2000]{richerLang.typecheck_fn}
+\\
+\rulelabel{2.5ex}{T-App}\HOLthm[rule,width=2000]{richerLang.typecheck_app}
+\\
+\rulelabel{2.5ex}{CT-Com}\HOLthm[rule,width=2000]{chorType.chorTypecheckOK_com}
+\\
+\rulelabel{2.5ex}{CT-Let}\HOLthm[rule,width=2000]{chorType.chorTypecheckOK_let}
+% \rulelabel{2ex}{Com-S}\HOLthm[rule,α/alpha,C/c,C'/c',width=2000]{chorSem.trans_com_swap}
+% \\
+% \rulelabel{2ex}{Com-A}\HOLthm[rule,width=2000,C/c,C'/c',α/alpha]{chorSem.trans_com_async}
+
+% \\
+% \rulelabel{3ex}{Sel}\HOLthm[rule,conj2,width=2000,C/c]{chorSem.trans_rules}
+% \\
+% \rulelabel{2.5ex}{If-T}\HOLthm[rule,width=2000,C1/c1,C2/c2]{chorSem.trans_if_true}\\
+% \rulelabel{2ex}{Fix}\HOLthm[rule,width=2000,X/dn,C/c]{chorSem.trans_fix}
+% \inferrule*[left=\textsc{If-F}]
+%    {s(p,v) \neq \top}
+%    {\provtrans{s \rhd \ifthel{v @ p}{C_1}{C_2}}
+%           {\tau_p}
+%           {\epsilon}
+%           {s \rhd C_2}
+%    }
+\end{array}\]
+\caption{semantics: communication rules.
+  The function $\mathrm{wv}(\alpha)$ returns the variable (if any) that is
+modified by $\alpha$.
+}
+
+\label{table:chorsem1}
+\end{table*}
+
+\begin{center}
+  \begin{tabular}{rl|l}
+    \multicolumn{2}{c|}{\cellcolor{vlightgray}Choreography} & \comptitle{}{External Computation} \\
+    \texttt{1.} & $\commprefix{\mathtt{server}}{var}{\mathtt{client}}{\mathit{x}}{}$; & $\textrm{\textbf{fun}}\;mod\;\mathit{x}\;=$\\
+    \texttt{2.} & $\letin{\mathit{v}@\mathtt{client} = \mathtt{mod}(\mathit{x})}{}$ & $\quad\HOLKeyword{case}\;\ensuremath{\HOLConst{Option.map}\;(\HOLKeyword{fn}\;\HOLBoundVar{s}\;\HOLTokenImp{}\;\HOLConst{valOf}\;(\HOLConst{Int.fromString}\;\HOLBoundVar{s}))\;(\HOLConst{hd}\;\HOLFreeVar{x})}\;\HOLKeyword{of}$\\
+    \texttt{3.} & $\commprefix{\mathtt{client}}{v}{\mathtt{server}}{\mathit{result}}{}$; & $\quad\;\;\HOLConst{None}\;\HOLTokenImp{}\;\HOLConst{None}$ \\
+    & & $\quad\HOLTokenBar{}\;\HOLConst{Some}\;\HOLBoundVar{n}\;\HOLTokenImp{}\;\HOLConst{Some}\;[\HOLConst{Int.toString}\;(\HOLBoundVar{n}\;\HOLConst{MOD}\;\HOLFreeVar{y})]$ \\
+  \end{tabular}
+\end{center}
+
+\begin{center}
+  \begin{tabular}{rl}
+    \texttt{1.} & $\commprefix{\mathtt{server}}{var}{\mathtt{client}}{\mathit{x}}{}$; \\
+    \texttt{2.} & $\letin{\mathit{v}@\mathtt{client} = \HOLConst{StrOf}\;((\HOLConst{NumOf}\;(\HOLConst{Var}\;\HOLFreeVar{x}))\;\HOLConst{Mod}\;(\HOLConst{Var}\;\HOLFreeVar{y}))}{}$ \\
+    \texttt{3.} & $\commprefix{\mathtt{client}}{v}{\mathtt{server}}{\mathit{result}}{}$; \\
+  \end{tabular}
+\end{center}

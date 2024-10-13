@@ -32,74 +32,79 @@ progress, the choreography inherits these properties as well. Thus, when
 analyzing message exchange behaviors in choreography---such as multiparty 
 sessions, asynchrony, and parallelism---one can safely assume good behaviours 
 of local computation \citep{montesi_compositional_2013, cruz2017core, carbone_deadlock-freedom-by-design_2013}.
+
 But when it comes to writing the choreography program that implements concrete system 
 behaviours, if local computation is ever required by the system, one must describe 
 the inputs and outputs of local computations. Current work either delegate this part to 
 an assumed well-behaved external implementation, for example, Kalas~\cite{pohjola_kalas_2022} and Pirouette~\cite{hirsch_pirouette_2022},
-or provide a basic framework where only natural numbers are considered, as in Core Choreography (CC)~\cite{cruz2017core}.
+or provide a basic framework where only Church numerals are considered, as in Core Choreography (CC)~\cite{cruz2017core}.
 This makes writing choregraphy program with local computation implementation  
 an unpleasant experience. For instance, a choreography program in Kalas, where the client 
-performs local computation using input from the server and then sends the result back, would look like:
+computes modulo locally using input from the server and then sends the result back, will look like:
 
-\begin{center}
-  \begin{tabular}{rl}
-    \texttt{1.} & $\commprefix{\mathtt{server}}{var}{\mathtt{client}}{\mathit{x}}{}$; \\
-    \texttt{2.} & $\letin{\mathit{v}@\mathtt{client} = \mathtt{fun}(\mathit{x})}{}$ \\
-    \texttt{3.} & $\commprefix{\mathtt{client}}{v}{\mathtt{server}}{\mathit{result}}{}$; \\
-  \end{tabular}
-\end{center}
-\label{ex:compute1}
+\begin{example}[Local computation --- Modulo]\label{ex:oldmod}\rule{3mm}{0mm}
+  \begin{center}
+    \begin{tabular}{rl|l}
+      \multicolumn{2}{c|}{\cellcolor{vlightgray}\textnormal{Kalas}} & \comptitle{}{\textnormal{External computation}} \\
+      \texttt{1.} & $\commprefix{\mathtt{server}}{var}{\mathtt{client}}{\mathit{x}}{}$; & $\textrm{\textbf{fun}}\;mod\;\mathit{x}\;=$\\
+      \texttt{2.} & $\letin{\mathit{v}@\mathtt{client} = \mathtt{mod}(\mathit{x})}{}$ & $\quad\HOLKeyword{case}\;\ensuremath{\HOLConst{Option.map}\;(\HOLKeyword{fn}\;\HOLBoundVar{s}\;\HOLTokenImp{}\;\HOLConst{valOf}\;(\HOLConst{Int.fromString}\;\HOLBoundVar{s}))\;(\HOLConst{hd}\;\HOLFreeVar{x})}\;\HOLKeyword{of}$\\
+      \texttt{3.} & $\commprefix{\mathtt{client}}{v}{\mathtt{server}}{\mathit{result}}{}$; & $\quad\;\;\HOLConst{None}\;\HOLTokenImp{}\;\HOLConst{None}$ \\
+      & & $\quad\HOLTokenBar{}\;\HOLConst{Some}\;\HOLBoundVar{n}\;\HOLTokenImp{}\;\HOLConst{Some}\;[\HOLConst{Int.toString}\;(\HOLBoundVar{n}\;\HOLConst{MOD}\;\HOLFreeVar{y})]$ \\
+    \end{tabular}
+  \end{center}
+\end{example}
 
 In Kalas, processes communicate exclusively via strings. Therefore, in the external 
-implementation of $\mathtt{fun}(\mathit{x})$, the string value of $\mathit{x}$ must first be 
-converted to the desired data type for computation. Afterward, the result is converted 
-back to a string before updating the client process variable $\mathit{v}$.
+implementation of $\mathtt{mod}(\mathit{x})$, the string value of $\mathit{x}$ must 
+first be converted to a number. Then client computes the modulo on the converted input.
+Afterward, the result is converted back to a string before updating the client process 
+variable $\mathit{v}$. We can easily see from this example that how data type conversions 
+between choregraphy and external language lead to cumbersome code.
 
 Thus this thesis extends Kalas, a verified choregraphy language with machine-checked 
-end-to-end compilation, with a simple language of expressions
-over types such as integers, strings and booleans. We ensure that the extended Kalas 
-has important properties such as type preservation and progress. Using the extended
-Kalas, the previous choregraphy where client computes the factorial of input integer 
-can be written as:
+end-to-end compilation, by introducing \richerlang, a simple language of expressions
+over types such as integers, strings and booleans. Using the extended Kalas, 
+local computations can be handled gracefully within a few lines of codes. The previous 
+choregraphy where client computes the modulo of input integer can be written as in 
+Example~\ref{ex:modenriched}. 
 
+By providing a concrete local language syntax and semantics,
+we are able to formally anlayse the message exchange behaviours of choregraphy
+in terms of progress and type preservation when local computations are considered.
+We show that type soundness and strong normalisation properties of \richerlang\;
+lead to progress for the enriched Kalas. Our semantics and typing system also
+allow us to show type preservation for non-recursive and synchronised transitions in
+the enriched Kalas.
+
+\begin{example}[Local computation with \richerlang\;--- Modulo]\label{ex:modenriched}\rule{3mm}{0mm}
 \begin{center}
   \begin{tabular}{rl}
     \texttt{1.} & $\commprefix{\mathtt{server}}{var}{\mathtt{client}}{\mathit{x}}{}$; \\
-    \texttt{2.} & $\letin{\mathit{v}@\mathtt{client} = \textbf{case }\mathtt{NumOf}x \textbf{ of}}{}$ \\
+    \texttt{2.} & $\letin{\mathit{v}@\mathtt{client} = \HOLConst{StrOf}\;((\HOLConst{NumOf}\;(\HOLConst{Var}\;\HOLFreeVar{x}))\;\HOLConst{Mod}\;(\HOLConst{Var}\;\HOLFreeVar{y}))}{}$ \\
     \texttt{3.} & $\commprefix{\mathtt{client}}{v}{\mathtt{server}}{\mathit{result}}{}$; \\
-    \texttt{4.} & $\commprefix{\mathtt{client}}{v}{\mathtt{server}}{\mathit{result}}{}$; \\
-    \texttt{5.} & $\commprefix{\mathtt{client}}{v}{\mathtt{server}}{\mathit{result}}{}$; \\
   \end{tabular}
 \end{center}
-\label{ex:compute2}
+\end{example}
 
-This thesis provides three main contributions. 
+To summarise, this thesis provides three main contributions. 
 \begin{itemize}
-  \item The first contribution is an environment language with functional big step semantics. 
-  We also provide a typing system. The language is implemented using the HOL4 proof assistant \citep{slind2008brief}.
-  We give type soundness proof for the proposed semantics and typing rules.
+  \item The first contribution is \richerlang, a simply typed lambda calculus with function closure.
+  According to the approach taken by \cite{owens2016functional}, we use a functional big-step semantics with
+  clocks to ensure the evaluation function for \richerlang'\; expressions is total. Our evaluation 
+  strategy is call-by-value. We also provide a typing system and give type soundness proof for 
+  the proposed semantics and typing rules. \richerlang\; is implemented using the higher-order logic
+  proof assistant HOL4 \citep{slind2008brief} and all the proofs are conducted within HOL4.
  
-  \item The second contribution is the strong normalisation proof for our environment 
-  language model. It is essentially the strong normalisation proof for a simply-typed 
-  lambda calculus, but we define the logic relation based on environment semantics.
+  \item The second contribution is the strong normalization proof for \richerlang. We follow the 
+  standard practice for proving strong normalization in simply typed lambda calculus, 
+  with a specific case for function closure in the definition of the strong normalization relation.
 
-  \item The third contribution is the enriched Kalas. Besides common data types such as 
-  integer, string, and boolean, we also add function, pair, and sum types to the choregraphy.
-  Common operators for our data types are included, such as addition, modulo, and negation.
-  Integer-string convertor is implemented as well for the integration with Kalas. Last but 
-  not least, we prove the enriched Kalas exhibits type preservation and progress.
-
+  \item The third contribution is Kalas enriched with \richerlang. Besides common data types such as 
+  integer, string, and boolean, we also add function, pair, and sum types to the local computation in 
+  Kalas. Common operators for our data types are included, such as addition, modulo, and negation.
+  Integer-string convertor is implemented as well for the integration with Kalas. Last but not least, 
+  we prove the enriched Kalas enjoys progress. We also show type preservation holds for non-recursive, 
+  synchronised transitions in the enriched Kalas.
 \end{itemize}
-
-% Plan for the introduction:
-% - what is a choreography, why is it desired (what brings to the idea of choreography): 
-% what is deadlock-free; also deadlock freedom by design
-% - CC: minimal design, not implementation-specific, fundamental model for studying choreography, elegant
-% - What is Kalas and what it does well; what it can be improved and why interesting
-% - how different choreographies handle local computations and why a simplification is desired
-% - research question
-
-% - Contribution
-% - contreibution: simple typing system for choreography???
 
 % - Thesis Structure

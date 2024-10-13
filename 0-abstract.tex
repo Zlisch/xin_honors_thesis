@@ -1,9 +1,46 @@
 \chapter*{Abstract}
 
+Distributed systems are ubiquitous but writing endpoint programs can be 
+error-prone since mismatched message sending and receiving can lead to 
+errors such as deadlock, where the system indefinitely awaits a message.
+Choreography offers a solution by providing a global description of how 
+messages are exchanged among endpoints, where message mismatches are disallowed ---
+a property called "deadlock-free by design." The global choreography 
+is then projected into process models for each endpoint via EndPoint Projection (EPP),
+preserving the deadlock-free property.
+
+While many choreography languages focus on message exchange behaviors, few address 
+the local computations occurring within endpoints. Most current languages assume local 
+computation results or delegate them to external languages. While this offers a reasoning 
+ground for studying message exchange behaviours of choreography, when it comes to writing 
+a concrete choreography program, the former can only exchange literal values and the 
+latter leads to cumbersome code due to the addition of an external computation program which 
+typically involves conversions between choreography values and external data types.
+
+Hence in this thesis, we extend Kalas, a state-of-art choreography language with
+verified end-to-end compilation, with a local language \richerlang, such that
+local computations are handled gracefully within a few lines of codes. Moreover,
+it also allows us to formally analyse the message exchange behaviours of choregraphy
+when local computations are considered. 
+
+We design \richerlang\, as a simply typed lambda calculus with function closure. We use
+a functional bis-step semantics with clocks to ensure the evaluation function for
+\richerlang\, is total. We prove type soundness for the proposed semantics and typing rules. 
+We also provide a strong normalisation proof for \richerlang.
+
+We extend the Kalas'\,\textit{let} transition with \richerlang\, expressions. Besides common data types 
+such as integer, string, and boolean, we also add function, pair, and sum types to the 
+local computation in choregraphy. Common operators for our data types are included, such as addition, modulo, 
+and negation. An integer-string converter is implemented as well to handle message strings 
+in Kalas. Last but not least, we prove the enriched Kalas enjoys progress. We also show
+type preservation holds for non-recursive, synchronised transitions.
+
+
+
 % An abstract is a very short summary (around 15 lines) of your entire work (that doesn't use citations by convention). There are plenty of examples you can take a look at -- simply take a look at some papers published at top-tier venues, e.g., by your supervisor.
 
-- choreography diagram; CC, Kalas
-- the meaning of deadlock freedom by design
-- mostly focus on interactions via message passing
-- contribution 1: richerLang: call by value, functional big step semantics with clock to be implemented in HOL4, richer data types, environment semantics; an environmental language model with type theory; and strong normalisation property
-- contribution 2: the enriched choreography, with a simple type theory, Kalas have the safety property of deadlock freedom
+% - choreography diagram; CC, Kalas
+% - the meaning of deadlock freedom by design
+% - mostly focus on interactions via message passing
+% - contribution 1: richerLang: call by value, functional big step semantics with clock to be implemented in HOL4, richer data types, environment semantics; an environmental language model with type theory; and strong normalisation property
+% - contribution 2: the enriched choreography, with a simple type theory, Kalas have the safety property of deadlock freedom

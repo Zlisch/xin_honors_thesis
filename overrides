@@ -200,6 +200,23 @@ normalise_queues 0 {}
 -> 2 \ensuremath{\to}
 
 FEMPTY 1 \ensuremath{\emptyset}
-(ctcok1) 1 ,
-(ctcok2) 1 \ensuremath{\vdash}
-(ctcok3) 1 \ensuremath{\checkmark}
+comma 1 ,
+vdash 1 \ensuremath{\vdash}
+vdash_s 1 \ensuremath{\vdash_s}
+checkmark 1 \ensuremath{\checkmark}
+
+eval_exp 8 \ensuremath{\HOLConst{eval\_exp}}
+value_type 10 \ensuremath{\HOLConst{value\_type}}
+not_finish 10 \ensuremath{\HOLConst{not\_finish}}
+
+ws 1 \,
+
+colon 1 :
+leftp 1 (
+rightp 1 )
+
+(localise1) 9 \ensuremath{\HOLConst{localise}(}
+(localise3) 1 \ensuremath{)}
+
+(fvs1) 3 \freev{
+(fvs2) 0 }

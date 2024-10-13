@@ -1,13 +1,43 @@
 \chapter{Background}\label{chap:background}
 
 \section{Choreography as a Programming Diagram}
-- why choregraphy is desired
-- how choregraphy can be applied to a real example
-- deadlock free by design and the idea of EPP
-- a choregraphy diagram showing the choregraphy and its projections
+A distributed system can be defined as a collection of autonomous computing 
+elements that behaves to its users' expectations \citep{mullender1990distributed}. Message exchanges
+are heart of the distributed system designs cause it allows nodes to collaborate
+and share resources with each other. Otherwise there is no need to put different 
+nodes inside one connected network. Using a traditional way to describe a distributed 
+system, one will have to give a detailed description of operations at each node in the 
+system. For example, a communication between node A and node B is achieved by A sending the 
+message and B receiving the message. But mismatched message sending
+and receiving can happen and these endpoint programs may fail to prevent the system
+from deadlocks or race among messages.
+
+Choreography raises as an effort to eliminate incorrect system implementation
+by only providing a global description on how messages should be exchanged within 
+the system. This approach is analogous to dance choreography, which outlines steps 
+and movements for an entire performance without focusing on individual dancers' 
+control points.
+
+While it is fascinating to have no mismatched messages in choregraphy perspective,
+choregraphy cannot be run directly on individual nodes in a system and thus endpoint
+programs are still required by implementation. Thus the idea of EndPoint Projection (EPP) is 
+proposed in which a choreography is projected into endpoint programs such that each endpoint
+correctly implements the behaviours described by its role in the choreography. This idea is first 
+described by the design document of Web Services Choreography Description Language (WS-CDL) \citep{w3c2004wsdl},
+and \cite{carbone2007structured} further formalise it into the theory of EPP, namely the \emph{soundness} and 
+\emph{completeness} properties for a given EPP. Soundness means that all projected endpoint 
+communications adhere to the choregraphy description and completeness means that all communications
+described by the choregraphy are projected into endpoint codes.
+- maybe two important results but not namely
+
+- idea of CC
+
+- common aspected in choreography: asynchrony ...
 
 \section{Interactive Theorem Proving}
+- what is higher-order logic
 - how proofs are done using HOL
+- recInduct in HOL
 
 \section{Kalas}
 - overview including intro to its compiler

@@ -1,5 +1,7 @@
 
 % define your own macros here
+\definecolor{vlightgray}{gray}{0.95}
+\newcommand{\comptitle}[2]{\multicolumn{1}{c#1}{\cellcolor{vlightgray}#2}}
 
 \newcommand{\Eff} {\ensuremath{\mathit{eff}}}  % example command without arguments
 \newcommand{\Pre} {\ensuremath{\mathit{pre}}}  % (again)
@@ -190,9 +192,9 @@
 %\newcommand{\hooks}{\triangleleft}
 %\newcommand{\och}{\wedge}
 %\newcommand{\logicify}[1]{logicify(#1)}
-\newcommand{\iftok}{\mbox{\rm \textbf{if}}}
-\newcommand{\thentok}{\mbox{\rm \textbf{then}}}
-\newcommand{\elsetok}{\mbox{\rm \textbf{else}}}
+\newcommand{\iftok}{\mbox{\textrm{\textbf{if}}}}
+\newcommand{\thentok}{\mbox{\textrm{\textbf{then}}}}
+\newcommand{\elsetok}{\mbox{\textrm{\textbf{else}}}}
 \newcommand{\ifthel}[3]{\mbox{\iftok{} \ensuremath{#1} \thentok{} \ensuremath{#2} \elsetok{} \ensuremath{#3}}}
 \newcommand{\fixc}[2]{\ensuremath{\mu #1. #2}}
 \newcommand{\fixcall}[1]{#1}
@@ -256,7 +258,7 @@
 %\newcommand{\instmap}[2]{\ldbr #1 \rdbr_{#2}}
 %\newcommand{\instmapd}[3]{\ldbr #1 \rdbr_{#3}^{#2}}
 %\newcommand{\equiinstanceof}{\stackrel{=}{\surd}}
-%\newcommand{\infers}{\vdash_s}
+\newcommand{\infers}{\vdash_s}
 \newcommand{\simplies}{\leq}
 %\newcommand{\ssimplies}{\simplies_s}
 %\newcommand{\xxximplies}{\simeq\hspace*{-3pt}>}

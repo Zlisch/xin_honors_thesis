@@ -58,8 +58,8 @@ munge.exe : $(MAIN).uo ppTheory.uo
 	$(protect $(HOLDIR)/bin/mkmunge.exe) $(MAIN)
 
 # Style files for the hol commands
-holtexbasic.sty: $(HOLDIR)/src/TeX/holtexbasic.sty
-	$(CP) $< $@
+# holtexbasic.sty: $(HOLDIR)/src/TeX/holtexbasic.sty
+# 	$(CP) $< $@
 
 heap: $(HEAPDEPS)
 	$(protect $(HOLDIR)/bin/buildheap) -o $@ $(HEAPDEPS)

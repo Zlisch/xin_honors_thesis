@@ -1,4 +1,4 @@
-\chapter{The Environment Model}\label{chap:richerLang}
+\chapter{\richerlang: A Simply Typed Lambda Calculus}\label{chap:richerLang}
 
 \section{Syntax}\label{sec:envSyntax}
 - binary operators
@@ -6,6 +6,13 @@
 - value script?
 
 \section{Semantics}\label{sec:envSemantics}
+- how the recursion is not supported in our semantics; we don't support fixed point (as in the
+abstraction book which can't be cited)
+
+- evaluation strategy is defined by the evaluation rules: call by value as in ... by \cite{owens2016functional}
+
+- closure modification based on the submap property for choregraphy
+
 - functional big step semantics: intepreter style with clock, total function. for being implemented in HOL4
 - properties: clock increment (cases on result) (and clock decrement)
 - closure: issues with dynamic environment, so we use lexical environment;
@@ -27,9 +34,47 @@ do we explain restrciting to fv(e) and how?
 - valuetype: closure
 - no type uniqueness
 
+- maybe an example of what program typing rules allow and which disallow and 
+it is actually meaningful
+
 \subsection{Main Properties}\label{subsec:envTypingProperties}
-- value invertability; envtype used for fnT case of it
+- typecheck_*_thm: the inversion (generation) lemma, \citep{pierce2002types};
+we can calculate the types of subterm of a well-typed term; all automatically 
+handled by HOL4, for matching the subgoals (when no IH), OR for using the IH
+
+- valuetype_EQ_* lemma: canonical forms of types \citep{pierce2002types},
+used for type soundness proof, where we only have v and we don't have the form
+of v; only needed for boolean value, function value and sum value, where those 
+are intermediate evaluated values in semantics and after the IH has been applied
+and we want to have a canonical form of v rather than merely the name v itself,
+because we want the results from IH to match the evaluation semantics in goal, which
+operates on concrete value forms rather than a name of the value; it's for using
+the IH results (to match the evaluation process in goal)
+
+- If no intermediate evaluated values are involved in the semantics, we don't have to use
+IH since no recursive calls to evaluation thus no IH to use; in this case `irule value_type_*` 
+moves one step higher in the proof tree to the previous sub-proof tree, transforming the goal; 
+we will have the concrete form of values in goal since we rewrite the evaluation definition in 
+our goal
+
+- envtype: analogous to the "Preservation of types under substitution" lemma in a substitution
+semantics type soundness proof \citep{pierce2002types}; our equivalent version is by envtype; so 
+substitution gives free variables meaning, we do this by FLOOKUP (var case using envtype_def;
+other that contains intermediate value evaluation using envtype update lemma)
+
+- bop type soundness and uop type soundness is just the same as operator case in the 
+type soundness proof for a simply typed lambda calculus
+
+
+% - value invertability; envtype used for fnT case of it
 - operators: uoptype soundness and boptype soundness (use the invertability)
 - typecheck: reducing typing environment (for soundness fn case)
 
 \subsection{Type Soundness}\label{subsec:envTypingSoundness}
+
+- fn case: 
+- envtype_DRESTRICT
+- typecheck_update_sub_fv: which needs typecheck_drestrict (which needs typecheck_env_fv), 
+a strengthening on the typing context
+
+- other cases: mostly need envtype_lemma to ensure the updated environments still has envtype
