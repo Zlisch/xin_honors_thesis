@@ -21,66 +21,55 @@ This is a theorem:
 
 The transition relation looks like \HOLtm{eval_exp clk E exp}
 
-\begin{theorem}\label{thm:test}
+\begin{thm}\label{thm:test}
     some text here
     \begin{enumerate}
       \item (Operational completeness) If \HOLtm{chorTypecheckOK G Th c} then there exist \dots
       \item  (Operational soundness) If \HOLtm{eval_exp clk E exp} then there exist \dots
     \end{enumerate}
-\end{theorem}
+\end{thm}
 
 \begin{definition}[\textsf{Kalas} syntax]\emph{Choreographies} in \textsf{Kalas}, ranged
     over by $C$, are inductively defined by the grammar
-  %
     \begin{center}
     \begin{tabular}{rcllcll}
       $C$ & ::=
-        &  $\HOLtm{Com p1 v1 p2 v2 C}$ & \textit{(com)} \\
-        &  & $\HOLtm{Let v p e C}$ & \textit{(let)} \\
-        &  & \dots
-
-        % &  $\HOLtm{Com p1 v1 p2 v2 C}$ & \mathit{(com)}
-        % &  & $\HOLtm{Sel p1 b p2 C}$ & (sel) \\
-        % &  & $\HOLtm{IfThen v p C1 C2}$ & (if)
-        % &  & $\HOLtm{Let v p e C}$ & (let) \\
-        % &  & $\HOLtm{chorLang$Fix X C}$ & (fix)
-        % &  & $\HOLtm{Call X}$ & (var) \\
-        % &  & $\HOLtm{chorLang$Nil}$ & (nil)
+        &  $\HOLtm{Com p1 v1 p2 v2 C}$ & {(com)}
+        &  & $\HOLtm{Sel p1 b p2 C}$ & (sel) \\
+        &  & $\HOLtm{IfThen v p C1 C2}$ & (if)
+        &  & $\HOLtm{Let v p e C}$ & (let) \\
+        &  & $\HOLtm{chorLang$Fix X C}$ & (fix)
+        &  & $\HOLtm{Call X}$ & (var) \\
+        &  & $\HOLtm{chorLang$Nil}$ & (nil)
         &  &  &
     \end{tabular}
   \end{center}
   \label{def:kalas}
 \end{definition}
 
-\begin{definition}[\richerlang syntax] Expressions in \richerlang, ranged
-  over by $e$, are inductively defined by the grammar
-%
+\begin{definition}[\richerlang\;syntax] \emph{Values} and \emph{expressions} in \richerlang, ranged
+  over by $v, e$, are inductively defined by the grammar
   \begin{center}
-  \begin{tabular}{rcllcll}
-    $e$ & ::=
-      &  $\HOLtm{Var x}$ & \textit{(var)} \\
-      &  & $\HOLtm{BinOp bop e1 e2}$ & \textit{(bop)} \\
-      &  & $\HOLtm{Uop uop e}$ & \textit{(uop)} \\
-      &  & $\HOLtm{If bg e1 e2}$ & \textit{(if)} \\
-      &  & $\HOLtm{Let x e1 e2}$ & \textit{(let)} \\
-      &  & $\HOLtm{Fn x e}$ & \textit{(fn)} \\
-      &  & $\HOLtm{App e1 e2}$ & \textit{(app)} \\
-      &  & $\HOLtm{Case e x e1 y e2}$ & \textit{(case)}
-
-
-      % &  $\HOLtm{Var x}$ & (var)
-      % &  & $\HOLtm{StrLit s}$ & (str) \\
-      % &  & $\HOLtm{IntLit n}$ & (int)
-      % &  & $\HOLtm{BoolLit b}$ & (bool) \\
-      % &  & $\HOLtm{BinOp bop e1 e2}$ & (bop)
-      % &  & $\HOLtm{Uop uop e}$ & (uop) \\
-      % &  & $\HOLtm{If bg e1 e2}$ & (if)
-      % &  & $\HOLtm{Let x e1 e2}$ & (let) \\
-      % &  & $\HOLtm{Fn x e}$ & (fn) 
-      % &  & $\HOLtm{App e1 e2}$ & (app) \\
-      % &  & $\HOLtm{Case e x e1 y e2}$ & (case)
-      &  &  &
-  \end{tabular}
+  \begin{tabular}{rcl}
+    $v$ & ::= & $\HOLtm{IntV n} \mid \HOLtm{StrV s} \mid \HOLtm{BoolV b} \mid \HOLtm{Clos s e E} \mid \HOLtm{PairV v1 v2} \mid \HOLtm{SumLV v} \mid \HOLtm{SumRV v}$ \\[1ex]
+    $\HOLFreeVar{bop}$ & ::= & $\HOLConst{Add} \mid \HOLConst{Concat} \mid \HOLConst{Mult} \mid \HOLConst{Div} \mid \HOLConst{Mod} \mid \HOLConst{Less} \mid \HOLConst{And} \mid \HOLConst{Or} \mid \HOLConst{Eq} \mid \HOLConst{Sub} \mid \HOLConst{Pair}$ \\[1ex]
+    $\HOLFreeVar{uop}$ & ::= & $\HOLConst{Not} \mid \HOLConst{NumOf} \mid \HOLConst{StrOf} \mid \HOLConst{Fst} \mid \HOLConst{Snd} \mid \HOLConst{SumL} \mid \HOLConst{SumR}$ \\[1ex]
+    $e$ & ::= & 
+        \begin{tabular}[t]{llcll}
+          $\HOLtm{Var x}$ & \textit{(var)}
+          &  & $\HOLtm{StrLit s}$ & \textit{(str)} \\
+          $\HOLtm{IntLit n}$ & \textit{(int)}
+          &  & $\HOLtm{BoolLit b}$ & \textit{(bool)} \\
+          $\HOLtm{BinOp bop e1 e2}$ & \textit{(bop)}
+          &  & $\HOLtm{Uop uop e}$ & \textit{(uop)} \\
+          $\HOLtm{If bg e1 e2}$ & \textit{(if)}
+          &  & $\HOLtm{Let x e1 e2}$ & \textit{(let)} \\
+          $\HOLtm{Fn x e}$ & \textit{(fn)} 
+          &  & $\HOLtm{App e1 e2}$ & \textit{(app)} \\
+          $\HOLtm{Case e x e1 y e2}$ & \textit{(case)}
+          &  &  &
+        \end{tabular}
+\end{tabular}
 \end{center}
 \label{def:kalas}
 \end{definition}

@@ -38,6 +38,8 @@ described by the choregraphy are projected into endpoint codes.
 - what is higher-order logic
 - how proofs are done using HOL
 - recInduct in HOL
+- tactices
+- finite maps?
 
 \section{Kalas}
 - overview including intro to its compiler

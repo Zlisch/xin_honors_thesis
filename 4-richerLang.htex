@@ -1,23 +1,211 @@
 \chapter{\richerlang: A Simply Typed Lambda Calculus}\label{chap:richerLang}
+- we introduce \richerlang, a language over expressions; Adpoting a functional 
+big-step semantics (owens), we define an interpreter that evaluate expressions to values;
+we evaluate expressions with clocks to ensure termination, thus our evaluation function
+is total. Expressions in \richerlang\; can also be evaluated into exceptions. We include 
+common arithmetic errors such as division by zero, and integer-string conversion
+errors such as bad formatted strings. The latter is included for the integration
+with Kalas, since a process may want to perform integer arithmetic based on the received 
+string which does not encode a valid integer.
+
+\richerlang\; is deterministic in a sense that if we increase the clocks an expression
+will be evaluated to the same values or exceptions.
+
+- \richerlang\;closely resembles a STLC, but uses a dynamic environment to store values of free
+variables, so we always evaluate the given expression inside an environment E. This
+leads to typing expressions in a typing environment G that stores types for free variables.
+This setup, further requires the typed expression being evaluated in a \emph{correct} environment E
+in the type soundness proof, given the typing environment G where the expression was typed.
 
 \section{Syntax}\label{sec:envSyntax}
-- binary operators
-- unary operators (StrOf, NumOf)
-- value script?
+- syntax definition (+ exceptions) with brief explanation
+\begin{definition}[\richerlang\;syntax] \emph{Values} and \emph{expressions} in \richerlang, ranged
+over by $v, e$, are inductively defined by the grammar
+\begin{center}
+\begin{tabular}{rcl}
+      $v$ & ::= & $\HOLtm{IntV n} \mid \HOLtm{StrV s} \mid \HOLtm{BoolV b} \mid \HOLtm{Clos s e E} \mid \HOLtm{PairV v1 v2} \mid \HOLtm{SumLV v} \mid \HOLtm{SumRV v}$ \\[1ex]
+      $\HOLFreeVar{bop}$ & ::= & $\HOLConst{Add} \mid \HOLConst{Concat} \mid \HOLConst{Mult} \mid \HOLConst{Div} \mid \HOLConst{Mod} \mid \HOLConst{Less} \mid \HOLConst{And} \mid \HOLConst{Or} \mid \HOLConst{Eq} \mid \HOLConst{Sub} \mid \HOLConst{Pair}$ \\[1ex]
+      $\HOLFreeVar{uop}$ & ::= & $\HOLConst{Not} \mid \HOLConst{NumOf} \mid \HOLConst{StrOf} \mid \HOLConst{Fst} \mid \HOLConst{Snd} \mid \HOLConst{SumL} \mid \HOLConst{SumR}$ \\[1ex]
+      $e$ & ::= & 
+          \begin{tabular}[t]{llcll}
+            $\HOLtm{Var x}$ & \textit{(var)}
+            &  & $\HOLtm{StrLit s}$ & \textit{(str)} \\
+            $\HOLtm{IntLit n}$ & \textit{(int)}
+            &  & $\HOLtm{BoolLit b}$ & \textit{(bool)} \\
+            $\HOLtm{BinOp bop e1 e2}$ & \textit{(bop)}
+            &  & $\HOLtm{Uop uop e}$ & \textit{(uop)} \\
+            $\HOLtm{If bg e1 e2}$ & \textit{(if)}
+            &  & $\HOLtm{Let x e1 e2}$ & \textit{(let)} \\
+            $\HOLtm{Fn x e}$ & \textit{(fn)} 
+            &  & $\HOLtm{App e1 e2}$ & \textit{(app)} \\
+            $\HOLtm{Case e x e1 y e2}$ & \textit{(case)}
+            &  &  &
+          \end{tabular}
+\end{tabular}
+\end{center}
+\label{def:kalas}
+\end{definition}
+
+Function and application syntax are standard. Same as if and let. Case
+here is for sum types. $\HOLtm{Var x}$ represents variable where $x$ is 
+a string that represents variable's name. We include literals for string, 
+integer and boolean in our syntax to allow expressions such as 
+$\HOLConst{BinOp}\;\HOLConst{Add}\;(\HOLConst{Var}\;\HOLFreeVar{x})\;(\HOLConst{IntLit}\;1)$.
+For the sake of readability, we will write the addition example as $\HOLConst{Add}\;(\HOLConst{Var}\;\HOLFreeVar{x})\;(\HOLConst{IntLit}\;1)$,
+and same for any binary or unary operators examples.
+
+We abstract binary and unary operators to allow shorter syntax definitions.
+This makes extending binary and unary operators easy since we only
+need to register the new operator in $\HOLFreeVar{bop}$ or $\HOLFreeVar{uop}$
+definition and provide the corresponding evaluation rule. It also greatly reduces
+the number of cases generated in proofs that rely on syntax forms of an expression
+since we only have one case for all binary operators and one case for all unary
+operators. Though those two cases typically rely on lemmas that establish the desired properties
+for all operators, as discussed in Section~?, most operators cases can be proven
+using the same tactics and where some operator case in the lemma proof differs
+from the others is usually the essential subproof that is required to re-establish
+the desired property after introducing this operator to our language. Thus separating
+concrete operator syntax definitions from language syntax definitions also enabling
+a neat proof maintenance process when new operators are introduced.
+
+We include exceptions to handle division by zero and bad formatted integer strings.
+They are thrown by the corresponding operators. We define evaluation results as either
+values, or we encounter a type error (for example, $\HOLConst{Add}\;(\HOLConst{IntLit}\;1)\;(\HOLConst{BoolLit}\;\HOLConst{T})$),
+or we reach an exception, or the evaluation times out for the given clock.
 
 \section{Semantics}\label{sec:envSemantics}
+As discussed above, we defined our semantics using evaluation function rather than
+relation. The size of expressions are decreasing except for the application 
+case, so we decrease the clock to ensure termination. Semantics for
+if, let, case are standard. When evaluating a variable, we try to look up 
+for the value corresponds to the variable name in the given environment. If 
+we try to look up an unknown variable name, the evaluation function will return
+with type error. Environments are implemented as finite maps in HOL4, as 
+discussed in Section~?.
+
+- semantics rules
+
+Our evaluation strategy is call-by-value. For evaluating binary or unary operations,
+we first evaluate the argument expressions into values, and then use another 
+function $\HOLConst{eval\_bop}$ or $\HOLConst{eval\_uop}$ to apply the operators by
+the specified rules on the evaluated values and return the result. $\HOLConst{eval\_bop}$ 
+and $\HOLConst{eval\_uop}$ are where concrete evaluation rules for each operator
+is defined.
+
+%% maybe a graph for the example
+
+For example, $\HOLConst{eval\_exp}\;\HOLFreeVar{c}\;\HOLFreeVar{E}\;(\HOLConst{NumOf}\;(\HOLConst{Var}\;\HOLFreeVar{x}))$
+will first compute $\HOLConst{eval\_exp}\;\HOLFreeVar{c}\;\HOLFreeVar{E}\;(\HOLConst{Var}\;\HOLFreeVar{x})$
+by looking up name $\HOLFreeVar{x}$ in $\HOLFreeVar{E}$. If $\HOLFreeVar{x}$
+is unknown to $\HOLFreeVar{E}$, the function will return $\HOLConst{TypeError}$ and propagate it
+to the top. Otherwise it will return the value $\HOLFreeVar{v}$ stored under the
+name $\HOLFreeVar{x}$ in $\HOLFreeVar{E}$ and we move to compute $\HOLConst{eval\_uop}\;\HOLConst{NumOf}\;\HOLFreeVar{v}$.
+If $\HOLFreeVar{v}$ is not a correctly formatted integer string (for example, if it
+contains a non-numeric character), $\HOLConst{eval\_uop}\;\HOLConst{NumOf}\;\HOLFreeVar{v}$
+will return $Exn BadStr$. Otherwise, it will return the converted integer value $\HOLConst{IntV}\;\HOLFreeVar{n}$.
+Again, the format checking and conversion algorithm are implemented in $\HOLConst{eval\_uop}$'s definition.
+The same applies to evaluating any binary operations. Definitions of $\HOLConst{eval\_uop}$
+and $\HOLConst{eval\_bop}$ are included in Appendix~?.
+
+- typed example: $\HOLConst{eval\_exp}\;\HOLFreeVar{c}\;\emptyset\;$
+
+\subsection{Function Closure}
+
+- function semantics rule
+
+We stores the bindings of free variables (i.e. the environment) into
+the closure value when evaluate a function definition. So we never lose
+track of values for bound variables when evaluating a function definition that appears
+nested in another function definition. If we don't keep track of values for bound
+variables, when we finishing evaluating a function definition that contains
+nested function definitions, only the inner most bound variable will appear bound
+and the inner most function body will be the expression to be evaluated when we apply
+this nested function definition to a value. Since we now lose bindings for all the other
+bound variables from outer scopes, we are unable to finish the evaluation of 
+application.
+
+- example
+
+This is illustrated by Example~?. When we are evaluating $\HOLConst{Fn}\;\HOLFreeVar{y}\;(\HOLConst{Add}\;(\HOLConst{Var}\;\HOLFreeVar{x})\;(\HOLConst{Var}\;\HOLFreeVar{y}\;1))$
+in line 5 we know $\HOLFreeVar{x}$ is bound to $1$. But we lose this information
+when we choose $(\HOLFreeVar{y}, \HOLConst{Add}\;(\HOLConst{Var}\;\HOLFreeVar{x})\;(\HOLConst{Var}\;\HOLFreeVar{y}))$
+to be the evaluation result. So we only know $\HOLFreeVar{y}$ is bound to $\HOLConst{IntLit}\;2$
+when we try to evaluate $\HOLConst{Add}\;(\HOLConst{Var}\;\HOLFreeVar{x})\;(\HOLConst{Var}\;\HOLFreeVar{y}\;1)$ in line 7.
+
+By using function closure to record values of all bound variables when a
+function definition is being evaluated, we are able to evaluate $\HOLConst{Add}\;(\HOLConst{Var}\;\HOLFreeVar{x})\;(\HOLConst{Var}\;\HOLFreeVar{y}\;1)$,
+as illustrated in line 7 of Example~?. It is possible that a function body
+contains unbound free variables, but such expression cannot be typed in an empty
+environment and it is reasonable to make its evaluation fails. Discussions
+on typing for function closure are in Section~?.
+
+- another example
+
+\subsubsection{Detour on Restricted Function Closure}
+
+The Kalas repository states an interesting property: Given a bigger state $\Gamma_1$ that contains
+$\Gamma$, the choregraphy $c$ still transits into $c'$ and $\Gamma_1'$ contains $\Gamma'$.
+
+- Property theorem.
+
+However, our $\textsc{S-Fn}$ invalidates this property since a bigger state may result in a closure
+value that contains a bigger environment, so we will not be able to transit into the same
+$c'$. In order to re-establish this property, we modify $\textsc{S-Fn}$ to store a 
+restricted environment instead: $(\HOLConst{DRESTRICT}\;\HOLFreeVar{E}\;(\HOLConst{free_vars}\;\HOLFreeVar{e})\;\HOLSymConst{\HOLTokenBackslash{}\HOLTokenBackslash{}}\;\HOLFreeVar{s})$,
+where $\HOLConst{DRESTRICT}$ is defined as:
+
+- definition of $\HOLConst{DRESTRICT}$
+
+The restricted closure should at least contain bindings of variables that appear free from
+the perspective of the current function definition scope, as much as provided
+by the environment in which the current function definition is evaluated. Such that
+if we apply the evaluated restricted function closure to a value, if we were able
+to evaluate the application without restriction, we will be able to evaluate to the same
+result with restriction.
+
+But we further require the restricted environment to exclude storing the value of
+the variable bound by current function definition in the current environment if any.
+This still allows us to evaluate an application to the same result because 
+if we ever apply this function to a value we will always bind $\HOLFreeVar{s}$ 
+with the provided value, leaving the previous value of $\HOLFreeVar{s}$ stored in
+the environment irrelevant. 
+
+Excluding storing $\HOLFreeVar{s}$ is also necessary. If we only restrict $\HOLFreeVar{E}$
+with $\HOLConst{free_vars}\;\HOLFreeVar{e}$, since $\HOLFreeVar{e}$ can have $\HOLFreeVar{s}$
+as free variables and $\Gamma$ does not need to contain binding for $\HOLFreeVar{s}$
+for evaluating $\HOLConst{Fn}\;\HOLFreeVar{s}\;\HOLFreeVar{e}$, $(\HOLConst{DRESTRICT}\;(\HOLConst{localise}\;\HOLFreeVar{\ensuremath{\Gamma}}\;\HOLFreeVar{p})\;(\HOLConst{free_vars}\;\HOLFreeVar{e}))$
+may not contain binding for $\HOLFreeVar{s}$. But since $\Gamma'$ contains $\Gamma$,
+$\Gamma'$ may contain binding for $\HOLFreeVar{s}$ and thus $(\HOLConst{DRESTRICT}\;(\HOLConst{localise}\;\HOLFreeVar{\ensuremath{\Gamma'}}\;\HOLFreeVar{p})\;(\HOLConst{free_vars}\;\HOLFreeVar{e}))$
+contains binding for $\HOLFreeVar{s}$, making the closure evaluated in a bigger state larger than
+the closure evaluated in the smaller state.
+
+But this restriction is too strict that it makes evaluation for currying 
+function in Example~? fails, illustrated in Example~?. Because we exclude 
+storing the variable bound by current function definition into the closure
+for all such variables in a function definition that has nested function definition,
+we encounter the same issue as in Example~? where no function closure is used:
+we lose bindings for all the previously bound variables and the evaluation fails.
+
+- currying failure example.
+
+We argue that this issue can be mitigated by only further excluding the 
+bound variable in the inner most function definition since bindings for
+all previously bound variables are necessary for evaluation of application
+of nested functions to values. And by excluding the truly and only unnecessary
+binding of the inner most function definition bound variable $\HOLFreeVar{s}$, 
+the above argument still applies and we are able to achieve the same closure
+when evaluating in a bigger state. However, this interesting property lives
+on its own in Kalas repository and no other theorems are dependant on it. Given
+the time constrain for this project, we delegate the fixing to future work.
+If not specified, we always refer to the unrestricted $\textsc{S-Fn}$.
+
+\subsubsection{Recursion}
 - how the recursion is not supported in our semantics; we don't support fixed point (as in the
-abstraction book which can't be cited)
+abstraction book which can't be cited); letrec
 
-- evaluation strategy is defined by the evaluation rules: call by value as in ... by \cite{owens2016functional}
-
-- closure modification based on the submap property for choregraphy
-
-- functional big step semantics: intepreter style with clock, total function. for being implemented in HOL4
+\subsection{Main Properties}
+% - functional big step semantics: intepreter style with clock, total function. for being implemented in HOL4
 - properties: clock increment (cases on result) (and clock decrement)
-- closure: issues with dynamic environment, so we use lexical environment;
-do we explain restrciting to fv(e) and how?
-- exceptions
 
 \section{Typing}\label{sec:envTyping}
 
@@ -37,7 +225,7 @@ do we explain restrciting to fv(e) and how?
 - maybe an example of what program typing rules allow and which disallow and 
 it is actually meaningful
 
-\subsection{Main Properties}\label{subsec:envTypingProperties}
+% \subsection{Main Properties}\label{subsec:envTypingProperties}
 - typecheck_*_thm: the inversion (generation) lemma, \citep{pierce2002types};
 we can calculate the types of subterm of a well-typed term; all automatically 
 handled by HOL4, for matching the subgoals (when no IH), OR for using the IH

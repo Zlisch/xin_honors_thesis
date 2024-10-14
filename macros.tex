@@ -15,7 +15,7 @@
 % the first parameter states the new environmet's name that can be
 % used (due to this definition here) and the second the name that
 % will appear in the PDF document
-\theoremstyle{definition}
+\theoremstyle{plain} %% definition
 \newtheorem{definition}{Definition}   % well, a formal definition!
 \theoremstyle{plain}
 \newtheorem{prop}{Proposition} % like a theorem, but less important or evolved
@@ -23,6 +23,17 @@
 \newtheorem{thm}{Theorem}      % well, a theorem! :) important and evolved
 \newtheorem{cor}{Corollary}    % basically either a proposition or theorem,
                                %  but one that follows from another theorem.
+\newtheoremstyle{normalstyle}   % Name
+  {10pt}        % Space above
+  {10pt}        % Space below
+  {\normalfont}  % Body font (normal text)
+  {}            % Indent amount
+  {\bfseries}   % Theorem head font
+  {.}           % Punctuation after theorem head
+  { }           % Space after theorem head
+  {}            % Theorem head spec (can be left empty)
+\theoremstyle{normalstyle}
+\newtheorem{example}{Example}[section]
 % There's a lot you can configure about the appearance. If interested,
 % open the manual of amsthm or google for tutorials etc. on that package
 
