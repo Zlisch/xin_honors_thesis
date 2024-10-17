@@ -19,6 +19,8 @@ This is a theorem:
 \HOLthm{typeSN.richerLang_sn}
 \end{HOLmath}
 
+\HOLtm{BinOp Add (Var x) (IntLit 1)}
+
 The transition relation looks like \HOLtm{eval_exp clk E exp}
 
 \begin{thm}\label{thm:test}

@@ -10,25 +10,29 @@
 \contentsline {section}{\numberline {3.2}Some Title}{9}{section.3.2}%
 \contentsline {chapter}{\numberline {4}\textsf {Sprinkles}: A Simply Typed Lambda Calculus}{11}{chapter.4}%
 \contentsline {section}{\numberline {4.1}Syntax}{11}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Semantics}{12}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}Function Closure}{13}{subsection.4.2.1}%
-\contentsline {subsubsection}{Detour on Restricted Function Closure}{13}{section*.1}%
-\contentsline {subsubsection}{Recursion}{14}{section*.2}%
-\contentsline {section}{\numberline {4.3}Typing}{14}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Syntax}{14}{subsection.4.3.1}%
-\contentsline {subsection}{\numberline {4.3.2}Typing Rules}{14}{subsection.4.3.2}%
-\contentsline {subsection}{\numberline {4.3.3}Type Soundness}{15}{subsection.4.3.3}%
-\contentsline {chapter}{\numberline {5}Strong Normalisation}{17}{chapter.5}%
-\contentsline {chapter}{\numberline {6}The Enriched Choreography}{19}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Syntax}{19}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Semantics}{19}{section.6.2}%
-\contentsline {section}{\numberline {6.3}Typing}{19}{section.6.3}%
-\contentsline {subsection}{\numberline {6.3.1}Typing Rules}{19}{subsection.6.3.1}%
-\contentsline {subsection}{\numberline {6.3.2}Main Properties}{19}{subsection.6.3.2}%
-\contentsline {subsection}{\numberline {6.3.3}Type Soundness}{19}{subsection.6.3.3}%
-\contentsline {chapter}{\numberline {7}Concluding Remarks}{21}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Conclusion}{21}{section.7.1}%
-\contentsline {section}{\numberline {7.2}Future Work}{21}{section.7.2}%
-\contentsline {chapter}{\numberline {8}Test}{23}{chapter.8}%
-\contentsline {chapter}{\numberline {A}Appendix: Explanation on Appendices}{27}{appendix.A}%
-\contentsline {chapter}{\numberline {B}Appendix: Explanation on Page Borders}{29}{appendix.B}%
+\contentsline {section}{\numberline {4.2}Statics}{12}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Syntax and Typing Rules}{13}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Typing Examples}{13}{subsection.4.2.2}%
+\contentsline {section}{\numberline {4.3}Dynamics}{14}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Function Closure}{14}{subsection.4.3.1}%
+\contentsline {subsubsection}{Restricted Function Closure}{15}{section*.1}%
+\contentsline {subsubsection}{Recursion}{16}{section*.2}%
+\contentsline {subsection}{\numberline {4.3.2}Main Properties}{16}{subsection.4.3.2}%
+\contentsline {section}{\numberline {4.4}Type Soundness}{16}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Lemmas}{17}{subsection.4.4.1}%
+\contentsline {subsubsection}{Restricted Function Closure}{18}{section*.3}%
+\contentsline {subsection}{\numberline {4.4.2}Type Soundness Proof}{19}{subsection.4.4.2}%
+\contentsline {chapter}{\numberline {5}Strong Normalisation}{21}{chapter.5}%
+\contentsline {chapter}{\numberline {6}The Enriched Choreography}{23}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Syntax}{23}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Semantics}{23}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Typing}{23}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}Typing Rules}{23}{subsection.6.3.1}%
+\contentsline {subsection}{\numberline {6.3.2}Main Properties}{23}{subsection.6.3.2}%
+\contentsline {subsection}{\numberline {6.3.3}Type Soundness}{23}{subsection.6.3.3}%
+\contentsline {chapter}{\numberline {7}Concluding Remarks}{25}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Conclusion}{25}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Future Work}{25}{section.7.2}%
+\contentsline {chapter}{\numberline {8}Test}{27}{chapter.8}%
+\contentsline {chapter}{\numberline {A}Appendix: Explanation on Appendices}{31}{appendix.A}%
+\contentsline {chapter}{\numberline {B}Appendix: Explanation on Page Borders}{33}{appendix.B}%
