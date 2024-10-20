@@ -45,6 +45,7 @@ over by $v, e$, are inductively defined by the grammar
 \end{center}
 \label{def:kalas}
 \end{definition}
+%% TODO add results
 
 Syntax for function and application syntax are standard. Same as if and let. Case
 here is for sum types, where $\HOLFreeVar{s1}, \HOLFreeVar{e1}$ represent the left branch and
@@ -101,6 +102,10 @@ for operators and a separate soundness lemma regarding the operator typing relat
 is required by the general case.
 
 \subsection{Syntax and Typing Rules}\label{subsec:envTypingRules}
+\begin{definition}\label{def:stypes}
+    - types
+\end{definition}
+
 \begin{definition}\label{def:typecheck}
     - typing relations: typecheck
 \end{definition}
@@ -110,7 +115,7 @@ is required by the general case.
 \end{definition}
 - typing relations: typecheck, value_type, uop_type, bop_type
 
-A typing relation for expression is written as (G entails e: ty) where $\HOLFreeVar{G}$
+A typing relation for expression is written as \HOLtm{typecheck G e ty} where $\HOLFreeVar{G}$
 is the typing environment. For typing a binary operation expression, 
 we require the expressions as arguments to the operator to have some type
 $\HOLFreeVar{t1}, \HOLFreeVar{t2}$, and those types and the output type 
@@ -124,6 +129,8 @@ environment $\HOLFreeVar{G}$ and a dynamic environment $\HOLFreeVar{E}$.
 \begin{definition}\label{def:envtype}
     - envtype definition.
 \end{definition}
+
+%% TODO: a diagram?
 
 Intuitively, $\HOLtm{envtype G E}$ means that values of variables stored in $\HOLFreeVar{E}$
 satisfy the typing constrains specified in $\HOLFreeVar{G}$.
@@ -180,6 +187,8 @@ discussed in Section~?.
 \begin{definition}\label{def:sdynamicsrules}
     - semantics rules
 \end{definition}
+
+%% TODO: maybe we need to explain the monad here???
 
 Our evaluation strategy is call-by-value. For evaluating binary or unary operations,
 we first evaluate the argument expressions into values, and then use another 
@@ -340,6 +349,18 @@ will be evaluated into a quadruple $(\HOLFreeVar{f}, \HOLFreeVar{x}, \HOLFreeVar
 The quadruple is similar to the one described by \cite{hardin2021concepts}.
 
 \subsection{Main Properties}
+We first show that the evaluation function for \richerlang\; is total. That is, for any expression 
+$\HOLFreeVar{e}$, environment $\HOLFreeVar{E}$, and clock value $\HOLFreeVar{c}$, $\HOLConst{eval\_exp}$ 
+always returns a \textit{result}.
+
+\begin{lem}\label{lem:evaltotal}
+    - eval_exp is total
+\end{lem}
+
+\emph{Proof:} By Definition~\ref{def:sdynamicsrules}, $(\HOLFreeVar{c}, \HOLConst{exp\_size}\;\HOLFreeVar{e})$
+always becomes smaller in the lexicographic order over $\HOLFreeVar{c} \times (\HOLConst{exp\_size}\;\HOLFreeVar{e})$ 
+in every recursive call to $\HOLConst{eval\_exp}$. Box
+
 The total evaluation function obtained by using a functional big-step semantics
 makes \richerlang's evaluation deterministic. We say that the evaluation for an expression 
 \emph{terminates} if there exists a clock with which the evaluation function
@@ -347,17 +368,61 @@ return a result that is not $\HOLConst{Timeout}$. Otherwise if for all clocks
 the evaluation for an expression returns $\HOLConst{Timeout}$, we say the evaluation 
 for this expression \emph{diverges}. Then the evaluation of \richerlang is deterministic
 in a sense that if the evaluation for an expression terminates for an initial clock, then 
-if we increase the clock we will always evaluate to the same result. 
+if we increase the clock we will always evaluate to the same result. We show this result
+as a corollary follows from Lemmas~\ref{lem:clock_value_increment},~\ref{lem:clock_exn_increment}, and~\ref{lem:clock_typeerr_increment}.
 
-\begin{thm}\label{thm:clockincre}
-    - theorem
-\end{thm}
+The first lemma says that if expression $\HOLFreeVar{e}$ is evaluated to a value $\HOLFreeVar{v}$ in 
+environment $\HOLFreeVar{E}$ given some clock $\HOLFreeVar{c0}$, then if we evaluate the same expression in the same
+environment with a lager clock value $\HOLFreeVar{c1}$, we will have the same value $\HOLFreeVar{v}$ as our result.
+The statements for Lemmas~\ref{lem:clock_exn_increment} and~\ref{lem:clock_typeerr_increment}
+are similar.
 
-Theorem~\ref{thm:clockincre} is important in the strong normalisation proof. For example, in the if 
+%% TODO: the appendix label
+\begin{lem}\label{lem:clock_value_increment}
+    - clock_value_increment
+\end{lem}
+
+\emph{Proof:} Using the well-founded lexicographic induction principle by Definition~\ref{def:sdynamicsrules}, results for 
+each case directly follows the inductive hypotheses. The induction principle can be found in Appendix~?. Box.
+
+\begin{lem}\label{lem:clock_exn_increment}
+    - clock_exn_increment
+\end{lem}
+
+\emph{Proof:} We use the same induction principle in Lemma~\ref{lem:clock_value_increment} proof. 
+Base cases are trivial since by Definition~\ref{def:sdynamicsrules} variables \HOLtm{Var x} or literals 
+such as \HOLtm{IntLit 1} cannot be evaluated into an exception. For the inductive case, when any of the sub-expressions of
+the current expression evaluates into an exception under the initial clock $\HOLFreeVar{c0}$, 
+by the inductive hypothesis we know this sub-expression also evaluates into an exception
+under the bigger clock $\HOLFreeVar{c1}$, which then by the use of monadic binds in Definition~\ref{def:sdynamicsrules},
+the evaluation of the current expression returns an exception. When all the sub-expressions of
+the current expression evaluates into values under the initial clock $\HOLFreeVar{c0}$, we know from the premise 
+of the goal that it is the final evaluation step that uses the evaluated values under the initial clock $\HOLFreeVar{c0}$
+that throws an exception. For example, in the \HOLtm{App e1 e2} case, the premise of the goal gives us
+\HOLtm{eval_exp c0 E e1 = Value (Clos s e E')}, \HOLtm{eval_exp c0 E e2 = Value v}, and
+\HOLtm{eval_exp (c0 − 1) (E' |+ (s,v)) e = Exn exn}. We have \HOLtm{eval_exp c1 E e1 = Value (Clos s e E')} and \HOLtm{eval_exp c1 E e2 = Value v}
+by Lemma~\ref{lem:clock_exn_increment}, and the last evaluation corresponds to the inductive hypotheses for $(\HOLFreeVar{c0}-1, \HOLFreeVar{e})$. 
+Then by applying the inductive hypothesis we have \HOLtm{eval_exp (c1 − 1) (E' |+ (s,v')) e = Exn exn}. Similar analyses apply
+to other inductive cases. Box
+
+\begin{lem}\label{lem:clock_typeerr_increment}
+    - clock_typeerr_increment
+\end{lem}
+
+\emph{Proof:} Similar to the proof for Lemma~\ref{lem:clock_exn_increment}. Box
+
+\begin{cor}\label{cor:clockincre}
+    - clock_increment
+\end{cor}
+
+\emph{Proof:} Cases analyses based on the syntax form of $\HOLFreeVar{r}$. Each case follows either
+Lemma~\ref{lem:clock_value_increment},~\ref{lem:clock_exn_increment}, or~\ref{lem:clock_typeerr_increment}. Box
+
+Corollary~\ref{cor:clockincre} is important in the strong normalisation proof. For example, in the if 
 case of the proof, we know evaluation for boolean guard and two branches terminates
 by the inductive hypothesis on their separate clock, we want to ensure that there exists
 a common clock on which the evaluation of all three expressions also terminate and return
-the same results. More discussion on the use of Theorem~? in strong normalisation proof
+the same results. More discussion on the use of Corollary~\ref{cor:clockincre} in strong normalisation proof
 can be found in Section~?.
 
 \section{Type Soundness}
@@ -515,7 +580,9 @@ by Definition~\ref{def:derestrict}. For the other direction, if there exists a t
 $\HOLFreeVar{G'}$ that contains less bindings than \HOLtm{DRESTRICT G (free_vars e)} and we have \HOLtm{typecheck G' e ty}, 
 by Lemma~\ref{lem:typecheck_env_fv} $\HOLFreeVar{G'}$ contains bindings for all free variables in $\HOLFreeVar{e}$. Contradiction. Box
 
-\subsection{Type Soundness Proof}\label{subsec:envTypingSoundness}
+%% TODO consider including remarks?
+
+\subsection{Type Soundness}\label{subsec:envTypingSoundness}
 
 We are now ready to prove the type soundness property for \richerlang. 
 

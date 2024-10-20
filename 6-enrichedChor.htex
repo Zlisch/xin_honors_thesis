@@ -1,14 +1,105 @@
 \chapter{The Enriched Choreography}\label{chap:enrichedChor}
+We introduce the enrich Kalas, where local computations are handled by
+\richerlang\;. As a result, the external function $f(v)$ in the previous 
+$\HOLConst{Let}$ rule of Kalas (Definition~\ref{def:kalas}) is replaced with
+a \richerlang\; expression $\HOLFreeVar{e}$. Messages in Kalas used to be
+a list of strings, but now they are string values in \richerlang. Since
+evaluations in \richerlang\;may return an exception, we introduce new transition
+rules in the enriched Kalas to handle local computation failure.
+
+We provide typing rules for the enrich Kalas. Our choregraphy does not return
+values and thus our rules only specify whether a choregraphy type checks. 
+Kalas uses \emph{states} to store values for variables located at a certain process,
+so we introduce a similar \emph{typing state} that stores types for variables located 
+at a certain process. 
+
+Since a local expression $\HOLFreeVar{e}$ neither cares neither about values 
+of variables in other processes nor about their types, we introduce the concept of 
+\emph{localised} environment and \emph{localised} typing environment to describe
+the result of filtering out values or types of variables in other processes.
+So $\HOLFreeVar{e}$ can be evaluated in the \emph{localised} environment and 
+typed in the \emph{localised} typing environment.
+
+We prove that our enriched Kalas has an important property: \emph{progress}.
+The strong normalisation property of \richerlang\;is crucial for the progress proof,
+otherwise we would have had to solve the halting problem. We also prove that
+the non-recursive, synchronised transitions in the enriched Kalas has type
+preservation property, where the type soundness and strong normalisation of
+local computations is required.
 
 \section{Syntax}\label{sec:enrichedSyntax}
+\begin{definition}\label{def:enrichedsyntax}
+    - syntax for the enriched Kalas
+\end{definition}
 
-\section{Semantics}\label{sec:enrichedSemantics}
+In \HOLtm{Let v p e C}, $\HOLFreeVar{e}$ represents a \richerlang\;expression and
+$(\HOLFreeVar{v}, \HOLFreeVar{p})$ represents a variable $\HOLFreeVar{v}$ located at
+process $\HOLFreeVar{p}$. The message values are \richerlang's results (Definition~\ref{sec:envSyntax}).
+Other syntax are the same as Kalas' (Definition~\ref{def:kalas}).
+%% too short?
+
+\section{Statics}\label{sec:enrichedstatics}
+
+\subsection{Syntax and Typing Rules}\label{subsec:enrichedTypingRules}
+A typing state $\HOLFreeVar{\Gamma}$ is a finite map that stores mappings from
+$(\HOLFreeVar{v}, \HOLFreeVar{p})$ to a \richerlang's type (Definition~\ref{def:stypes}).
+A type statement for the enriched kalas is written as \HOLtm{chorTypecheckOK Γ Θ C},
+where $\HOLFreeVar{\Gamma}$ is a typing state, $\HOLFreeVar{\Theta}$ being a set of processes, and 
+$\HOLFreeVar{C}$ is the choregraphy being typed.
+
+- chorEnvtype: ensure chortype_no_undefined_vars; and the trans_submap adapted
+let rule extra constrains in the progress proof
+
+\subsection{Typing Examples}\label{subsec:enrichedTypingExamples}
+- example of typable choregraphy
+
+\section{Dynamics}\label{sec:enricheddynamics}
+- trans rules
+
+- label definition
+
 - exceptions
 
-\section{Typing}\label{sec:enrichedTyping}
+- if rules
 
-\subsection{Typing Rules}\label{subsec:enrichedTypingRules}
+- com: we don't have undefined vars, so we only consider
+com and com_exn
 
-\subsection{Main Properties}\label{subsec:enrichedTypingProperties}
+- let: adaptions for the trans_submap in letval and letexn
 
-\subsection{Type Soundness}\label{subsec:enrichedTypingSoundness}
+\section{Progress}\label{subsec:enrichedProgress}
+
+\subsection{Formalisation}
+- chor_progress does not work: new free varibles might be introduced as the 
+choregraphy advances
+
+- chor_progress_lemma
+
+\subsection{Lemmas}\label{subsec:enrichedProgressLemmas}
+- the generation lemma, chorTypecheckOK_*_thm
+
+- chorEnvtype lemmas:
+chortype_update
+
+- chortype_no_undefined_vars: requires type_has_value (?)
+
+- chortype_no_self_communications
+
+\subsubsection{Strong Normalisation in the Localised Environments}
+- def: chorEnvsn
+
+- chorEnvsn_update
+
+- richerLang_localise_sn
+
+\subsection{Proof}\label{subsec:enrichedProgressProof}
+
+\section{Type Preservation}\label{subsec:enrichedPreservation}
+
+\subsection{Formalisation}
+- issues with closed choregraphy
+
+- chor_preservation_lemma; how it can combine with chor_progress_lemma to state 
+termination
+
+\subsection{Proof}\label{subsec:enrichedPreservationProof}

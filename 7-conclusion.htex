@@ -9,6 +9,16 @@ This section usually summarizes the entire paper including the conclusions drawn
 
 
 \section{Future Work}
+- communicate with richer data types rather than merely strings
 
-- asynchronus messages; confluence property
-- Progress for EPP
+- it will be interesting to implement a small-step semantics or using 
+a substitution model for \richerlang
+
+- progress proof for asynchronus messages; 
+
+- prove termination for choregraphy
+
+- fixing confluence property scripts etc.
+
+- what if local language does not have SN property and we may do some special
+handling to recover the progress for choregraphy \ref{chap:strongNormalisation}
