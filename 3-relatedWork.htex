@@ -11,11 +11,11 @@ some intro ..
 Choreography language model can ensure deadlock freedom without using a typing system. 
 The property is typically proven through structural induction on the choreography's 
 semantics, where an applicable rule always enables reduction, or reduction 
-follows by inductive hypothesis \citep{carbone_deadlock-freedom-by-design_2013, cruz2017core, pohjola_kalas_2022}. 
+follows by inductive hypothesis \citep{carbone-deadlock-freedom-by-design-2013, cruz2017core, pohjola-kalas-2022}.
 Typing system in this case might still be desired since it can discipline choreography in 
 other ways such as correct protocol implementation.
 
-Channel Choreography (ChC) by \cite{carbone_deadlock-freedom-by-design_2013} is a rich 
+Channel Choreography (ChC) by \cite{carbone-deadlock-freedom-by-design-2013} is a rich
 choregraphy language where a choreography program consists of where a program consists of roles, threads, 
 and sessions that implement communication protocols. Deadlock freedom is guaranteed by its 
 semantics, while the typing system ensures correct protocol implementation by sessions. 
@@ -33,7 +33,7 @@ during execution.
 When local computation is involved in the choreography, since we cannot solve the halting 
 problem in semantics by deciding whether the local computation will terminate, a typing system 
 is desired to reassert deadlock freedom. To the best of our knowledge, the closet work to this 
-discussion is Pirouette by \cite{hirsch_pirouette_2022}. They assume a substitution model with 
+discussion is Pirouette by \cite{hirsch-pirouette-2022}. They assume a substitution model with
 small-step semantics for the local language. Based on a set of admissible typing rules for 
 the sake of providing a reasoning ground, their results show that type preservation and progress 
 in the local language ensure the same for the choreography language. Their progress result aligns 
@@ -57,7 +57,7 @@ typing environment, binding variables to types at a specific location.
 % disallow a branching where the target local variable is appear in the label.
 % might be incorrect
 
-Another state-of-art functional choregraphy language Chor$\lambda$ by \cite{cruz-filipe_functional_2022}
+Another state-of-art functional choregraphy language Chor$\lambda$ by \cite{cruz-filipe-functional-2022}
 uses a different approach than Pirouette, where choreographies are interpreted as terms in 
 $\lambda$-calculus. Chor$\lambda$ assumes local values for communications, without focusing 
 on how they are computed. This results in a distinct typing system: local value types are 

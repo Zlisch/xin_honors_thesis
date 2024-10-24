@@ -22,7 +22,7 @@ We define the strong normalisation of an expression in \richerlang\; as there ex
 expression evaluates to a value or an exception. And we adapt the logical relations required by the Fundamental
 Lemma according to \richerlang's values, especially the function closure, and its use 
 of environments to store free variables' bindings. Strong normalisation proof for \richerlang\;
-is similar to the proof for a simpler call-by-value STLC in HOL's repository by \cite{hol_cbv_lc},
+is similar to the proof for a simpler call-by-value STLC in HOL's repository by \cite{hol-cbv-lc},
 in a sense that they both adopt a functional big-step semantics and use an environment to store bindings for
 free variables, but \richerlang\; has richer data types compared to the STLC in HOL example.
 
@@ -162,7 +162,7 @@ applicable since we do not update the typing environment, but with Property~\ref
 we can extend the dynamic environment to contain extra information of values of unused variable.
 
 Property~\ref{lem:envsnlemmas4} is required to handle the restricted function closure in the $\HOLConst{Fn}$
-case of the Fundamental Lemma proof. The premise of current goal gives us \HOLtm{envsn (DRESTRICT G (free_vars e DIFF {s})) E},
+case of the Fundamental Lemma proof. The premise of current goal gives us \HOLtm{envsn (DRESTRICT G (free_vars e DIFF {s\})) E},
 but we need to establish the $\HOLConst{envsn}$ property for the restricted environment in function closure,
 so we can apply the inductive hypothesis for the function body expression stored in closure. 
 Property~\ref{lem:envsnlemmas4} allows us to shrink the dynamic environment as long as the reduced 
