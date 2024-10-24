@@ -1,14 +1,13 @@
 \chapter{Introduction}
+Distributed systems consist of multiple endpoints that communicate by exchanging 
+messages, operating asynchronously and in parallel as these messages are sent 
+and received among the various endpoints. However, programming distributed systems 
+is notoriously error-prone because programmers must implement the communication 
+protocol by developing individual endpoint programs. Mismatched message sending 
+and receiving can lead to errors such as \emph{deadlock}, where the system indefinitely 
+waits for a message.
 
-Distributed systems consist of multiple endpoints that communicate by 
-exchanging messages, operating with asynchrony and parallelism as these 
-messages are sent and received between the various endpoints. But programming 
-distributed system is notoriously error-prone as programmer has to implement 
-the communication protocol by developing individual endpoint programs. Mismatched 
-message sending and receiving can lead to errors such as \emph{deadlock}, where 
-the system is waiting forever for a message.
-
-\emph{Choreography} arises as a programming diagram to address this issue by providing a 
+\emph{Choreographic programming} arises as a formalisaton to address this issue by providing a 
 concrete global description of how the messages are exchanged between endpoints
 in a distributed system. A choreography program is written in a similar style to the 
 "Alice and Bob" notation by \cite{needham_using_1978}: 
@@ -19,21 +18,21 @@ in a distributed system. A choreography program is written in a similar style to
     \end{tabular}
 \end{center}
 Thus message mismatches are disallowed from the choreographic 
-perspective. A property we refer to as \emph{deadlock free by design}. 
-The global choreography is then projected into process models for each 
+perspective. This property is known as \emph{deadlock-free-by-design}. 
+The global choreography can then be projected into process models for each 
 endpoint via EndPoint Projection (EPP), with properties such as 
 deadlock free by design preserved \citep{hallal_global_2018}.
 
-While most choreography languages focus on the message exchange behaviours, 
-few pay attention to the local computation happening in the 
-individual endpoint. It is shown by \cite{hirsch_pirouette_2022} that as 
-long as the local language exhibits type preservation and 
-progress, the choreography inherits these properties as well. Thus, when 
-analyzing message exchange behaviors in choreography---such as multiparty 
-sessions, asynchrony, and parallelism---one can safely assume good behaviours 
-of local computation \citep{montesi_compositional_2013, cruz2017core, carbone_deadlock-freedom-by-design_2013}.
+When analysing message exchange behaviors in choreography, such as multiparty sessions, 
+asynchrony, and parallelism, it is reasonable to assume good behaviors in local 
+computation \citep{montesi_compositional_2013, cruz2017core, carbone_deadlock-freedom-by-design_2013}. 
+Consequently, most choreography languages focus primarily on message exchange behaviours, 
+with few paying attention to the local computation occurring in individual endpoints. 
+Although \cite{hirsch_pirouette_2022} demonstrates that for their assumed local language, 
+as long as it exhibits type preservation and progress, the choreography inherits these 
+properties, this result may not hold true for all local languages.
 
-But when it comes to writing the choreography program that implements concrete system 
+Additionally, when it comes to writing the choreography program that implements concrete system 
 behaviours, if local computation is ever required by the system, one must describe 
 the inputs and outputs of local computations. Current work either delegate this part to 
 an assumed well-behaved external implementation, for example, Kalas~\cite{pohjola_kalas_2022} and Pirouette~\cite{hirsch_pirouette_2022},
@@ -64,7 +63,7 @@ between choreography and external language lead to cumbersome code.
 Thus this thesis extends Kalas, a verified choreography language with machine-checked 
 end-to-end compilation, by introducing \richerlang, a simple language of expressions
 over types such as integers, strings and booleans. Using the extended Kalas, 
-local computations can be handled gracefully within a few lines of codes. The previous 
+local computations can be handled gracefully within a few lines of code. The previous 
 choreography where client computes the modulo of input integer can be written as in 
 Example~\ref{ex:modenriched}. 
 
@@ -88,9 +87,9 @@ the enriched Kalas.
 
 To summarise, this thesis provides three main contributions. 
 \begin{itemize}
-  \item The first contribution is \richerlang, a simply typed lambda calculus with function closure.
-  According to the approach taken by \cite{owens2016functional}, we use a functional big-step semantics with
-  clocks to ensure the evaluation function for \richerlang'\; expressions is total. Our evaluation 
+  \item The first contribution is \richerlang, a simply typed lambda calculus with rich types.
+  Following the approach taken by \cite{owens2016functional}, we use a functional big-step semantics with
+  environments and closures to ensure the evaluation function for \richerlang'\; expressions is total. Our evaluation 
   strategy is call-by-value. We also provide a typing system and give type soundness proof for 
   the proposed semantics and typing rules. \richerlang\; is implemented using the higher-order logic
   proof assistant HOL4 \citep{slind2008brief} and all the proofs are conducted within HOL4.
@@ -102,8 +101,8 @@ To summarise, this thesis provides three main contributions.
   \item The third contribution is Kalas enriched with \richerlang. Besides common data types such as 
   integer, string, and boolean, we also add function, pair, and sum types to the local computation in 
   Kalas. Common operators for our data types are included, such as addition, modulo, and negation.
-  Integer-string convertor is implemented as well for the integration with Kalas. Last but not least, 
-  we prove the enriched Kalas enjoys progress. We also show type preservation holds for non-recursive, 
+  Integer-string conversion is implemented as well for the integration with Kalas. Last but not least, 
+  we prove the enriched Kalas enjoys an important property: \emph{progress}. We also show type preservation holds for non-recursive, 
   synchronous transitions in the enriched Kalas.
 \end{itemize}
 

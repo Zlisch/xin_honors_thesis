@@ -1,50 +1,47 @@
 \chapter{Related Work}\label{chap:relatedWork}
-% maybe 3 sections for choreography models: functional; (implementation for real use;) core models; exceptions
-% - we discuss in terms of how local computation is considered and how important properties such as
-% type preservation and progress is influenced by those decisions
-some intro ..
+% some intro ..
 
 \section{Choreography Models}
-some intro ..
-
+% s
 \subsection{Typing System for Choreography}
-Choreography language model can ensure deadlock freedom without using a typing system. 
-The property is typically proven through structural induction on the choreography's 
-semantics, where an applicable rule always enables reduction, or reduction 
-follows by inductive hypothesis \citep{carbone_deadlock-freedom-by-design_2013, cruz2017core, pohjola_kalas_2022}. 
-Typing system in this case might still be desired since it can discipline choreography in 
-other ways such as correct protocol implementation.
+Choreography models can ensure deadlock freedom without relying on a typing system. 
+This property is typically proven through structural induction on the choreography's semantics, 
+where an applicable rule always enables reduction, or the reduction follows from the inductive 
+hypothesis \citep{carbone_deadlock-freedom-by-design_2013, cruz2017core, pohjola_kalas_2022}. 
+However, a typing system might still be desirable, as it can impose additional discipline on 
+choreography, such as ensuring correct protocol implementation.
 
-Channel Choreography (ChC) by \cite{carbone_deadlock-freedom-by-design_2013} is a rich 
-choreography language where a choreography program consists of where a program consists of roles, threads, 
-and sessions that implement communication protocols. Deadlock freedom is guaranteed by its 
-semantics, while the typing system ensures correct protocol implementation by sessions. 
-The typing context includes three components: a service environment $\Gamma$, which stores 
-global types for public channels specifying session execution and local expressions (annotated 
-with threads); a thread environment $\Theta$, which tracks the roles of threads in each session; and a 
-session environment $\Delta$, which stores the types of active sessions.
+Channel Choreography (ChC), introduced by \cite{carbone_deadlock-freedom-by-design_2013}, is a 
+rich choreography language in which a program consists of roles, threads, and sessions 
+that implement communication protocols. Its semantics guarantee deadlock freedom, while the typing 
+system ensures the correct implementation of protocols by sessions. The typing context comprises 
+three components: a service environment $\Gamma$, which stores global types for public channels 
+specifying session execution and local expressions (annotated with threads); a thread environment 
+$\Theta$, which tracks the roles of threads in each session; and a session environment $\Delta$, 
+which stores the types of active sessions.
 
-It ensures that a well-typed choreography, with public channels specified by $\Gamma$ and 
-threads assuming roles in $\Theta$, maintains disciplined sessions governed by $\Delta$. 
-Additionally, runtime typing introduces a delegation environment to handle changes in 
-typing context due to asynchrony or parallelism, ensuring the program adheres to the protocol 
-during execution.
+It ensures that a well-typed choreography, with public channels specified by $\Gamma$ 
+and threads assuming roles in $\Theta$, maintains disciplined sessions governed by $\Delta$. 
+Furthermore, runtime typing introduces a delegation environment to handle changes in the 
+typing context caused by asynchrony or parallelism, ensuring that the program adheres to 
+the protocol throughout execution.
 
-When local computation is involved in the choreography, since we cannot solve the halting 
-problem in semantics by deciding whether the local computation will terminate, a typing system 
-is desired to reassert deadlock freedom. To the best of our knowledge, the closet work to this 
-discussion is Pirouette by \cite{hirsch_pirouette_2022}. They assume a substitution model with 
-small-step semantics for the local language. Based on a set of admissible typing rules for 
-the sake of providing a reasoning ground, their results show that type preservation and progress 
-in the local language ensure the same for the choreography language. Their progress result aligns 
-with our results, but our local language adopts big-step semantics and thus preservation for 
-choreography requires strong normalisation from local language rather than type preservation.
+When local computation is involved in the choreography, a typing system is needed to maintain 
+deadlock freedom, as it is impossible to determine whether local computations will terminate. 
+To the best of our knowledge, the closest 
+related work is Pirouette by \cite{hirsch_pirouette_2022}. In their approach, they use a 
+substitution model with small-step semantics for the local language. Relying on a set of 
+admissible typing rules to provide a reasoning ground, their results show that type 
+preservation and progress for the assumed local language implies the same properties for the choreography. 
+While their progress result aligns with ours, our local language uses big-step semantics, 
+meaning that preservation in choreography requires strong normalisation from the local language, 
+rather than just type preservation.
 
 Pirouette is a higher-order functional choreography language with three value types: local 
 values, local functions (mapping local values to choreographies), and global functions 
 (mapping choreographies to choreographies). This structure enables choreographies to return 
-values, forming the basis of its typing system. On the other hand, since neither Kalas or the enriched Kalas has 
-return values, our typing system mainly checks for the well-formedness of a choreography within the 
+values, forming the basis of its typing system. On the other hand, since neither Kalas nor Kalas enriched with \richerlang{} has 
+return values for choreographies, our typing system mainly checks for well-formedness of a choreography within the given 
 typing environment and if any local computation is involved, we discipline it with its own typing
 system in a localised typing environment. Pirouette types its local values in a similar projected
 typing environment, binding variables to types at a specific location.
@@ -59,70 +56,89 @@ typing environment, binding variables to types at a specific location.
 
 Another state-of-art functional choreography language Chor$\lambda$ by \cite{cruz-filipe_functional_2022}
 uses a different approach than Pirouette, where choreographies are interpreted as terms in 
-$\lambda$-calculus. Chor$\lambda$ assumes local values for communications, without focusing 
-on how they are computed. This results in a distinct typing system: local value types are 
+$\lambda$-calculus. Chor$\lambda$ assumes local values for communications, without considering how they are computed. 
+This results in a distinct typing system: local value types are 
 annotated with roles and are part of the global types, rather than being projected from 
-a global environment. Type preservation and progress follow from Chor$\lambda$'s typing 
+a global environment. Type preservation and progress for choreographies follow from Chor$\lambda$'s typing 
 and semantic rules.
 
 \subsection{Handling Exceptions}
 % choreography in implementation? how they deal with local computations
 % Other choreography languages ... and exceptions ...
-- Choral: an object-oriented choreography implemented as a java library \citep{giallorenzo2024choral}. 
-It treats choreography as class and EPP as generating role classes from the choreography
-implementation. It also offloads the local computation to Java. Higher-order functional
-choreography models such as Pirouette and Chor$\lambda$ can be viewed as formal model candidates for it.
-Its type checker is similar to the typing system in ChC where it has types for public channels
-where roles for sender and receiver are specified as well as the type of messages being communicated
-an it also has local types annotated with roles.
+Choral is an object-oriented choreography implemented as a Java library \citep{giallorenzo2024choral}. 
+It treats a choreography as a class and implements Endpoint Projection (EPP) as generating role-specific classes 
+from the choreography. Local computation is delegated to Java. Higher-order functional 
+choreography models like Pirouette and Chor$\lambda$ can be seen as formal model candidates for Choral. 
+Its type checker is similar to the typing system in ChC, with types for public channels specifying the 
+sender and receiver roles, as well as the types of communicated messages, and local types annotated with roles.
 
 In terms of communication failure which may raise an exception when a role is trying to perform operation
 based on reading from the place where a received message has not arrived yet, Choral implements the failure 
 model in RC by \cite{montesi2017choreographies}, using recover strategies such as capped attempts or 
 timer within java try-catch block.
 
-- RC, a model where communication failure is considered, recover strategy for senders and receivers, either 
-while loop until received (exactly once delivery for setting 1), or with a timer or capped tries (best efforts);
-typing system to ensure almost once delivery (and exactly one delivery where message won't be lost);
-they use configuration where sender and receiver have stacks and it is initially false, with payload value,
-or ticked meaning no longer in the stack (sent/received) to implement send/received and the failure rules for
-semantics and typings; we do not consider message sending failure, but we do have exception caused by 
-local computation failure (e.g. division by zero) or bad message value type (not a string), and we
-record the exception using transition labels. But we do not consider any recover strategy and always
-transits the choreography into a termination state (nil)
+To handle communication failures, where an exception may be raised if a role tries to perform an 
+operation based on reading a message that has not yet arrived, Choral implements the failure model 
+Reliable Choreography (RC) described by \cite{montesi2017choreographies}. More specifically, 
+it uses recovery strategies, such as capped retry 
+attempts or timers, within Java's try-catch blocks.
 
-\section{Some Title}
-- functional big-step semantics \cite{owens2016functional}
+RC is a model that addresses communication failures with recovery strategies for senders and 
+receivers. These strategies include using a while loop to wait until the message is received, 
+ensuring exactly-once delivery in an ideal setting where messages cannot be lost, or 
+using a timer or capped attempts for best-effort 
+delivery. A typing system is designed to ensure almost-once delivery or exactly-once delivery 
+given different settings. RC uses a configuration where both sender and receiver have 
+stacks, initially marked as false with a payload value or as ticked when the payload value is no longer in the stack, 
+indicating a sent or received message. In Kalas enriched with \richerlang{}, we do not consider message-sending failures
+caused by message being lost. Instead, communication exceptions can be caused by incorrect message types. 
+We also consider local computation failures and include exceptions for errors such as division by zero.
+However, these exceptions are mainly recorded by transition labels, we do not implement any 
+recovery strategy and always transition the choreography into \HOLtm{Nil}, when an error occurs.
 
-Though \richerlang\; is an extension of simply typed lambda calculus (STLC),
-its functional big-step semantics and function closure makes its strong normalisation
-proof slightly different to a standard one. A standard proof for STLC with non-deterministic reductions, 
-small-step semantics, and substitutions would have to define an inductive notion $\HOLConst{SN}$ for strong normalisation
-and prove the notion $\HOLConst{SN}$ is sound that a term of $\HOLConst{SN}$ is truly strongly normalising.
-The definition of $\HOLConst{SN}$ also has to handle application of terms by introducing an extra constrain 
-called strong head reduction, since $[\HOLFreeVar{N}/\HOLFreeVar{x}]M$ being strongly normalising does not imply
-$(\lambda x:A. M) N$ or $N$ are also strongly normalising since there may be no occurrences of $\HOLFreeVar{x}$ in $\HOLFreeVar{N}$.
-Thus the strong head reduction requires $\HOLFreeVar{N}$ to have the notion of $\HOLConst{SN}$ as well.
-However, due to the differences of semantics mentioned above, strong normalisation proof for \richerlang{} 
-does not need to consider the reduction sequences nor need to consider the strong head reduction for application when using
-a substitution model. Our proof, is more closed to the strong normalisation proof for a simpler call-by-value STLC in HOL's repository by \cite{hol_cbv_lc},
+\section{Approach to Strong Normalisation}
+Although \richerlang{} is an extension of the simply typed lambda calculus (STLC), 
+its functional big-step semantics and function closures make the proof of strong 
+normalisation slightly different from the standard approach.
+
+A standard strong normalisation proof for STLC with non-deterministic reductions, 
+small-step semantics, and substitutions would define an inductive notion $\HOLConst{SN}$ for strong normalisation
+and prove the notion $\HOLConst{SN}$ is sound that any term belonging to $\HOLConst{SN}$ is indeed strongly normalising \citep{abel2019poplmark}.
+
+The definition of $\HOLConst{SN}$ must address the application of terms by introducing an 
+additional constraint called strong head reduction. This is necessary because if $[\HOLFreeVar{N}/\HOLFreeVar{x}]M$ 
+is strongly normalising, it does not imply that either $(\lambda x:A. M) N$ or $N$ is strongly 
+normalising, as there may be no occurrences of $\HOLFreeVar{x}$ in $\HOLFreeVar{N}$. Therefore, strong 
+head reduction requires $\HOLFreeVar{N}$ to also adhere to the notion of $\HOLConst{SN}$.
+
+However, \richerlang{} uses a functional big-step semantics as outlined by \cite{owens2016functional}, 
+leading us to implement our semantics as an evaluation function with clocks. This setup 
+guarantees that the evaluation function of \richerlang{} is both total and deterministic.
+
+As a result, strong normalisation proof for \richerlang{} is equivalent to a weak one, and it 
+does not require us to consider the reduction sequences nor need to consider the strong head reduction for application when using
+a substitution model. Our proof, is more closed to the strong normalisation proof for a simpler call-by-value STLC in 
+HOL repository by \cite{hol_cbv_lc},
 in a sense that they both adopt a functional big-step semantics and use an environment to store bindings for
-free variables, but \richerlang\; has richer data types compared to the STLC in HOL example.
+free variables, but \richerlang{} has richer data types compared to the STLC in HOL example.
 
-We don't need to address the issue of strong head reduction in $\HOLConst{sn\_v}$ cause 
-this is handled by $\HOLConst{envsn}$ (Definition~\ref{def:envsn}), as a standard 
-inductive strong normalisation notion of terms would have to. For example, when extending STLC 
-with disjoint sums, the strong normalisation notion used by \cite{abel2019poplmark} adapts by
-adding strong head reduction rules for the case term to discipline the expansion. Using our approach, 
-we don't need a separate rule to describe the evaluation of a sum case
-expression. Rather, when evaluating \HOLtm{Case e s1 e1 s2 e2}, we will have $\HOLConst{e}$ evaluates to 
-some $\HOLConst{v}$ and \HOLtm{sn_v t v} by re-establishing the $\HOLConst{envsn}$ property 
-for the corresponding (left or right branch of the sum case expression) inductive hypothesis.
-This is essentially what the strong head reduction rules for the case term do \citep{abel2019poplmark}.
-We only need to add a left sum value case and a right sum value case in $\HOLConst{sn\_v}$
-to describe what will make the sum value a good value to use in the future evaluation.
+As a result, the strong normalisation proof for \richerlang{} is equivalent to a weak one, 
+without the need to consider reduction sequences or strong head reduction for applications 
+when using a substitution model. Our proof is closer to the strong normalisation proof for the 
+simpler call-by-value STLC found in the HOL repository by \cite{hol_cbv_lc}. Both adopt functional 
+big-step semantics and use an environment to store bindings for free variables, although \richerlang{} 
+supports a richer set of data types compared to the STLC in the HOL example.
 
-- STLC; language with environment semantics
-- our typing is not unique
-- SN for STLC; Weak and strong SN in terms of non-deterministic; my language is deterministic
+% We don't need to address the issue of strong head reduction in $\HOLConst{sn\_v}$ cause 
+% this is handled by $\HOLConst{envsn}$ (Definition~\ref{def:envsn}), as a standard 
+% inductive strong normalisation notion of terms would have to. For example, when extending STLC 
+% with disjoint sums, the strong normalisation notion used by \cite{abel2019poplmark} adapts by
+% adding strong head reduction rules for the case term to discipline the expansion. Using our approach, 
+% we don't need a separate rule to describe the evaluation of a sum case
+% expression. Rather, when evaluating \HOLtm{Case e s1 e1 s2 e2}, we will have $\HOLConst{e}$ evaluates to 
+% some $\HOLConst{v}$ and \HOLtm{sn_v t v} by re-establishing the $\HOLConst{envsn}$ property 
+% for the corresponding (left or right branch of the sum case expression) inductive hypothesis.
+% This is essentially what the strong head reduction rules for the case term do \citep{abel2019poplmark}.
+% We only need to add a left sum value case and a right sum value case in $\HOLConst{sn\_v}$
+% to describe what will make the sum value a good value to use in the future evaluation.
 

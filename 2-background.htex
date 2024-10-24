@@ -1,57 +1,113 @@
 \chapter{Background}\label{chap:background}
 
 \section{Choreographic Programming}
-A distributed system can be defined as a collection of autonomous computing 
-elements that behaves to its users' expectations \citep{mullender1990distributed}. Message exchanges
-are heart of the distributed system designs cause it allows nodes to collaborate
-and share resources with each other. Otherwise there is no need to put different 
-nodes inside one connected network. Using a traditional way to describe a distributed 
-system, one will have to give a detailed description of operations at each node in the 
-system. For example, a communication between node A and node B is achieved by A sending the 
-message and B receiving the message. But mismatched message sending
-and receiving can happen and these endpoint programs may fail to prevent the system
-from deadlocks or race among messages.
+A distributed system is defined as a collection of autonomous computing elements 
+that operate according to users' expectations \citep{mullender1990distributed}. 
+Message exchanges are at the core of distributed system design, as they enable nodes 
+to collaborate and share resources. Without such exchanges, there would no need to 
+connect different nodes within a single network. In a traditional approach 
+to describe a distributed system, one must provide a detailed specification of the 
+operations at each individual node. For example, communication between node A and node 
+B involves A sending a message and B receiving it. However, this approach can lead to 
+issues such as mismatched message sending and receiving, potentially resulting in 
+deadlocks or race conditions.
 
-Choreography raises as an effort to eliminate incorrect system implementation
-by only providing a global description on how messages should be exchanged within 
-the system. This approach is analogous to dance choreography, which outlines steps 
-and movements for an entire performance without focusing on individual dancers' 
-control points.
+Choreography emerges as an effort to eliminate message mismatches in 
+distributed systems by offering a global description of how messages should be 
+exchanged. This method is similar to dance choreography, where the focus is on 
+the overall coordination of steps and movements for the entire performance, rather 
+than detailing the control points of individual dancers.
 
-While it is fascinating to have no mismatched messages in choreography perspective,
-choreography cannot be run directly on individual nodes in a system and thus endpoint
-programs are still required by implementation. Thus the idea of EndPoint Projection (EPP) is 
-proposed in which a choreography is projected into endpoint programs such that each endpoint
-correctly implements the behaviours described by its role in the choreography. This idea is first 
-described by the design document of Web Services Choreography Description Language (WS-CDL) \citep{w3c2004wsdl},
-and \cite{carbone2007structured} further formalise it into the theory of EPP, namely the \emph{soundness} and 
-\emph{completeness} properties for a given EPP. Soundness means that all projected endpoint 
-communications adhere to the choreography description and completeness means that all communications
-described by the choreography are projected into endpoint codes.
-- maybe two important results but not namely
+While it is exciting to eliminate mismatched messages from the choreography perspective, 
+choreography cannot be executed directly on individual nodes within a system. As a result, 
+implementing endpoint programs is still necessary. This led to the idea of EndPoint 
+Projection (EPP), which involves projecting a choreography into endpoint programs so that 
+each endpoint correctly implements the behaviours defined by its role in the choreography. 
+This concept was first outlined in the design document for the Web Services Choreography 
+Description Language (WS-CDL) \citep{w3c2004wsdl}, and was subsequently formalised into the 
+theory of EPP by \cite{carbone2007structured}. In this context, two key properties are 
+established: \emph{soundness} and \emph{completeness}. Soundness ensures that all projected endpoint 
+communications conform to the choreography description, while completeness guarantees that 
+all communications specified in the choreography are reflected in the projected endpoint codes.
 
-- idea of CC
+% - maybe two important results but not namely
 
-- common aspected in choreography: asynchrony ...
+% - idea of CC
+
+% - common aspected in choreography: asynchrony ...
 
 \section{Interactive Theorem Proving}
-- what is higher-order logic
-- how proofs are done using HOL
-- recInduct in HOL
-- tactices
-- finite maps?
+Higher Order Logic (HOL) is a programming language developed on top of the metalanguage 
+ML \citep{gordon1988hol}. ML is an interactive programming language that allows users to 
+evaluate expressions, with the corresponding values and types being printed. Users can also 
+perform declarations to bind values to names. In HOL, terms are represented as an ML type 
+called \emph{term}, while the types of HOL terms are represented as an ML type called \emph{type}.
+
+We are mainly interested in using HOL as a proof assistant. HOL supports proofs by  
+natural deduction. In this context, a sequent in HOL is defined as a pair $(\Gamma, t)$, 
+where $\Gamma$ represents a set of assumptions and $t$ denotes the conclusion formula. A 
+theorem in HOL is a sequent that is either an axiom or a sequent derived from other theorems 
+using rules of inference.
+
+A key feature of HOL as a proof assistant is its support for \emph{goal-oriented} 
+proving through the use of tactics. In a goal-oriented proof, the goal is 
+broken down into subgoals through justifications. This process continues until the subgoals 
+become straightforward to prove. A \emph{tactic} is an ML function that reduces the current goal
+into subgoals. For example, the conjunction tactic takes a goal of the 
+form $p \wedge q$ and breaks it into two subgoals: $p$ and $q$.
+
+HOL includes many built-in libraries that cover useful theories for option types, 
+natural numbers, set operations, and more. These theories can be loaded into the current working 
+file, allowing users to build definitions and proofs based on the imported theories. Consequently, 
+we develop \richerlang{} and its related theorems by first creating HOL definitions for our syntax, 
+functions, and relations based on the imported theories. We then apply HOL tactics to prove the 
+stated theorems in a goal-oriented manner. The most frequently used theory for this project, aside 
+from common theories like natural numbers and set operations, is the finite map theory. Both Kalas' 
+states and \richerlang's environments are implemented as finite maps. This project is also based on HOL4, 
+the latest supported version of HOL \citep{slind2008brief}.
 
 \section{Kalas}
-- overview including intro to its compiler
-- semantics
-- implementation in HOL
+Kalas is a state-of-the-art choreography language featuring verified end-to-end compilation. 
+Its syntax is outlined in Definition~\ref{def:kalas} and is similar to that of Core Choreography 
+(CC) \citep{cruz2017core}. Kalas supports recursions and sequencing. Besides the synchronous 
+transitions, Kalas' transition rules also handle parallel and 
+asynchronous transitions (Definition~\ref{def:kalasdynamicsrules}). Most importantly, 
+a compiler with an end-to-end, machine-checked proof of correctness for Kalas is provided.
 
-\begin{definition}\label{def:kalas}
-    - kalas syntax
+The compilation process for Kalas consists of several phases, during which the top-level 
+choreography is projected into endpoint process algebra. The process programs are further compiled 
+phase by phase to address message sizes and the Kalas fixpoint operator. The compiler reaches  
+CakeML \citep{kumar2014cakeml}, a functional programming language with verified compilation, in the final compilation phase, 
+which gives Kalas semantics preservation down to the machine code. Soundness
+and completeness proofs are provided for each compilation phase to ensure operational correctness at 
+every stage. As a result, Kalas enjoys network-level deadlock free and correctness.
+
+Kalas is implemented using HOL4, with all its proofs conducted through the HOL proof assistant. 
+This foundation leads us to implement \richerlang{} and its associated proofs using HOL.
+
+\begin{definition}[Kalas syntax]\emph{Choreographies} in Kalas, ranged
+    over by $C$, are inductively defined by the grammar
+    \begin{center}
+    \begin{tabular}{rcllcll}
+      $C$ & ::=
+        &  $\HOLinline{\commprefix{\ensuremath{\HOLFreeVar{p}\sb{\mathrm{1}}}}{\ensuremath{\HOLFreeVar{v}\sb{\mathrm{1}}}}{\ensuremath{\HOLFreeVar{p}\sb{\mathrm{2}}}}{\ensuremath{\HOLFreeVar{v}\sb{\mathrm{2}}}};\HOLFreeVar{C}}$ & (com)
+        &  & $\HOLinline{\selprefix{\ensuremath{\HOLFreeVar{p}\sb{\mathrm{1}}}}{\HOLFreeVar{b}}{\ensuremath{\HOLFreeVar{p}\sb{\mathrm{2}}}};\HOLFreeVar{C}}$ & (sel) \\
+        &  & $\HOLinline{\iftok\;\HOLFreeVar{v}@\HOLFreeVar{p}\;\thentok\;\ensuremath{\HOLFreeVar{C}\sb{\mathrm{1}}}\;\elsetok\;\ensuremath{\HOLFreeVar{C}\sb{\mathrm{2}}}}$ & (if)
+        &  & $\HOLinline{\letin{\HOLFreeVar{v}@\HOLFreeVar{p}=\HOLFreeVar{f}(\HOLFreeVar{\ve{v}})}\HOLFreeVar{C}}$ & (let) \\
+        &  & $\HOLinline{\ensuremath{\mu}\HOLFreeVar{X}.\;\HOLFreeVar{C}}$ & (fix)
+        &  & $\HOLinline{\fixcall{\HOLFreeVar{X}}}$ & (var) \\
+        &  & $\HOLinline{\HOLConst{\nil}}$ & (nil)
+        &  &  &
+    \end{tabular}
+\end{center}
+\label{def:kalas}
 \end{definition}
 
-% This section should explain all the technical background that is important for being able to read your report. Recall that your report must be completely self-contained, so you should only assume ``mathematical understanding'', but no specific knowledge. All such knowledge should be provided here, e.g., the formalization and vocabulary of the research areas in which your work resides.
+\begin{definition}[Parallel and asynchronous transitions in Kalas]\label{def:kalasdynamicsrules}
+    \[\def\arraystretch{3.2}\qquad\begin{array}{c}
 
-% Note that this is not the same as reviewing related work. Related work puts the work done/described in your report into context of other (mostly recent) work that's done by others. In contrast the current chapter is not so much about what work others have done, and more about the formalization (and possibly standard techniques) that you require to describe your contributions (but since you probably didn't come up with these formalizations, you of course still need to cite the respective authors).
-
-% Please make use of sections and subsections as it's reasonable to better structure this (or any) chapter.
+    \rulelabel{2ex}{Com-S}\HOLthm[rule,α/alpha,C/c,C'/c',width=2000]{chorSem.trans_com_swap}
+    \\
+    \rulelabel{2ex}{Com-A}\HOLthm[rule,width=2000,C/c,C'/c',α/alpha]{chorSem.trans_com_async}
+    \end{array}\]
+\end{definition}

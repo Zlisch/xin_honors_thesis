@@ -1,30 +1,56 @@
 \chapter{Concluding Remarks}\label{chap:conclusion}
-
-If you wish, you may also name that section \emph{``Conclusion and Future Work''}, though it might not be a perfect choice to have a section named ``A \& B'' if it has subsections ``A'' and ``B''. Also note that you don't necessarily have to use these subsections; that also depends on how much content you have in each. (E.g., having a section header might be odd if it contains just three lines.)
-
-
 \section{Conclusion}
+In this thesis, we present a simply typed lambda calculus, \richerlang{}, 
+with functional big-step semantics and function closures. To restore 
+the property for transitions in the larger state  (Proposition~\ref{prop
+}) of Kalas, we adjust the evaluation rule in \richerlang{}. Specifically, 
+when evaluating a function expression, we return a restricted function closure.
 
-This section usually summarizes the entire paper including the conclusions drawn, e.g., did the developed techniques work? Maybe add why or why not. Also don't hold back on limitations of your work; it shows that you understood what you have done. And science isn't about claiming how great something is, but about objectively testing hypotheses. Also note that every single scientific paper has such a section, so you can check out many examples, preferably at top-tier venues, e.g., by your supervisor(s).
+We establish that \richerlang{} enjoys both type soundness and strong normalisation. 
+Our type soundness proof follows a standard approach. However, evaluating function expressions 
+into restricted closures requires us to exhibit a minimal typing environment for a typed expression
+in the function case of the type soundness proof.
 
+Function big-step semantics means that the evaluation function for \richerlang{} is total and deterministic, making
+the strong normalisation proof equivalent to a weak one. Our proof approach is mostly
+standard, namely induction over types. Although the use of function big-step semantics and environments
+requires us to define strongly normalising values and environments consisting of strongly normalising values, which are 
+not typically addressed in a standard proof outlined by \cite{abel2019poplmark}.
+
+We demonstrate that \richerlang{} can be integrated into Kalas, enabling more streamlined choreographic
+programming with ability to write concrete local computation codes. We also provide typing rules to Kalas 
+enriched with \richerlang{}.
+Our proof results indicate that the strong normalisation property of \richerlang{} implies  
+progress for the enriched Kalas. Additionally, the combination of strong normalisation and type 
+soundness of \richerlang{} implies type preservation for non-recursive, synchronous transitions 
+in the enriched Kalas. This type preservation result differs from the one by 
+\cite{hirsch_pirouette_2022}, where the type preservation property of their assumed local language implies 
+type preservation for the choreography.
 
 \section{Future Work}
-- communicate with richer data types rather than merely strings
+Immediate future work involves proving type preservation for recursive and asynchronous 
+transitions in the enriched Kalas. Once type preservation is established for all transitions, 
+we can assert the termination property for a typed choreography: if we have \HOLtm{chorTypecheckOK Γ Θ c}, 
+\HOLtm{chorEnvtype Γ s}, and \HOLtm{chorEnvsn Γ s}, then there exists a state-choreography pair 
+\HOLtm{(s',c')} that is related to \HOLtm{(s,c)} through the reflexive transitive closure of the 
+transition relation defined in Definition~\ref{def:enricheddynamicsRules}.
 
-- it will be interesting to implement a small-step semantics or using 
-a substitution model for \richerlang
+Another immediate task involves updating the scripts for later stages of Kalas's compilation, such 
+as endpoint projection. These scripts may still rely on the original Kalas syntax, so modifications 
+are needed to align them with the changes in syntax and transitions introduced by the enriched Kalas.
 
-- progress proof for asynchronus messages; 
+In the long term, future work could focus on introducing more message types in the enriched 
+Kalas. Currently, messages are limited to strings, but we can envision processes communicating 
+using richer data types, such as integers, booleans, or even function closures.
 
-- prove termination for choreography
-We can further combine Theorem~\ref{thm:chor_progress_lemma} and~\ref{thm:chor_preservation_lemma} to state the 
-\emph{termination} property for a typed choreography: If we have \HOLtm{chorTypecheckOK Γ Θ c}, \HOLtm{chorEnvtype Γ s},
-and \HOLtm{chorEnvsn Γ s}, then there exists a state-choreography pair \HOLtm{(s',c')} which is related to \HOLtm{(s,c)}
-in the reflective transitive closure of transition relation defined in Definition~\ref{def:enricheddynamicsRules}.
+Another important area of future work is implementing a more robust exception-handling mechanism 
+for the enriched Kalas. Currently, the choreography transitions directly to \HOLtm{Nil} in response 
+to communication or local computation exceptions. Drawing inspiration from the work of 
+\cite{giallorenzo2024choral, montesi2017choreographies}, one could introduce try-catch blocks to 
+manage exceptions and implement recovery strategies. This approach would allow the choreography to 
+handle errors more gracefully, avoiding an immediate transition to \HOLtm{Nil}.
 
-- fixing confluence property scripts etc.
+\richerlang{} uses a functional big-step semantics and looks up values for variables in an environment. 
+It would be interesting as well to implement a small-step semantics with a substitution model for \richerlang{} to 
+explore how this change might affect the progress and type preservation proofs for the enriched choreography. 
 
-- what if local language does not have SN property and we may do some special
-handling to recover the progress for choreography \ref{chap:strongNormalisation}
-
-- Section~\ref{subsubsec:modifiedTransRules}
