@@ -10,6 +10,8 @@ heap
 *.fls
 mainfile.log
 mainfile.out
+mainfile.aux
+mainfile.pdf
 munge.exe
 *.sig
 mainfile.toc
