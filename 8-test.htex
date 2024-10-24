@@ -8,10 +8,6 @@ This is a theorem:
 \end{HOLmath}
 
 \begin{HOLmath}
-\HOLthm{deadlockFreedom.chor_preservation_lemma}
-\end{HOLmath}
-
-\begin{HOLmath}
 \HOLthm{envSem.type_soundness}
 \end{HOLmath}
 

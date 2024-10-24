@@ -102,7 +102,7 @@ vecv 1 \ve{v}
 (chortrans5) 0 }{
 (chortrans6) 1 \rhd
 (chortrans7) 0 }
-nillabs 1 \epsilon
+nillabs 1 \ensuremath{\epsilon}
 (lcom1) 1 .
 (lcom2) 1 \grossarrow{}
 (lcom3) 1 .
@@ -204,10 +204,6 @@ comma 1 ,
 vdash 1 \ensuremath{\vdash}
 vdash_s 1 \ensuremath{\vdash_s}
 checkmark 1 \ensuremath{\checkmark}
-
-eval_exp 8 \ensuremath{\HOLConst{eval\_exp}}
-value_type 10 \ensuremath{\HOLConst{value\_type}}
-not_finish 10 \ensuremath{\HOLConst{not\_finish}}
 
 ws 1 \,
 
