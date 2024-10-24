@@ -1,6 +1,6 @@
 \chapter{Introduction}
 
-Distributed systems consist of multiple endpoints that communicate by 
+Distributed systems consist of multiple endpoints that communicate by
 exchanging messages, operating with asynchrony and parallelism as these 
 messages are sent and received between the various endpoints. But programming 
 distributed system is notoriously error-prone as programmer has to implement 
@@ -11,7 +11,7 @@ the system is waiting forever for a message.
 \emph{Choreography} arises as a programming diagram to address this issue by providing a 
 concrete global description of how the messages are exchanged between endpoints
 in a distributed system. A choreography program is written in a similar style to the 
-"Alice and Bob" notation by \cite{needham_using_1978}: 
+"Alice and Bob" notation by \cite{needham-using-1978}:
 \begin{center}
     \begin{tabular}{rl}
       \texttt{1.} & \texttt{Alice} $\to$ \texttt{Bob} $: key$ \\
@@ -22,21 +22,21 @@ Thus message mismatches are disallowed from the choreographic
 perspective. A property we refer to as \emph{deadlock free by design}. 
 The global choreography is then projected into process models for each 
 endpoint via EndPoint Projection (EPP), with properties such as 
-deadlock free by design preserved \citep{hallal_global_2018}.
+deadlock free by design preserved \citep{hallal-global-2018}.
 
 While most choreography languages focus on the message exchange behaviours, 
 few pay attention to the local computation happening in the 
-individual endpoint. It is shown by \cite{hirsch_pirouette_2022} that as 
+individual endpoint. It is shown by \cite{hirsch-pirouette-2022} that as
 long as the local language exhibits type preservation and 
 progress, the choreography inherits these properties as well. Thus, when 
 analyzing message exchange behaviors in choreography---such as multiparty 
 sessions, asynchrony, and parallelism---one can safely assume good behaviours 
-of local computation \citep{montesi_compositional_2013, cruz2017core, carbone_deadlock-freedom-by-design_2013}.
+of local computation \citep{montesi-compositional-2013, cruz2017core, carbone-deadlock-freedom-by-design-2013}.
 
 But when it comes to writing the choreography program that implements concrete system 
 behaviours, if local computation is ever required by the system, one must describe 
 the inputs and outputs of local computations. Current work either delegate this part to 
-an assumed well-behaved external implementation, for example, Kalas~\cite{pohjola_kalas_2022} and Pirouette~\cite{hirsch_pirouette_2022},
+an assumed well-behaved external implementation, for example, Kalas~\cite{pohjola-kalas-2022} and Pirouette~\cite{hirsch-pirouette-2022},
 or provide a basic framework where only Church numerals are considered, as in Core Choreography (CC)~\cite{cruz2017core}.
 This makes writing choregraphy program with local computation implementation  
 an unpleasant experience. For instance, a choreography program in Kalas, where the client 
