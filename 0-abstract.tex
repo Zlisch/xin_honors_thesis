@@ -20,7 +20,7 @@ typically involves conversions between choreography values and external data typ
 Hence in this thesis, we extend Kalas, a state-of-art choreography language with
 verified end-to-end compilation, with a local language \richerlang, such that
 local computations are handled gracefully within a few lines of codes. Moreover,
-it also allows us to formally analyse the message exchange behaviours of choregraphy
+it also allows us to formally analyse the message exchange behaviours of choreography 
 when local computations are considered. 
 
 We design \richerlang\, as a simply typed lambda calculus with function closure. We use
@@ -30,10 +30,10 @@ We also provide a strong normalisation proof for \richerlang.
 
 We extend the Kalas'\,\textit{let} transition with \richerlang\, expressions. Besides common data types 
 such as integer, string, and boolean, we also add function, pair, and sum types to the 
-local computation in choregraphy. Common operators for our data types are included, such as addition, modulo, 
+local computation in choreography . Common operators for our data types are included, such as addition, modulo, 
 and negation. An integer-string converter is implemented as well to handle message strings 
 in Kalas. Last but not least, we prove the enriched Kalas enjoys progress. We also show
-type preservation holds for non-recursive, synchronised transitions.
+type preservation holds for non-recursive, synchronous transitions.
 
 
 

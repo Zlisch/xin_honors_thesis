@@ -25,7 +25,29 @@ Proof
   qid_spec_tac ‘valvec’ >> Induct_on ‘varvec’ >>
   simp[OPT_MMAP_def, PULL_EXISTS]
 QED
-*)
+*)                                                
+Theorem better_trans_submap =
+        chorPropsTheory.trans_submap
+          |> Q.SPECL [‘z1’, ‘c’, ‘α’, ‘τ’, ‘z1'’, ‘c'’, ‘z2’]
+
+Theorem better_Trm_trans =
+        chorPropsTheory.Trm_trans
+          |> Q.SPECL [‘s’, ‘c’, ‘τ’, ‘k’, ‘(s',c')’]
+          |> REWRITE_RULE [chorPropsTheory.no_undefined_vars_def]                                            
+Theorem better_chortype_no_undefined_vars =
+        chorTypePropsTheory.chortype_no_undefined_vars
+          |> Q.SPECL [‘Γ’, ‘Θ’, ‘s’]
+          |> REWRITE_RULE [chorPropsTheory.no_undefined_vars_def]                                            
+Theorem better_chor_preservation_lemma =
+        deadlockFreedomTheory.chor_preservation_lemma
+          |> Q.SPECL [‘c’, ‘Θ’, ‘Γ’, ‘s’, ‘τ’, ‘l’, ‘s'’, ‘c'’]
+          |> REWRITE_RULE [chorPropsTheory.not_finish_def]
+                                                
+Theorem better_chor_progress_lemma =
+        deadlockFreedomTheory.chor_progress_lemma
+          |> Q.SPECL [‘c’, ‘s’]
+          |> REWRITE_RULE [chorPropsTheory.not_finish_def]
+                                                
 Theorem better_trans_letval =
         chorSemTheory.trans_letval |> Q.SPECL [‘v’, ‘s’, ‘x’, ‘p’, ‘e’, ‘c’, ‘cl’]
                                    |> REWRITE_RULE [localise_fdom]
@@ -68,7 +90,18 @@ val _ = stdrule ("BinOp", Infixl 500,
 Overload LENSUPD = “λfm k v. fm |+ (k,v)”
 
 val _ = stdrule ("LENSUPD", Suffix 2100, chain "LENSUPD" 3)
+                           
+Overload DELETEX = “λS x. S DELETE x”
 
+val _ = stdrule ("DELETEX", Suffix 451, chain "DELETEX" 2)
+
+Overload fdomm = “λf. FDOM f”
+
+val _ = stdrule ("fdomm", Closefix, chain "fdom" 2)
+
+Overload drestrict = “λf A. DRESTRICT f A”
+
+val _ = stdrule ("drestrict", Suffix 451, chain "drestrict" 2)
 
 val _ = stdrule ("Fix", Prefix 501,
                  [TOK "(fixmu)", TM, TOK "(fixdot)", BreakSpace(1,2)]);
@@ -121,14 +154,22 @@ val _ = add_rule {term_name =  "chorTypecheckOK", fixity = Suffix 451,
 val _ = stdrule ("localise", Prefix 501,
                  [TOK "(localise1)", TM, TOK "comma", TM, TOK "(localise3)"]);
 *)
-val _ = stdrule ("free_vars", Prefix 501,
-                 [TOK "(fvs1)", TM, TOK "fvs2"]);
+val _ = stdrule ("free_variables", Closefix,
+                 [TOK "(fvs1)", TM, TOK "(fvs2)"]);
+
+val _ = stdrule ("free_vars", Closefix,
+                 [TOK "(fvs1)", TM, TOK "(fvs2)"]);
                
 val _ = add_rule {term_name =  "typecheck", fixity = Suffix 451,
                   paren_style=  OnlyIfNecessary, 
                   block_style = (AroundEachPhrase, (PP.CONSISTENT,0)),
                   pp_elements = [TOK "vdash_s", TM, TOK "colon"]}
 
+val _ = add_rule {term_name =  "value_type", fixity = Prefix 501,
+                  paren_style=  OnlyIfNecessary, 
+                  block_style = (AroundEachPhrase, (PP.CONSISTENT,0)),
+                  pp_elements = [TOK "(vt1)", TM, TOK "(vt2)"]}                                                                        
+                              
 val _ = add_rule {term_name = "LCom", fixity = Infixr 400,
                   paren_style = IfNotTop{realonly=false},
                   block_style = (AroundEachPhrase,(PP.CONSISTENT,0)),

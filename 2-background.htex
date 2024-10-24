@@ -18,16 +18,16 @@ the system. This approach is analogous to dance choreography, which outlines ste
 and movements for an entire performance without focusing on individual dancers' 
 control points.
 
-While it is fascinating to have no mismatched messages in choregraphy perspective,
-choregraphy cannot be run directly on individual nodes in a system and thus endpoint
+While it is fascinating to have no mismatched messages in choreography perspective,
+choreography cannot be run directly on individual nodes in a system and thus endpoint
 programs are still required by implementation. Thus the idea of EndPoint Projection (EPP) is 
 proposed in which a choreography is projected into endpoint programs such that each endpoint
 correctly implements the behaviours described by its role in the choreography. This idea is first 
 described by the design document of Web Services Choreography Description Language (WS-CDL) \citep{w3c2004wsdl},
 and \cite{carbone2007structured} further formalise it into the theory of EPP, namely the \emph{soundness} and 
 \emph{completeness} properties for a given EPP. Soundness means that all projected endpoint 
-communications adhere to the choregraphy description and completeness means that all communications
-described by the choregraphy are projected into endpoint codes.
+communications adhere to the choreography description and completeness means that all communications
+described by the choreography are projected into endpoint codes.
 - maybe two important results but not namely
 
 - idea of CC

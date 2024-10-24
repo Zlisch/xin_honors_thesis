@@ -1,24 +1,26 @@
 \chapter{\richerlang: A Simply Typed Lambda Calculus}\label{chap:richerLang}
-- we introduce \richerlang, a language over expressions; Adopting a functional 
-big-step semantics (owens), we define an interpreter that evaluate expressions to values;
-we evaluate expressions with clocks to ensure termination, thus our evaluation function
-is total. Expressions in \richerlang\; can also be evaluated into exceptions. We include 
-common arithmetic errors such as division by zero, and integer-string conversion
-errors such as bad formatted strings. The latter is included for the integration
-with Kalas, since a process may want to perform integer arithmetic based on the received 
-string which does not encode a valid integer.
+We introduce \richerlang, a language over expressions that closely resembles a 
+simply typed lambda calculus. We adopt the functional big-step semantics described by 
+\cite{owens2016functional}, which guarantees that our evaluation function is both total 
+and deterministic. Our implementation includes an evaluation function that utilises clocks 
+to evaluate expressions, yielding either values or exceptions. We also account for common 
+exceptions, such as division by zero and improperly formatted strings during integer-string 
+conversions.
 
-\richerlang\; is deterministic in a sense that if we increase the clocks an expression
-will be evaluated to the same values or exceptions.
+We use an environment, denoted as $\HOLFreeVar{E}$, to store values for free variables. 
+Thus we need to pass $\HOLFreeVar{E}$ as an argument to our evaluation function.
+While a substitution model may be mathematically appealing, our environment-based approach 
+aligns well with functional big-step semantics and is relatively easy to implement. This setup 
+leads us to define a typing environment, $\HOLFreeVar{G}$, which stores types for free variables. 
+Consequently, expressions in \richerlang{} are always typed within some typing environment.
 
-- \richerlang\;closely resembles a STLC, but uses a dynamic environment to store values of free
-variables, so we always evaluate the given expression inside an environment E. This
-leads to typing expressions in a typing environment G that stores types for free variables.
-This setup, further requires the typed expression being evaluated in a \emph{correct} environment E
-in the type soundness proof, given the typing environment G where the expression was typed.
+When it comes to formalising the type soundness statement for \richerlang, we want to ensure that a typed 
+expression is evaluated in a \emph{correct} environment $\HOLFreeVar{E}$ according to the typing environment $\HOLFreeVar{G}$
+that types the expression, rather than an arbitrary one. To achieve this, 
+we define \HOLtm{envtype G E} to characterise such a \emph{correct} environment 
+$\HOLFreeVar{E}$ in relation to a typing environment $\HOLFreeVar{G}$.
 
 \section{Syntax}\label{sec:envSyntax}
-- syntax definition (+ exceptions) with brief explanation
 \begin{definition}[\richerlang\;syntax] \emph{Values} and \emph{expressions} in \richerlang, ranged
 over by $v, e$, are inductively defined by the grammar
 \begin{center}
@@ -43,43 +45,46 @@ over by $v, e$, are inductively defined by the grammar
           \end{tabular}
 \end{tabular}
 \end{center}
-\label{def:kalas}
 \end{definition}
 %% TODO add results
 
-Syntax for function and application syntax are standard. Same as if and let. Case
-here is for sum types, where $\HOLFreeVar{s1}, \HOLFreeVar{e1}$ represent the left branch and
-$\HOLFreeVar{s2}, \HOLFreeVar{e2}$ represent the right branch. 
-$\HOLtm{Var x}$ represents a variable where $x$ is 
-the string that represents variable's name. We include literals for string, 
-integer and boolean in our syntax to allow expressions such as 
-$\HOLConst{BinOp}\;\HOLConst{Add}\;(\HOLConst{Var}\;\HOLFreeVar{x})\;(\HOLConst{IntLit}\;1)$.
-For the sake of readability, we will write the addition example as $\HOLConst{Add}\;(\HOLConst{Var}\;\HOLFreeVar{x})\;(\HOLConst{IntLit}\;1)$,
-and same for any binary or unary operators examples.
+\HOLtm{Var x} represents a variable where $\HOLFreeVar{x}$ is 
+the string that represents variable's name. \HOLtm{BinOp bop e1 e2} represents
+a binary operation and \HOLtm{Uop uop e} represents unary operation.
+We include literals for string, integer and boolean in our syntax to allow expressions 
+such as \HOLtm{BinOp Add (Var x) (IntLit 1)}.
+$\HOLConst{If}$, $\HOLConst{Let}$, $\HOLConst{Fn}$, and $\HOLConst{App}$ are standard.
+\HOLtm{Case e x e1 y e2} represents a sum case expression, where the bound variable $\HOLFreeVar{x}$ 
+and expression $\HOLFreeVar{e1}$ correspond to the 
+left branch, while the bound variable $\HOLFreeVar{y}$ and $\HOLFreeVar{e2}$ correspond to the 
+right branch. Free variables for \richerlang{}' expressions
+are standard.
 
-We abstract binary and unary operators to allow shorter syntax definitions.
-This makes extending binary and unary operators easy since we only
-need to register the new operator in $\HOLFreeVar{bop}$ or $\HOLFreeVar{uop}$
-definition and provide the corresponding evaluation rule. It also greatly reduces
-the number of cases generated in proofs that rely on syntax forms of an expression
-since we only have one case for all binary operators and one case for all unary
-operators. Though those two cases typically rely on lemmas that establish the desired properties
-for all operators, as discussed in Section~?, most operators cases can be proven
-using the same tactics and where some operator case in the lemma proof differs
-from the others is usually the essential subproof that is required to re-establish
-the desired property after introducing this operator to our language. Thus separating
-concrete operator syntax definitions from language syntax definitions also enabling
-a neat proof maintenance process when new operators are introduced.
+We separate the syntax definitions for binary and unary operations from the 
+concrete definitions of specific binary and unary operators. This makes it 
+easy to extend the set of operators: to add a new operator, we only need to 
+update the $\HOLFreeVar{bop}$ or $\HOLFreeVar{uop}$ definitions and provide 
+the corresponding evaluation rule. This approach also significantly reduces 
+the number of cases in proofs that depend on the syntactic structure of expressions, 
+as there's just a single case for all binary operators and a single case for 
+all unary operators.
 
 We include exceptions to handle division by zero and bad formatted integer strings.
 They are thrown by the corresponding operators. We define three observable evaluation results:
-as either values, or we encounter a type error (for example, $\HOLConst{Add}\;(\HOLConst{IntLit}\;1)\;(\HOLConst{BoolLit}\;\HOLConst{T})$),
-or we reach an exception, or the evaluation times out for the given clock.
+as either values, or we encounter a type error (for example, \HOLtm{BinOp Add (IntLit 1) (StrLit "1")}),
+or we reach an exception, or the evaluation times out for the given clock value.
+
+We include exceptions to handle cases like division by zero and improperly 
+formatted integer strings, which are raised by the relevant operators. We define 
+four observable outcomes for evaluation: a successful value $\HOLFreeVar{v}$, a 
+\HOLtm{TypeError} for evaluating expressions like \HOLtm{BinOp Add (IntLit 1) (StrLit "1")}, 
+an exception \HOLtm{Exn exn}, or a \HOLtm{Timeout} if the evaluation exceeds the 
+specified clock limit.
 
 \section{Statics}\label{sec:sstatics}
-Our typing rules for expressions are similar to those for a simply typed lambda calculus.
-We define a typing relation for values as we want the evaluated values
-in the type soundness statement to be typed as well.
+Our typing rules for expressions closely follow those of a simply typed lambda 
+calculus. Because values are not part of the expression syntax, we also define 
+a separate typing relation for values.
 
 % maybe a formal description of G's syntax
 Our expressions are typed in a typing environment $\HOLFreeVar{G}$ which 
@@ -92,14 +97,22 @@ $\HOLFreeVar{E}$ in the type soundness statement to make sure we are
 evaluating the typed expression using a correct dynamic environment that
 aligns with the typing constrain specified in $\HOLFreeVar{G}$. 
 
-Similar to how we provide only one general case for binary/unary operation 
-evaluation and delegate the evaluation of concrete operators to 
-another function, we provide only one general rule for typing 
-binary/unary operations and delegate type checking concrete input/output types
-against a concrete operator to external relations, $\HOLConst{boptype}$ and $\HOLConst{uoptype}$. 
-As we will see in Section~?, this leads to only two cases in the type soundness proof
-for operators and a separate soundness lemma regarding the operator typing relation
-is required by the general case.
+Our expressions are typed within a typing environment, $\HOLFreeVar{G}$, 
+which maps variable names to types. Just as a variable expression is evaluated 
+by looking up its variable name in the dynamic environment $\HOLFreeVar{E}$, a variable expression
+is typed by checking the type associated with that variable name in the typing 
+environment $\HOLFreeVar{G}$. This setup requires the dynamic environment $\HOLFreeVar{E}$ 
+to be aligned with the types specified in the typing environment $\HOLFreeVar{G}$ in 
+the type soundness statement, so we can ensure expressions are evaluated in a correct 
+environment.  We formalise this constrain in Section~\ref{subsubsec:senvtypedef}.
+
+For typing binary and unary operations, we delegate the task of 
+checking operand types against a specific operator to two external typing relations, 
+$\HOLConst{boptype}$ and $\HOLConst{uoptype}$. This approach allows us to define just 
+two general rules for binary and unary operations when specifying typing rules for expressions. 
+This results in fewer cases in the type soundness proof for operators, 
+requiring only two separate soundness lemmas for $\HOLConst{boptype}$ and $\HOLConst{uoptype}$. 
+Our design showcases a clear separation of concerns.
 
 \subsection{Syntax and Typing Rules}\label{subsec:envTypingRules}
 \begin{definition}\label{def:stypes}
@@ -109,58 +122,64 @@ is required by the general case.
 \begin{definition}\label{def:typecheck}
     - typing relations: typecheck
 \end{definition}
-
-\begin{definition}\label{def:value_type}
-    - typing relations: value_type
-\end{definition}
 - typing relations: typecheck, value_type, uop_type, bop_type
 
-A typing relation for expression is written as \HOLtm{typecheck G e ty} where $\HOLFreeVar{G}$
-is the typing environment. For typing a binary operation expression, 
-we require the expressions as arguments to the operator to have some type
-$\HOLFreeVar{t1}, \HOLFreeVar{t2}$, and those types and the output type 
-satisfy the typing relation specified in $\HOLConst{boptype}$ for the 
-concrete binary operator involved. Typing for a unary operation is the same.
-Other rules are standard.
+\subsubsection{Expressions}
+Typing statements for expressions are formulated as \HOLtm{typecheck G e t}, 
+where $\HOLFreeVar{t}$ is the type of expression $\HOLFreeVar{e}$ given the typing 
+environment $\HOLFreeVar{G}$. A variable $\HOLFreeVar{x}$ is typed by 
+looking it up in $\HOLFreeVar{G}$. The typing rules for other expressions are standard.
 
-Before we explain $\HOLConst{value\_type}$, we define a typing constrain between a typing
-environment $\HOLFreeVar{G}$ and a dynamic environment $\HOLFreeVar{E}$.
+To type a binary operation \HOLtm{BinOp bop e1 e2}, we need the types of $\HOLFreeVar{e1}$ 
+and $\HOLFreeVar{e2}$, given $\HOLFreeVar{G}$, to satisfy the constraints defined by  
+$\HOLConst{boptype}$ for the operator $\HOLFreeVar{bop}$. The typing rules for unary 
+operations are defined in a similar manner.
+
+\subsubsection{Environments}\label{subsubsec:senvtypedef}
+Before we define types for values, we first introduce \HOLtm{envtype G E} as a 
+typing constraint that relates the typing environment $\HOLFreeVar{G}$ to the 
+dynamic environment $\HOLFreeVar{E}$. Specifically, $\HOLtm{envtype G E}$ requires 
+that the values of variables stored in $\HOLFreeVar{E}$ conform to the types of  
+variables specified in $\HOLFreeVar{G}$.
 
 \begin{definition}\label{def:envtype}
     - envtype definition.
 \end{definition}
 
-%% TODO: a diagram?
+\subsubsection{Values}
+\begin{definition}\label{def:value_type}
+    - typing relations: value_type
+\end{definition}
 
-Intuitively, $\HOLtm{envtype G E}$ means that values of variables stored in $\HOLFreeVar{E}$
-satisfy the typing constrains specified in $\HOLFreeVar{G}$.
+In \HOLtm{value_type v t}, a value $\HOLFreeVar{v}$ is related to a type 
+$\HOLFreeVar{t}$. Literal value cases are obvious. Typings for pair and sum values are standard. 
+Closure value, represented as \HOLtm{Clos s e E}, is a triple $(\HOLFreeVar{s}, \HOLFreeVar{e}, \HOLFreeVar{E})$ 
+corresponding to a function expression \HOLtm{Fn s e}. In this closure, $\HOLFreeVar{s}$ represents the function parameter, 
+$\HOLFreeVar{e}$ is the function body, and $\HOLFreeVar{E}$ is the environment that stores the 
+bindings of free variables when the function definition is evaluated.
 
-$\HOLConst{value\_type}$ relates a value $\HOLFreeVar{v}$ to a type $\HOLFreeVar{t}$. 
-Integer, string and boolean literal cases are obvious. For typing a 
-closure value, we require the function body $\HOLFreeVar{e}$ to have the output
-type $\HOLFreeVar{t2}$ in a typing environment $\HOLFreeVar{G}$ that extends
-with the type $\HOLFreeVar{t1}$ for function argument $\HOLFreeVar{s}$,
-where such $\HOLFreeVar{G}$ is a correct descriptions of types of variable values
-stored in $\HOLFreeVar{E}$. This constrain is equivalent as requiring 
-$\HOLtm{envtype G E}$. \footnote{We do not use $\HOLtm{envtype G E}$ directly 
-in the closure case of $\HOLConst{value\_type}$ because definition of $\HOLtm{envtype}$
-depends on $\HOLConst{value\_type}$ and we want to avoid mutually recursive definition 
-between a definition and a relation in HOL4.}
+To type a closure value \HOLtm{Clos s e E}, if $\HOLFreeVar{G}$ accurately 
+describes the types of variable values stored in $\HOLFreeVar{E}$, we require 
+that $\HOLFreeVar{e}$ has the output type $\HOLFreeVar{t2}$ in \HOLtm{G|+(s,t1)}. 
+The constraints for $\HOLFreeVar{G}$ and $\HOLFreeVar{E}$ align with Definition~\ref{def
+}.
+\footnote{We do not apply $\HOLtm{envtype G E}$ directly in the closure case because 
+the definition of $\HOLtm{envtype}$ depends on $\vdash_s$, and we want to avoid mutually 
+recursive definitions between a definition and a relation in HOL4.}
 
-We require $\HOLtm{envtype G E}$ is because we will evaluate the function body 
-$\HOLFreeVar{e}$ in an extended environment $\HOLFreeVar{E}$(+s,v) and we want 
-the extended typing environment $\HOLFreeVar{G}$(+s,v) in which $\HOLFreeVar{e}$ 
-is typed to correctly describes the types of values stored in $\HOLFreeVar{E}$(+s,v), i.e.
-$\HOLConst{envtype}\;\HOLFreeVar{E}(+s,v)\;\HOLFreeVar{G}(+s,v)$. 
-We will see in Section~? that $\HOLConst{envtype}\;\HOLFreeVar{E}(+s,v)\;\HOLFreeVar{G}(+s,v)$
-is necessary to be able to use the inductive hypothesis in the application case of type 
-soundness proof as our type soundness statement requires a typed expression to be 
-evaluated in an environment that aligns with the typing environment that types the 
-expression.
+Requiring the constraint $\HOLtm{envtype G E}$ in the definition of 
+\HOLtm{value_type (Clos s e E) (fnT t1 t2)} is appropriate because, when the closure 
+value is applied, $\HOLFreeVar{e}$ will be evaluated in the extended closure environment 
+\HOLtm{E|+(s,v)} for some argument value $\HOLFreeVar{v}$. Therefore, we want to have $\HOLFreeVar{e}$ 
+typed within a typing environment that accurately describes the types of values 
+stored in \HOLtm{E|+(s,v)}. As we will see in Section~\ref{subsec
+}, the constraint $\HOLtm{envtype G E}$ is also necessary for the proof of the \HOLtm{App e1 e2} 
+case in the type soundness proof.
 
-$\HOLConst{value\_type}$ for pair and sum cases are also standard. A $\HOLtm{SumLV v}$
-value does not have a unique type since $\HOLFreeVar{t2}$ is arbitrary and so as a 
-$\HOLtm{SumRV v}$ value.
+As a consequence of Definition~\ref{def:value_type} and~\ref{def:typecheck}, \HOLtm{SumLV v} 
+does not have a unique type because $\HOLFreeVar{t2}$ is arbitrary, 
+and the same applies to \HOLtm{SumRV v}. Furthermore, the function \HOLtm{Fn s (Var s)} 
+also has non-unique types, as the variable $\HOLFreeVar{s}$ can take on arbitrary types.
 
 \subsection{Typing Examples}
 Example~? discussed in Section~? to show our function closure supports 
@@ -175,73 +194,89 @@ typing environment since $\HOLFreeVar{f}$ is free in the definition expression.
 A stuck derivation tree is provided in Appendix~?.
 
 \section{Dynamics}\label{sec:sdynamics}
-As discussed above, we defined our semantics using evaluation function rather than
-relation. The size of expressions are decreasing except for the application 
-case, so we decrease the clock to ensure termination. Semantics for
-if, let, case are standard. When evaluating a variable, we try to look up 
-for the value corresponds to the variable name in the given environment. If 
-we try to look up an unknown variable name, the evaluation function will return
-with type error. Environments are implemented as finite maps in HOL4, as 
-discussed in Section~?.
+We adopt a functional big-step semantics. As a result, our 
+semantics are implemented as an evaluation function that takes a clock value $\HOLFreeVar{c}$,
+an environment $\HOLFreeVar{E}$, and an expression $\HOLFreeVar{e}$ as inputs. 
+We use clocks since the size of expressions are decreasing except for the application 
+case, so decreasing the clock value when evaluation an application ensures the termination
+of our evaluation function. Our definition of evaluation function also implies a call-by-value
+evaluation strategy.
+
+We define the evaluation function as:
 
 \begin{definition}\label{def:sdynamicsrules}
     - semantics rules
 \end{definition}
 
-%% TODO: maybe we need to explain the monad here???
+%% TODO somewhere define E
+Rules for $\HOLConst{If}$, $\HOLConst{Let}$, and $\HOLConst{Case}$ are standard. 
+We evaluate \HOLtm{Var x} by looking up the variable $\HOLFreeVar{x}$ in the provided 
+environment $\HOLFreeVar{E}$. If $\HOLFreeVar{E}$ does not contain a binding for $\HOLFreeVar{x}$, 
+it indicates that $\HOLFreeVar{x}$ is an undefined variable. Thus \HOLtm{TypeError} is returned.
 
-Our evaluation strategy is call-by-value. For evaluating binary or unary operations,
-we first evaluate the argument expressions into values, and then use another 
-function $\HOLConst{eval\_bop}$ or $\HOLConst{eval\_uop}$ to apply the operators by
-the specified rules on the evaluated values and return the result. $\HOLConst{eval\_bop}$ 
-and $\HOLConst{eval\_uop}$ are where concrete evaluation rules for each operator
-is defined.
+%% TODO: add appendix
+For \HOLtm{Bin bop e1 e2}, we first evaluate $\HOLFreeVar{e1}$ and $\HOLFreeVar{e2}$ 
+to obtain $\HOLFreeVar{v1}$ and $\HOLFreeVar{v2}$. Next, we use \HOLtm{eva_bop bop v1 v2} 
+to compute the result based on the specific rule for the operator $\HOLFreeVar{bop}$, which is 
+defined in $\HOLConst{eval_bop}$. The evaluations for unary operations are defined in a 
+similar manner. The definitions of $\HOLConst{eval_uop}$ and $\HOLConst{eval_bop}$ can be 
+found in Appendix~?.
 
-%% maybe a graph for the example
+Based on the rules outlined so far, let's consider an evaluation example of the expression 
+\HOLtm{Uop NumOf (Var x)}. The function \HOLtm{eval_exp c E (Uop NumOf (Var x))} will first 
+compute \HOLtm{eval_exp c E (Var x)} by looking up the variable $\HOLFreeVar{x}$ in the 
+environment $\HOLFreeVar{E}$. If $\HOLFreeVar{x}$ is not found in $\HOLFreeVar{E}$, the function 
+will return \HOLConst{TypeError}. If the lookup 
+succeeds, \HOLtm{eval_exp c E (Var x)} will return a value $\HOLFreeVar{v}$, and we will then 
+compute \HOLtm{eval_uop NumOf v}. If $\HOLFreeVar{v}$ is not a correctly formatted integer string 
+(for instance, if it contains a non-numeric character), \HOLtm{eval_uop NumOf v} will return 
+\HOLtm{Exn BadStr}. Otherwise, \HOLtm{eval_uop NumOf v} will return the converted integer value 
+\HOLtm{IntV n}. The relevant format checking and string conversion algorithms are utilised by 
+$\HOLConst{eval_uop}$ during the evaluation process.
 
-For example, $\HOLConst{eval\_exp}\;\HOLFreeVar{c}\;\HOLFreeVar{E}\;(\HOLConst{NumOf}\;(\HOLConst{Var}\;\HOLFreeVar{x}))$
-will first compute $\HOLConst{eval\_exp}\;\HOLFreeVar{c}\;\HOLFreeVar{E}\;(\HOLConst{Var}\;\HOLFreeVar{x})$
-by looking up name $\HOLFreeVar{x}$ in $\HOLFreeVar{E}$. If $\HOLFreeVar{x}$
-is unknown to $\HOLFreeVar{E}$, the function will return $\HOLConst{TypeError}$ and propagate it
-to the top. Otherwise it will return the value $\HOLFreeVar{v}$ stored under the
-name $\HOLFreeVar{x}$ in $\HOLFreeVar{E}$ and we move to compute $\HOLConst{eval\_uop}\;\HOLConst{NumOf}\;\HOLFreeVar{v}$.
-If $\HOLFreeVar{v}$ is not a correctly formatted integer string (for example, if it
-contains a non-numeric character), $\HOLConst{eval\_uop}\;\HOLConst{NumOf}\;\HOLFreeVar{v}$
-will return $Exn BadStr$. Otherwise, it will return the converted integer value $\HOLConst{IntV}\;\HOLFreeVar{n}$.
-Again, the format checking and conversion algorithm are implemented in $\HOLConst{eval\_uop}$'s definition.
-The same applies to evaluating any binary operations. Definitions of $\HOLConst{eval\_uop}$
-and $\HOLConst{eval\_bop}$ are included in Appendix~?.
+\subsection{Function Closure}\label{subsec:sfunclos}
+We first define \HOLtm{DRESTRICT f s} as:
 
-- typed example: $\HOLConst{eval\_exp}\;\HOLFreeVar{c}\;\emptyset\;$
-
-\subsection{Function Closure}
-
-\begin{definition}
-    - function semantics rule (unrestricted version)
+\begin{definition}\label{def:derestrict}
+    - definition of $\HOLConst{DRESTRICT}$
 \end{definition}
 
-For a function $\HOLtm{Fn x e}$, closure is a triple
-$(\HOLFreeVar{x}, \HOLFreeVar{e}, \HOLFreeVar{E})$. $\HOLFreeVar{x}$
-is the function parameter. $\HOLFreeVar{e}$ is the function body. 
-$\HOLFreeVar{E}$ is the environment that stores bindings of free variables
-when the function definition is evaluated.
+Then we give the evaluation rule for \HOLtm{Fn s e}:
 
-We stores the bindings of free variables (i.e. the environment) into
-the closure value when evaluate a function definition so we never lose
-track of values for bound variables when evaluating a function definition that appears
-nested in another function definition. If we don't keep track of values for bound
-variables, when we finishing evaluating a function definition that contains
-nested function definitions, only the inner most bound variable will appear bound
-and the inner most function body will be the expression to be evaluated when we apply
-this nested function definition to a value. Since we now lose bindings for all the other
-bound variables from outer scopes, we are unable to finish the evaluation of 
-application.
+\begin{definition}
+    - function semantics rule (restricted version)
+\end{definition}
+
+% For a function \HOLtm{Fn s e}, closure \HOLtm{Clos s e E} is a triple
+% $(\HOLFreeVar{s}, \HOLFreeVar{e}, \HOLFreeVar{E})$. $\HOLFreeVar{s}$
+% is the function parameter. $\HOLFreeVar{e}$ is the function body. 
+% $\HOLFreeVar{E}$ is the environment that stores bindings of free variables
+% when the function definition is evaluated.
+
+However, our rule stores a restricted environment \HOLtm{Clos s e (DRESTRICT E (free_vars e) \\ s)} 
+in the evaluated closure, which may seem unexpected. Nonetheless, we argue that 
+\HOLtm{Clos s e (DRESTRICT E (free_vars e) \\ s)} behaves the same as \HOLtm{Clos s e E} during 
+evaluations and will produce the same result.
+
+First, \HOLtm{DRESTRICT E (free_vars e)} includes values for all free variables in $\HOLFreeVar{e}$. 
+Second, excluding $\HOLFreeVar{s}$ is safe because when we apply the restricted closure to a value, 
+we always bind $\HOLFreeVar{s}$ to the argument value. So the previous value of $\HOLFreeVar{s}$ 
+stored in the environment becomes irrelevant. This modification is also necessary to preserve 
+Proposition~\ref{prop:transsubmap}. Further discussions can be found in Section~\ref{subsec:largerState}.
+
+By using a closure, we can keep track of the values for bound variables in 
+nested function definitions. If we do not record the environment when a function 
+definition is evaluated, we risk losing the bindings for all other bound variables 
+from outer scopes once we complete the evaluation of the innermost function definition. 
+Additionally, currying would be impossible without utilising a closure, as illustrated 
+in Example~\ref{ex:curryingfailswoutclos}.
 
 \begin{example}\label{ex:curryingfailswoutclos}
     - example: failure without closure
 \end{example}
 
-This is illustrated by Example~\ref{ex:curryingfailswoutclos}. When we are evaluating $\HOLConst{Fn}\;\HOLFreeVar{y}\;(\HOLConst{Add}\;(\HOLConst{Var}\;\HOLFreeVar{x})\;(\HOLConst{Var}\;\HOLFreeVar{y}\;1))$
+%% TODO use gpt to check it
+When we are evaluating $\HOLConst{Fn}\;\HOLFreeVar{y}\;(\HOLConst{Add}\;(\HOLConst{Var}\;\HOLFreeVar{x})\;(\HOLConst{Var}\;\HOLFreeVar{y}\;1))$
 in line 5 we know $\HOLFreeVar{x}$ is bound to $1$. But we lose this information
 when we choose $(\HOLFreeVar{y}, \HOLConst{Add}\;(\HOLConst{Var}\;\HOLFreeVar{x})\;(\HOLConst{Var}\;\HOLFreeVar{y}))$
 to be the evaluation result. So we only know $\HOLFreeVar{y}$ is bound to $\HOLConst{IntLit}\;2$
@@ -249,188 +284,107 @@ when we try to evaluate $\HOLConst{Add}\;(\HOLConst{Var}\;\HOLFreeVar{x})\;(\HOL
 
 By using function closure to record values of all bound variables when a
 function definition is being evaluated, we are able to evaluate $\HOLConst{Add}\;(\HOLConst{Var}\;\HOLFreeVar{x})\;(\HOLConst{Var}\;\HOLFreeVar{y}\;1)$,
-as illustrated in line 7 of Example~\ref{ex:curryingwithclos}. It is possible that a function body
+as illustrated in line 7 of Example~\ref{ex:rescurryingeval}. It is possible that a function body
 contains unbound free variables, but such expression cannot be typed in an empty
 environment and it is reasonable to make its evaluation fails. Discussions
 on typing for function closure are in Section~?.
-
-\begin{example}\label{ex:curryingwithclos}
-    - another example
-\end{example}
-
-\subsubsection{Restricted Function Closure}\label{subsubsec:dereclos}
-
-The Kalas repository states an interesting property: Given a bigger state $\Gamma_1$ that contains
-$\Gamma$, the choregraphy $c$ still transits into $c'$ and $\Gamma_1'$ contains $\Gamma'$.
-
-\begin{thm}\label{thm:transsubmap}
-    - Property theorem.
-\end{thm}
-
-However, our $\textsc{S-Fn}$ invalidates this property since a bigger state may result in a closure
-value that contains a bigger environment, so we will not be able to transit into the same
-$c'$. In order to re-establish this property, we modify $\textsc{S-Fn}$ to store a 
-restricted environment instead: $(\HOLConst{DRESTRICT}\;\HOLFreeVar{E}\;(\HOLConst{free_vars}\;\HOLFreeVar{e})\;\HOLSymConst{\HOLTokenBackslash{}\HOLTokenBackslash{}}\;\HOLFreeVar{s})$,
-where $\HOLConst{DRESTRICT}$ is defined as:
-
-\begin{definition}\label{def:derestrict}
-    - definition of $\HOLConst{DRESTRICT}$
-\end{definition}
-
-And the modified $\textsc{S-Fn}$ is defined as:
-
-\begin{definition}
-    - restricted eval_exp fn
-\end{definition}
-
-The restricted closure should at least contain bindings of variables that appear free from
-the perspective of the current function definition scope, as much as provided
-by the environment in which the current function definition is evaluated. Such that
-if we apply the evaluated restricted function closure to a value, if we were able
-to evaluate the application without restriction, we will be able to evaluate to the same
-result with restriction.
-
-But we further require the restricted environment to exclude storing the value of
-the variable bound by current function definition in the current environment if any.
-This still allows us to evaluate an application to the same result because 
-if we ever apply this function to a value we will always bind $\HOLFreeVar{s}$ 
-with the provided value, leaving the previous value of $\HOLFreeVar{s}$ stored in
-the environment irrelevant. 
-
-%% TODO maybe a proof here?
-
-Excluding storing $\HOLFreeVar{s}$ is also necessary. If we only restrict $\HOLFreeVar{E}$
-with $\HOLConst{free_vars}\;\HOLFreeVar{e}$, since $\HOLFreeVar{e}$ can have $\HOLFreeVar{s}$
-as free variables and $\Gamma$ does not need to contain binding for $\HOLFreeVar{s}$
-for evaluating $\HOLConst{Fn}\;\HOLFreeVar{s}\;\HOLFreeVar{e}$, $(\HOLConst{DRESTRICT}\;(\HOLConst{localise}\;\HOLFreeVar{\ensuremath{\Gamma}}\;\HOLFreeVar{p})\;(\HOLConst{free_vars}\;\HOLFreeVar{e}))$
-may not contain binding for $\HOLFreeVar{s}$. But since $\Gamma'$ contains $\Gamma$,
-$\Gamma'$ may contain binding for $\HOLFreeVar{s}$ and thus $(\HOLConst{DRESTRICT}\;(\HOLConst{localise}\;\HOLFreeVar{\ensuremath{\Gamma'}}\;\HOLFreeVar{p})\;(\HOLConst{free_vars}\;\HOLFreeVar{e}))$
-contains binding for $\HOLFreeVar{s}$, making the closure evaluated in a bigger state larger than
-the closure evaluated in the smaller state.
-
-The restricted $\textsc{S-Fn}$ still evaluates Example~\ref{ex:curryingwithclos}
-to the same result, as illustrated in Example~\ref{ex:rescurryingeval}. When the inner application is evaluated, 
-the parameter $\HOLFreeVar{x}$ of the current function is assigned with the evaluated argument 
-value $1$ in the environment. Since $\HOLFreeVar{x}$, which is bound by the outer function definition, 
-is a free variable from the perspective of the inner function definition, the binding of $\HOLFreeVar{x}$ is stored 
-into closure evaluated in line 5. So we are able to evaluate $\HOLFreeVar{x}+\HOLFreeVar{y}$ to $3$ in line 8.
 
 \begin{example}\label{ex:rescurryingeval}
     - restricted currying evaluation example
 \end{example}
 
-Excluding the parameter and storing only bindings of free variables into the closure environment 
-also makes sense in a way that bindings of free variables are necessary to evaluate the function body,
-and we will always have an evaluated value for the function parameter when the application is evaluated
-regardless of whether the closure environment contains a previous binding of the function parameter or not.
-
-Another possible approach to re-establish Theorem~\ref{thm:transsubmap} is to define an equivalence relation 
-on function closures where closures with the same parameter, function body are equivalent if their 
-environments all contain the same bindings of free variables in the function body, excluding 
-by not considering the binding of function parameter if any. This leads to a more complex 
-approach since one has to deal with choreographies that contains different but equivalent function closures. 
-Though our approach modifies the $\textsc{S-Fn}$ rule and requires extra lemmas to prove the function case in the 
-type soundness proof (discussed in Section~\ref{subsubsec:resfunclos}), 
-it is simpler since given a bigger state the function definition will still be evaluated to the same closure
-and no discussion on equivalence relation is required. If not specified, 
-the restricted $\textsc{S-Fn}$ will be used for the rest of the thesis.
-
 \subsubsection{Recursion}
-%% TODO needs to be fixed; recursive syntax is allowed; can we evaluate it? 
-\richerlang\; does not support recursion, as we see in the Example~?, the name $f$ is
-unbound in the definition thus we don't have a value for the recursively invoked name $f$
-in line 6.
+%% TODO needs to be fixed; it breaks references somehow
+\richerlang's syntax supports recursion, as one can write a $\HOLFreeVar{Y}$ combinator 
+% \begin{HOLmath}
+%     \HOLinline{\HOLConst{Fn}\;\HOLFreeVar{f}
+% \;\;(\HOLConst{App}\;(\HOLConst{Fn}\;\HOLFreeVar{x}\;(\HOLConst{App}\;(\HOLConst{Var}\;\HOLFreeVar{f})\;(\HOLConst{App}\;(\HOLConst{Var}\;\HOLFreeVar{x})\;(\HOLConst{Var}\;\HOLFreeVar{x}))))
+% \;\;\;\;\;(\HOLConst{Fn}\;\HOLFreeVar{x}\;(\HOLConst{App}\;(\HOLConst{Var}\;\HOLFreeVar{f})\;(\HOLConst{App}\;(\HOLConst{Var}\;\HOLFreeVar{x})\;(\HOLConst{Var}\;\HOLFreeVar{x})))))}.
+% \end{HOLmath}
+However, \HOLtm{Let f e1 e2} does not support recursion because $\HOLFreeVar{f}$ is not bound 
+within $\HOLFreeVar{e1}$. Additionally, our typing system is unable to type the $\HOLFreeVar{Y}$ combinator.
 
-- example
-
-We argue that recursion can be added to \richerlang\; by introducing $\HOLConst{Letrec}\;$
-syntax to our expressions, and $\HOLConst{Letrec}\;\HOLFreeVar{f}\;\HOLFreeVar{s}\;\HOLFreeVar{e1};\HOLFreeVar{e2}$
-will be evaluated into a quadruple $(\HOLFreeVar{f}, \HOLFreeVar{x}, \HOLFreeVar{e}, \HOLFreeVar{E})$.
-The quadruple is similar to the one described by \cite{hardin2021concepts}.
+We propose that recursion can be easily and effectively integrated into \richerlang{} 
+by introducing the syntax $\HOLConst{Letrec}$. The expression 
+$\HOLConst{Letrec}\;\HOLFreeVar{f}\;\HOLFreeVar{s}\;\HOLFreeVar{e1}\;\HOLFreeVar{e2}$ will be 
+evaluated into a quadruple $(\HOLFreeVar{f}, \HOLFreeVar{x}, \HOLFreeVar{e}, \HOLFreeVar{E})$. 
+This quadruple is similar to the one described by \cite{hardin2021concepts}.
 
 \subsection{Main Properties}
-We first show that the evaluation function for \richerlang\; is total. That is, for any expression 
-$\HOLFreeVar{e}$, environment $\HOLFreeVar{E}$, and clock value $\HOLFreeVar{c}$, $\HOLConst{eval\_exp}$ 
-always returns a \textit{result}.
+Functional big-step semantics ensures that our evaluation function is total and deterministic 
+by design. With this in mind, we define the evaluation of an expression as \emph{terminating} 
+if there exists a clock value for which the evaluation function returns a result that is not 
+$\HOLConst{Timeout}$. Conversely, if the evaluation returns $\HOLConst{Timeout}$ for all clock 
+values, we say that the evaluation of the expression \emph{diverges}.
 
-\begin{lem}\label{lem:evaltotal}
-    - eval_exp is total
-\end{lem}
+The evaluation of \richerlang{} is also deterministic in the sense that if the evaluation for an 
+expression terminates with an initial clock value, then increasing the clock will always yield the 
+same result. We demonstrate this result as a corollary that follows from Lemmas~\ref{lem:clock_value_increment},~\ref{lem:clock_exn_increment}, and~\ref{lem:clock_typeerr_increment}.
 
-\emph{Proof:} By Definition~\ref{def:sdynamicsrules}, $(\HOLFreeVar{c}, \HOLConst{exp\_size}\;\HOLFreeVar{e})$
-always becomes smaller in the lexicographic order over $\HOLFreeVar{c} \times (\HOLConst{exp\_size}\;\HOLFreeVar{e})$ 
-in every recursive call to $\HOLConst{eval\_exp}$. Box
-
-The total evaluation function obtained by using a functional big-step semantics
-makes \richerlang's evaluation deterministic. We say that the evaluation for an expression 
-\emph{terminates} if there exists a clock with which the evaluation function
-return a result that is not $\HOLConst{Timeout}$. Otherwise if for all clocks 
-the evaluation for an expression returns $\HOLConst{Timeout}$, we say the evaluation 
-for this expression \emph{diverges}. Then the evaluation of \richerlang is deterministic
-in a sense that if the evaluation for an expression terminates for an initial clock, then 
-if we increase the clock we will always evaluate to the same result. We show this result
-as a corollary follows from Lemmas~\ref{lem:clock_value_increment},~\ref{lem:clock_exn_increment}, and~\ref{lem:clock_typeerr_increment}.
-
-The first lemma says that if expression $\HOLFreeVar{e}$ is evaluated to a value $\HOLFreeVar{v}$ in 
-environment $\HOLFreeVar{E}$ given some clock $\HOLFreeVar{c0}$, then if we evaluate the same expression in the same
-environment with a lager clock value $\HOLFreeVar{c1}$, we will have the same value $\HOLFreeVar{v}$ as our result.
-The statements for Lemmas~\ref{lem:clock_exn_increment} and~\ref{lem:clock_typeerr_increment}
-are similar.
+The first lemma states that if the expression $\HOLFreeVar{e}$ evaluates to a 
+value $\HOLFreeVar{v}$ in the environment $\HOLFreeVar{E}$ with a clock value 
+$\HOLFreeVar{c0}$, then evaluating the same expression in the same environment 
+with a larger clock value $\HOLFreeVar{c1}$ will also yield the same value $\HOLFreeVar{v}$. 
+The statements for Lemmas~\ref{lem:clock_exn_increment} and~\ref{lem:clock_typeerr_increment} are analogous.
 
 %% TODO: the appendix label
 \begin{lem}\label{lem:clock_value_increment}
-    - clock_value_increment
+  \begin{HOLmath}
+    \HOLthm{envSem.clock_value_increment}
+  \end{HOLmath}
 \end{lem}
 
 \emph{Proof:} Using the well-founded lexicographic induction principle by Definition~\ref{def:sdynamicsrules}, results for 
-each case directly follows the inductive hypotheses. The induction principle can be found in Appendix~?. Box.
+each case directly follows the inductive hypotheses. The induction principle can be found in Appendix~?. \hfill \(\square\)
 
 \begin{lem}\label{lem:clock_exn_increment}
     - clock_exn_increment
 \end{lem}
 
-\emph{Proof:} We use the same induction principle in Lemma~\ref{lem:clock_value_increment} proof. 
-Base cases are trivial since by Definition~\ref{def:sdynamicsrules} variables \HOLtm{Var x} or literals 
-such as \HOLtm{IntLit 1} cannot be evaluated into an exception. For the inductive case, when any of the sub-expressions of
-the current expression evaluates into an exception under the initial clock $\HOLFreeVar{c0}$, 
-by the inductive hypothesis we know this sub-expression also evaluates into an exception
-under the bigger clock $\HOLFreeVar{c1}$, which then by the use of monadic binds in Definition~\ref{def:sdynamicsrules},
-the evaluation of the current expression returns an exception. When all the sub-expressions of
-the current expression evaluates into values under the initial clock $\HOLFreeVar{c0}$, we know from the premise 
-of the goal that it is the final evaluation step that uses the evaluated values under the initial clock $\HOLFreeVar{c0}$
-that throws an exception. For example, in the \HOLtm{App e1 e2} case, the premise of the goal gives us
-\HOLtm{eval_exp c0 E e1 = Value (Clos s e E')}, \HOLtm{eval_exp c0 E e2 = Value v}, and
-\HOLtm{eval_exp (c0 − 1) (E' |+ (s,v)) e = Exn exn}. We have \HOLtm{eval_exp c1 E e1 = Value (Clos s e E')} and \HOLtm{eval_exp c1 E e2 = Value v}
-by Lemma~\ref{lem:clock_exn_increment}, and the last evaluation corresponds to the inductive hypotheses for $(\HOLFreeVar{c0}-1, \HOLFreeVar{e})$. 
-Then by applying the inductive hypothesis we have \HOLtm{eval_exp (c1 − 1) (E' |+ (s,v')) e = Exn exn}. Similar analyses apply
-to other inductive cases. Box
+\emph{Proof:} The proof relies on the same induction principle for Lemma~\ref{lem:clock_value_increment}
+and depends on Lemma~\ref{lem:clock_value_increment}, since in the inductive case an exception can occur
+after a value. \hfill \(\square\)
+
+% We use the same induction principle in Lemma~\ref{lem:clock_value_increment} proof. 
+% Base cases are trivial since by Definition~\ref{def:sdynamicsrules} variables \HOLtm{Var x} or literals 
+% such as \HOLtm{IntLit 1} cannot be evaluated into an exception. For the inductive case, when any of the sub-expressions of
+% the current expression evaluates into an exception under the initial clock $\HOLFreeVar{c0}$, 
+% by the inductive hypothesis we know this sub-expression also evaluates into an exception
+% under the bigger clock $\HOLFreeVar{c1}$, which then by the use of monadic binds in Definition~\ref{def:sdynamicsrules},
+% the evaluation of the current expression returns an exception. When all the sub-expressions of
+% the current expression evaluates into values under the initial clock $\HOLFreeVar{c0}$, we know from the premise 
+% of the goal that it is the final evaluation step that uses the evaluated values under the initial clock $\HOLFreeVar{c0}$
+% that throws an exception. For example, in the \HOLtm{App e1 e2} case, the premise of the goal gives us
+% \HOLtm{eval_exp c0 E e1 = Value (Clos s e E')}, \HOLtm{eval_exp c0 E e2 = Value v}, and
+% \HOLtm{eval_exp (c0 − 1) (E' |+ (s,v)) e = Exn exn}. We have \HOLtm{eval_exp c1 E e1 = Value (Clos s e E')} and \HOLtm{eval_exp c1 E e2 = Value v}
+% by Lemma~\ref{lem:clock_exn_increment}, and the last evaluation corresponds to the inductive hypotheses for $(\HOLFreeVar{c0}-1, \HOLFreeVar{e})$. 
+% Then by applying the inductive hypothesis we have \HOLtm{eval_exp (c1 − 1) (E' |+ (s,v')) e = Exn exn}. Similar analyses apply
+% to other inductive cases. \hfill \(\square\)
 
 \begin{lem}\label{lem:clock_typeerr_increment}
     - clock_typeerr_increment
 \end{lem}
 
-\emph{Proof:} Similar to the proof for Lemma~\ref{lem:clock_exn_increment}. Box
+\emph{Proof:} Similar to the proof for Lemma~\ref{lem:clock_exn_increment}. \hfill \(\square\)
 
 \begin{cor}\label{cor:clockincre}
     - clock_increment
 \end{cor}
 
 \emph{Proof:} Cases analyses based on the syntax form of $\HOLFreeVar{r}$. Each case follows either
-Lemma~\ref{lem:clock_value_increment},~\ref{lem:clock_exn_increment}, or~\ref{lem:clock_typeerr_increment}. Box
+Lemma~\ref{lem:clock_value_increment},~\ref{lem:clock_exn_increment}, or~\ref{lem:clock_typeerr_increment}. \hfill \(\square\)
 
-Corollary~\ref{cor:clockincre} is important in the strong normalisation proof. For example, in the if 
-case of the proof, we know evaluation for boolean guard and two branches terminates
-by the inductive hypothesis on their separate clock, we want to ensure that there exists
-a common clock on which the evaluation of all three expressions also terminate and return
-the same results. More discussion on the use of Corollary~\ref{cor:clockincre} in strong normalisation proof
-can be found in Section~?.
+Corollary~\ref{cor:clockincre} is important for the proof of strong normalisation. For example, in the 
+case of the if statement, we know that the evaluation of the boolean guard and 
+the two branches terminates by the inductive hypotheses for their respective clocks. 
+We need to ensure that there exists a common clock value on which the evaluation of 
+all three expressions also terminates and returns the same results. Further discussion 
+on the use of Corollary~\ref{cor:clockincre} in the strong normalisation proof can be found in Section~\ref{subsec:snproof}.
 
 \section{Type Soundness}
-some intro \dots
-
 \subsection{Lemmas}\label{subsec:envTypingProperties}
-We discuss several lemmas and propositions for the proposed semantics and typing
-rules before attempting the type soundness proof.
+We will discuss several lemmas and propositions for the proposed semantics 
+and typing rules before proceeding with the type soundness proof.
 
 Our type soundness proof is similar to the type soundness proof for a 
 simply typed lambda calculus by \cite{pierce2002types} in a sense
@@ -438,46 +392,52 @@ that we require, or at least require an equivalent version of, the generation le
 the lemma of canonical forms of types, and the type preservation under 
 substitution lemma used in \cite{pierce2002types}'s proof.
 
+Our type soundness proof is similar to the type soundness proof 
+for a simply typed lambda calculus with small-step semantics and the substitution 
+model, such as the one presented by \cite{pierce2002types}. Specifically, we require, or at 
+least need an equivalent version of, the generation lemma, the lemma on canonical 
+forms of types, and the lemma on type preservation under substitution, all of which 
+are utilised in \cite{pierce2002types}'s proof.
+
 \begin{lem}\label{lem:sgeneration}
     - typecheck_*_thm: the generation lemma
 \end{lem}
 
-\emph{Proof:} Immediately follows from the typecheck definition. Box
+\emph{Proof:} Immediately follows from Definition~\ref{def:typecheck}. \hfill \(\square\)
 
-The generation lemma allows us to move one step forward in the type derivation tree
-in the bottom to top direction because it tells us how the current type was derived.
-We can obtain types or typing information of subterms in a well-typed term. 
-% auto handled by HOL4, for matching the subgoals (when no IH), OR for using the IH
+The generation lemma enables us to advance one step in the type derivation tree from 
+the bottom to the top. It allows us to obtain types and typing information for 
+the sub-expressions within a well-typed expression.
 
 \begin{lem}\label{lem:canvaluetype}
     - valuetype_EQ_*: the lemma of canonical forms of types (only useful cases)
 \end{lem}
 
-\emph{Proof:} Immediately follows from the $\HOLConst{value\_type}$ definition. Box.
+\emph{Proof:} Immediately follows from Definition~\ref{def:sn_v}. \hfill \(\square\)
 
-This gives us the concrete syntax of a value $\HOLFreeVar{v}$ and typing information
-for terms involved in the concrete syntax if we have $\HOLtm{value_type v t}$.
-This is useful for inductive cases in the type soundness proof, since we will have
-expressions evaluated to a value $\HOLFreeVar{v}$ and $\HOLtm{value_type v t}$
-by inductive hypothesis. And the concrete syntax of $\HOLFreeVar{v}$ matches terms
-in our goal.
-% because we want the results from IH to match the evaluation semantics in goal, which
-% operates on concrete value forms rather than a name of the value; it's for using
-% the IH results (to match the evaluation process in goal)
+The canonical form lemma provides the concrete syntax of a value $\HOLFreeVar{v}$ 
+along with the typing information for the expressions involved in that concrete syntax, 
+given that we have \HOLtm{value_type v t}. This is particularly useful for inductive 
+cases in the type soundness proof, as the inductive hypothesis tells us 
+that expressions evaluate to a value $\HOLFreeVar{v}$ and that \HOLtm{value_type v t} 
+holds. Moreover, the concrete syntax of $\HOLFreeVar{v}$ always aligns with the expressions in goal.
 
-The type preservation under substitution lemma used by \cite{pierce2002types} says 
-substituting variables with term of appropriate types preserves the original type.
-Since we evaluate variables into values by looking up in an environment $\HOLFreeVar{E}$,
-$\HOLtm{envtype G E}$ (Definition~?) is analogous to the type preservation under substitution lemma.
+The type preservation under substitution lemma used by \cite{pierce2002types} 
+states that substituting variables with terms of appropriate types preserves the original 
+type. Since we evaluate variables by looking them up in an environment $\HOLFreeVar{E}$, 
+the concept of \HOLtm{envtype G E} (as defined in Definition~\ref{def:envtype}) is 
+analogous to the type preservation under substitution lemma.
 
-As discussed in Section~? and Section~?, we evaluate the argument expressions into values first and delegate the 
-evaluation of binary/unary operation to $\HOLConst{eval\_bop}$ and $\HOLConst{eval\_uop}$.
-We also type the argument expressions first and then delegate checking input/output types against
-the concrete operator to a separate typing relation $\HOLConst{boptype}$ and $\HOLConst{uoptype}$.
-This leads to two important properties: if argument values are typed and the operator
-types with the argument types, $\HOLConst{eval\_bop}$ and $\HOLConst{eval\_uop}$
-will always output a value of correctly type or we reach an exception. We refer those
-properties as type soundness for $\HOLConst{eval\_bop}$ and $\HOLConst{eval\_uop}$.
+As discussed in Section~\ref{subsec:envTypingRules} and Section~\ref{sec:sdynamics}, 
+we first evaluate the argument expressions into values, and then we delegate the 
+evaluation of binary and unary operations to $\HOLConst{eval\_bop}$ and $\HOLConst{eval\_uop}$. 
+Similarly, we first type the argument expressions and then check the input and output 
+types against the concrete operators using separate typing relations, $\HOLConst{boptype}$ 
+and $\HOLConst{uoptype}$. This approach leads to two important properties: if the argument 
+values are properly typed and the operator types match the argument types, then 
+$\HOLConst{eval\_bop}$ and $\HOLConst{eval\_uop}$ will always output a value of the correct 
+type or result in an exception. We refer to these properties as type soundness for $\HOLConst{eval\_bop}$ 
+and $\HOLConst{eval\_uop}$.
 
 \begin{prop}\label{prop:boptypesoundness}
     - bop soundness
@@ -485,18 +445,19 @@ properties as type soundness for $\HOLConst{eval\_bop}$ and $\HOLConst{eval\_uop
 
 \emph{Proof:} $\HOLConst{boptype}$ is non-recursive. We prove by performing
 cases analyses based on $\HOLConst{boptype}$ rules and each case follows
-from Lemma~\ref{lem:canvaluetype}. Box
+from Lemma~\ref{lem:canvaluetype}. \hfill \(\square\)
 
 \begin{prop}\label{prop:uoptypesoundness}
     - uop soundness
 \end{prop}
 
-\emph{Proof:} Same as the above. Box
+\emph{Proof:} Same as the above. \hfill \(\square\)
 
-Proposition~\ref{prop:boptypesoundness} and Proposition~\ref{prop:uoptypesoundness} are needed for the
-binary and unary operator cases in the type soundness proof. As we will have a well-typed 
-evaluated argument values by the inductive hypothesis and we need to show $\HOLConst{eval\_bop}$ and $\HOLConst{eval\_uop}$
-output a well-typed value or an exception.
+Proposition~\ref{prop:boptypesoundness} and Proposition~\ref{prop:uoptypesoundness} are 
+required for the binary and unary operator cases in the type soundness proof. 
+By the inductive hypothesis, we will have well-typed evaluated argument values, and we 
+need to show that $\HOLConst{eval\_bop}$ or $\HOLConst{eval\_uop}$ either outputs 
+a well-typed value or results in an exception.
 
 There is also a lemma that allows us to update $\HOLFreeVar{G}$ and $\HOLFreeVar{E}$ with a typed
 value and re-establish the $\HOLConst{envtype}$ property:
@@ -505,86 +466,102 @@ value and re-establish the $\HOLConst{envtype}$ property:
     - envtype_lemma
 \end{lem}
 
-\emph{Proof:} Since $\HOLConst{value\_type}$ (Definition~?) is inductively defined,
-we prove by rule induction over $\HOLConst{value\_type}$. Integer, string, boolean literals 
-are base cases and directly follows the definition of $\HOLConst{envtype}$ (Definition~?).
-Pair and sum values cases follow directly from the inductive hypothesis. The closure
-value case does not require using inductive hypothesis, but rather follows the closure
-case of the lemma of canonical forms of types (Lemma~\ref{lem:canvaluetype}). Box
+\emph{Proof:} Since the typing rules for values (Definition~\ref{def:value_type}) are defined inductively, 
+we will prove them by induction on Definition~\ref{def:value_type}. The base cases include 
+integer, string, and boolean literals, which directly follow 
+from the definition of $\HOLConst{envtype}$ (Definition~\ref{def:envtype}). The cases for 
+pair and sum values derive directly from the inductive hypothesis. The 
+closure value case does not rely on the inductive hypothesis; instead, it follows from 
+the closure case in the lemma of canonical forms of types (Lemma~\ref{lem:canvaluetype}). \hfill \(\square\)
 
-This lemma is useful in the function, application and sum case cases of the 
-type soundness proof, where we have subterms inside the goal expression typed in an
-extended typing environment and we have to re-establish the $\HOLConst{envtype}$ property
-for the extended typing environment and dynamic environment so we can use
-the results from corresponding inductive hypothesis.
+This lemma is useful in the function, application, and sum cases of the type 
+soundness proof, where we have sub-expressions within the goal expression that 
+are typed in an extended typing environment. We need to re-establish the $\HOLConst{envtype}$ 
+property for both the extended typing environment and the dynamic environment so that we can 
+apply the results from the corresponding inductive hypothesis.
 
 \subsubsection{Restricted Function Closure}\label{subsubsec:resfunclos}
-If we adopt the restricted $\textsc{S-Fn}$ semantics (discussed in Section~\ref{subsubsec:dereclos}),
-we will need the following lemmas so we can type the closure value that contains a more restricted 
-dynamic environment $\HOLConst{Clos}\;\HOLFreeVar{x}\;\HOLFreeVar{e}\;(\HOLConst{DRESTRICT} E fv(e) delete s)$
-given that the expression of function body $\HOLFreeVar{e}$ is typed in an un-restricted
-extended typing environment $\HOLFreeVar{G}(+x,t)$. However, the following lemmas hold 
-regardless of whether we adopt a restricted function closure. They are simply 
-unnecessary for the type soundness proof when using an unrestricted function 
-closure.
+Since we evaluate a function expression into a restricted closure value (as discussed 
+in Section~\ref{subsec:sfunclos}), we will need the following lemmas for the function 
+case in the type soundness proof. 
+Given that \HOLtm{typecheck G (Fn s e) (fnT t1 t2)}, Lemma~\ref{lem:sgeneration} ensures 
+that \HOLtm{typecheck (G|+(s, t1)) e t2}. From the premise of the goal, we have 
+\HOLtm{envtype G E}. However, to show that 
+\HOLtm{value_type (Clos s e (DRESTRICT E (free_vars e) \\ s)) (fnT t1 t2)}, we need to show 
+that there exists a typing environment $\HOLFreeVar{G'}$ such that 
+\HOLtm{envtype G' (DRESTRICT E (free_vars e) \\ s)} holds (Definition~\ref{def:value_type}). 
+Clearly, the original $\HOLFreeVar{G}$ 
+does not qualify, as its domain may be larger than that of \HOLtm{DRESTRICT E (free_vars e) \\ s}. 
+Thus, Corollary~\ref{cor:minimaltypeenv}, which we will prove shortly, provides us with a 
+minimal typing environment $\HOLFreeVar{G'}$ 
+in which $\HOLFreeVar{e}$ has type $\HOLFreeVar{t2}$ and for which 
+\HOLtm{envtype G' (DRESTRICT E (free_vars e) \\ s)} holds, thereby proving the goal.
 
-The first lemma says that if en expression $\HOLFreeVar{e}$ is typed in an environment 
-$\HOLFreeVar{G}$ then $\HOLFreeVar{G}$ contains type information for all free variables in $\HOLFreeVar{e}$.
+
+% If we adopt the restricted $\textsc{S-Fn}$ semantics (discussed in Section~\ref{subsubsec:dereclos}),
+% we will need the following lemmas so we can type the closure value that contains a more restricted 
+% dynamic environment \HOLtm{Clos s e (DRESTRICT E (free_vars e) \\ s)} 
+% given that the expression of function body $\HOLFreeVar{e}$ is typed in an un-restricted
+% extended typing environment $\HOLFreeVar{G}(+x,t)$. However, the following lemmas hold 
+% regardless of whether we adopt a restricted function closure. They are simply 
+% unnecessary for the type soundness proof when using an unrestricted function 
+% closure.
+
+The first lemma states that if an expression $\HOLFreeVar{e}$ is typed in an environment 
+$\HOLFreeVar{G}$, then $\HOLFreeVar{G}$ contains type information for all free variables of $\HOLFreeVar{e}$.
 
 \begin{lem}\label{lem:typecheck_env_fv}
     - typecheck_env_fv
 \end{lem}
 
-\emph{Proof:} By rule induction on typecheck and rewriting the definition of subset relation
-and the commutativity property of subset relation. Box.
+\emph{Proof:} By rule induction on Definition~\ref{def:typecheck}. \hfill \(\square\)
 
-The second lemma says that if en expression $\HOLFreeVar{e}$ is typed in an environment 
-$\HOLFreeVar{G1}$, then $\HOLFreeVar{e}$ has the same type in a smaller typing environment
-$\HOLFreeVar{G2}$, given $\HOLFreeVar{G2}$ contains type information for all free variables 
-in $\HOLFreeVar{e}$.
+The second lemma states that if an expression $\HOLFreeVar{e}$ is typed in 
+an environment $\HOLFreeVar{G1}$, then $\HOLFreeVar{e}$ retains the same type 
+in a smaller typing environment $\HOLFreeVar{G2}$, provided that $\HOLFreeVar{G2}$ 
+contains type information for all free variables in $\HOLFreeVar{e}$.
 
 \begin{lem}\label{lem:typecheck_env_submap}
     - typecheck_env_submap
 \end{lem}
 
-\emph{Proof:} By rule induction on typecheck and results in the inductive hypothesis match the goal. 
-We define a typing environment $\HOLFreeVar{G}$ in HOL4 as a finite map that maps a finite set of name
-strings to a finite set of types. Thus proof for most cases is re-establishing the subset relation
-between free variables of an expression and the domain of a finite map, and the submap
-relation between finite maps, in order to use results in the inductive hypothesis. Box.
+\emph{Proof:} By rule induction on Definition~\ref{def:typecheck}. \hfill \(\square\)
 
-The third lemma says that we can always type the expression $\HOLFreeVar{e}$ in a smaller typing
-environment as long as the current typing environment still contains the 
-bindings for free variables of $\HOLFreeVar{e}$.
+The third lemma states that we can always type the expression $\HOLFreeVar{e}$ 
+in a smaller typing environment, provided that the smaller typing environment 
+still includes the bindings for the free variables of $\HOLFreeVar{e}$.
 
 \begin{lem}\label{lem:typecheck_drestrict}
     - typecheck_drestrict
 \end{lem}
 
-\emph{Proof:} Follows directly from Lemma~\ref{lem:typecheck_env_fv} and Lemma~\ref{lem:typecheck_env_submap}. Box
+\emph{Proof:} Follows directly from Lemma~\ref{lem:typecheck_env_fv} and Lemma~\ref{lem:typecheck_env_submap}. \hfill \(\square\)
 
-Lemma~\ref{lem:typecheck_drestrict} and Lemma~\ref{lem:typecheck_env_fv} gives us
-the existence of a minimal typing environment for an expression $\HOLFreeVar{e}$, which contains exactly bindings for all free
-variables of $\HOLFreeVar{e}$.
+Lemma~\ref{lem:typecheck_drestrict} and Lemma~\ref{lem:typecheck_env_fv} provide 
+the existence of a minimal typing environment for an expression $\HOLFreeVar{e}$, 
+containing exactly the bindings for all free variables of $\HOLFreeVar{e}$.
 
 \begin{cor}\label{cor:minimaltypeenv}
     - minimal typing env
 \end{cor}
 
-\emph{Proof:} By Lemma~\ref{lem:typecheck_drestrict}, we know that if $\HOLFreeVar{e}$
-is typable, i.e. there exists some $\HOLFreeVar{G}$ such that \HOLtm{typecheck G e ty},
-then we have \HOLtm{typecheck (DRESTRICT G (free_vars e)) e ty}. We know that
-$\HOLFreeVar{G}$ contains bindings for all free variables in $\HOLFreeVar{e}$ by Lemma~\ref{lem:typecheck_env_fv},
-thus \HOLtm{DRESTRICT G (free_vars e)} contains exactly bindings for all free variables in $\HOLFreeVar{e}$,
-by Definition~\ref{def:derestrict}. For the other direction, if there exists a typing environment
-$\HOLFreeVar{G'}$ that contains less bindings than \HOLtm{DRESTRICT G (free_vars e)} and we have \HOLtm{typecheck G' e ty}, 
-by Lemma~\ref{lem:typecheck_env_fv} $\HOLFreeVar{G'}$ contains bindings for all free variables in $\HOLFreeVar{e}$. Contradiction. Box
+\emph{Proof:} By Lemma~\ref{lem:typecheck_drestrict}, we know that if there exists some 
+$\HOLFreeVar{G}$ such that \HOLtm{typecheck G e t}, then we have 
+\HOLtm{typecheck (DRESTRICT G (free_vars e)) e t}. According to 
+Lemma~\ref{lem:typecheck_env_fv}, $\HOLFreeVar{G}$ contains bindings for all 
+free variables in $\HOLFreeVar{e}$; thus, \HOLtm{DRESTRICT G (free_vars e)} 
+contains exactly the bindings for all free variables in $\HOLFreeVar{e}$, given Definition~\ref{def:derestrict}. 
+
+For the reverse direction, suppose there exists a typing environment $\HOLFreeVar{G'}$ 
+that contains fewer bindings than \HOLtm{DRESTRICT G (free_vars e)}, and we have 
+\HOLtm{typecheck G' e t}. By Lemma~\ref{lem:typecheck_env_fv}, $\HOLFreeVar{G'}$ 
+must contain bindings for all free variables in $\HOLFreeVar{e}$, leading to a contradiction. \hfill \(\square\)
 
 %% TODO consider including remarks?
 
 \subsection{Type Soundness}\label{subsec:envTypingSoundness}
 
-We are now ready to prove the type soundness property for \richerlang. 
+We are now ready to prove the type soundness property for \richerlang{}. 
 
 \begin{thm}\label{thm:stype_soundness}
     \begin{HOLmath}
@@ -592,50 +569,65 @@ We are now ready to prove the type soundness property for \richerlang.
     \end{HOLmath}
 \end{thm}
 
-\emph{Proof:} We prove via rule induction on the definition of $\HOLConst{eval\_exp}$.
-$\HOLConst{Var}$ case follows directly from Definition~\ref{def:envtype}. For
-\HOLtm{Let s e1 e2} case, by Lemma~\ref{lem:sgeneration}, we have \HOLtm{typecheck G e1 t0}
-and \HOLtm{ typecheck (G |+ (s,t0)) e2 t} given \HOLtm{typecheck G (Let s e1 e2) t}.
-For all the following cases, we assume Lemma~\ref{lem:sgeneration} is applied first.
-Then by the inductive hypothesis for $\HOLFreeVar{e1}$ we know $\HOLFreeVar{e1}$ is evaluated
-to some value $\HOLFreeVar{v}$ and \HOLtm{value_type v t0}. Lemma~\ref{lem:envtype_lemma} then
-gives us \HOLtm{envtype (G |+ (s,t0)) (E |+ (s,v))}. This allows us to use the results in
-the induction hypothesis for $\HOLFreeVar{e2}$ which prove the goal.
+\emph{Proof:} We prove this by induction on the definition of $\HOLConst{eval\_exp}$. 
+The case for $\HOLConst{Var}$ follows directly from Definition~\ref{def:envtype}. 
+In the case of \HOLtm{Let s e1 e2}, by Lemma~\ref{lem:sgeneration}, we have 
+\HOLtm{typecheck G e1 t0} and \HOLtm{ typecheck (G |+ (s,t0)) e2 t}, 
+given that \HOLtm{typecheck G (Let s e1 e2) t}. Then, by the inductive hypothesis 
+for $\HOLFreeVar{e1}$, we know that $\HOLFreeVar{e1}$ 
+evaluates to some value $\HOLFreeVar{v}$ and we have \HOLtm{value_type v t0}. 
+Lemma~\ref{lem:envtype_lemma} then provides us with \HOLtm{envtype (G |+ (s,t0)) (E |+ (s,v))}. 
+This allows us to apply the results from the inductive hypothesis to $\HOLFreeVar{e2}$, 
+thereby proving our goal. 
 
-For \HOLtm{Fn s e} case, given \HOLtm{envtype G E} and \HOLtm{typecheck (G |+ (s,t1)) e t2},
-we need to show \HOLtm{value_type (Clos s e (DRESTRICT E (free_vars e) \\ s)) (fnT t1 t2)}.
-By the definition of $\HOLConst{value\_type}$ (Definition~\ref{def:value_type}) and $\HOLConst{envtype}$ (Definition~\ref{def:envtype}), 
-we need to show there exists some typing environment $\HOLFreeVar{G0}$ such that
-\HOLtm{typecheck (G0 |+ (s,t1)) e t2} and \HOLtm{envtype G0 (DRESTRICT E (free_vars e) \\ s)}.
-By Corollary~\ref{cor:minimaltypeenv} we know there exists a minimal $\HOLFreeVar{G'}$ such that \HOLtm{typecheck (G' |+ (s,t1)) e t2}
-and it contains bindings for all free variables of $\HOLFreeVar{e}$, excluding binding for $\HOLFreeVar{s}$ if \HOLtm{s ∈ (free_vars e)}. 
-Then by the definition of $\HOLConst{DRESTRICT}$ (Definition~\ref{def:derestrict}) and Definition~\ref{def:envtype} we have found such
-$\HOLFreeVar{G0}$ which is $\HOLFreeVar{G'}$.
+For all following cases, we assume that Lemma~\ref{lem:sgeneration} is applied 
+first. 
 
-if we use the unrestricted $\textsc{S-Fn}$, we need to show \HOLtm{value_type (Clos s e E) (fnT t1 t2)} instead, which is straight forward
+For \HOLtm{Fn s e} case, given \HOLtm{envtype G E} and \HOLtm{typecheck (G |+ (s,t1)) e t2}, 
+we need to show that \HOLtm{value_type (Clos s e (DRESTRICT E (free_vars e) \\ s)) (fnT t1 t2)}. 
+According to the definitions of $\HOLConst{value\_type}$ (Definition~\ref{def:value_type}) 
+and $\HOLConst{envtype}$ (Definition~\ref{def:envtype}), we must demonstrate the existence of 
+a typing environment $\HOLFreeVar{G0}$ such that \HOLtm{typecheck (G0 |+ (s,t1)) e t2} 
+and \HOLtm{envtype G0 (DRESTRICT E (free_vars e) \\ s)}. 
+
+By Corollary~\ref{cor:minimaltypeenv}, we know there exists a minimal typing environment $\HOLFreeVar{G'}$ 
+such that \HOLtm{typecheck (G' |+ (s,t1)) e t2}, and this environment contains bindings for all 
+free variables of $\HOLFreeVar{e}$, excluding the binding for $\HOLFreeVar{s}$ if \HOLtm{s ∈ (free_vars e)}. 
+Therefore, by the definition of $\HOLConst{DRESTRICT}$ (Definition~\ref{def:derestrict}) and 
+Definition~\ref{def:envtype}, we have found such an environment $\HOLFreeVar{G0}$, which is $\HOLFreeVar{G'}$.
+
+If we use an unrestricted function closure in Definition~\ref{def:sdynamicsrules} instead, 
+we need to show \HOLtm{value_type (Clos s e E) (fnT t1 t2)}, which is straightforward
 given Definition~\ref{def:value_type}.
 
 For $\HOLConst{BinOp}$ and $\HOLConst{Uop}$ cases, results follow directly from
 Proposition~\ref{prop:uoptypesoundness} and Proposition~\ref{prop:boptypesoundness},
 as discussed in Section~\ref{subsec:envTypingProperties}.
 
-For \HOLtm{If e e1 e2} case, from the inductive hypothesis for the guard expression $\HOLFreeVar{e}$
-we know $\HOLFreeVar{e}$ is evaluated to value $\HOLFreeVar{v}$ and \HOLtm{value_type v boolT}. By Lemma~\ref{lem:canvaluetype}
-we know $\HOLFreeVar{v}$ is either true or false. And we have true and false branches all covered by the 
-inductive hypotheses.
+For \HOLtm{If e e1 e2} case, the inductive hypothesis for the guard expression 
+$\HOLFreeVar{e}$ tells us that $\HOLFreeVar{e}$ evaluates to a value $\HOLFreeVar{v}$, where 
+\HOLtm{value_type v boolT}. By Lemma~\ref{lem:canvaluetype}, we know that $\HOLFreeVar{v}$ 
+must be either \HOLtm{BoolV T} or \HOLtm{BoolV F}. Both the true and false branches are covered by 
+the inductive hypotheses.
 
-For \HOLtm{App e1 e2} case, by the inductive hypothesis for $\HOLFreeVar{e1}$ and $\HOLFreeVar{e2}$ we know
-they are evaluated to $\HOLFreeVar{v1}$ and $\HOLFreeVar{v2}$ separately. We also have \HOLtm{value_type v1 (fnT t1 t2)}
-and \HOLtm{value_type v2 t1}.
-By Lemma~\ref{lem:canvaluetype} we know $\HOLFreeVar{v1}$ is a function closure \HOLtm{Clos s e E} which
-matches $\textsc{S-App}$ in the goal. Lemma~\ref{lem:canvaluetype} also gives us \HOLtm{typecheck (G |+ (s,t1)) e t2} in which 
-\HOLtm{envtype G E}. By Lemma~\ref{lem:envtype_lemma}, we have \HOLtm{envtype (G |+ (s,t1)) (E |+ (s,v2))}.
-This allows us to apply the inductive hypothesis for $\HOLFreeVar{e}$ which solves the goal.
-% - lexicographic induction??? if it is, explain it in the application case
+For \HOLtm{App e1 e2} case, the inductive hypotheses for $\HOLFreeVar{e1}$ and 
+$\HOLFreeVar{e2}$ tell us that they evaluate to $\HOLFreeVar{v1}$ and $\HOLFreeVar{v2}$, 
+respectively. We also know that \HOLtm{value_type v1 (fnT t1 t2)} and \HOLtm{value_type v2 t1}. 
+By Lemma~\ref{lem:canvaluetype}, we conclude that $\HOLFreeVar{v1}$ is a function closure, 
+represented as \HOLtm{Clos s e E}, which matches the expressions in our 
+goal. Additionally, Lemma~\ref{lem:canvaluetype} provides us with \HOLtm{typecheck (G |+ (s,t1)) e t2}, 
+where \HOLtm{envtype G E}. 
+Applying Lemma~\ref{lem:envtype_lemma}, we obtain \HOLtm{envtype (G |+ (s,t1)) (E |+ (s,v2))}. 
+This allows us to utilise the inductive hypothesis for $\HOLFreeVar{e}$, which solves the goal.
 
-For \HOLtm{Case e s1 e1 s2 e2} case, we have $\HOLFreeVar{e}$ evaluated to value $\HOLFreeVar{v}$
-and \HOLtm{value_type v (sumT t1 t2)} by the inductive hypothesis. By Lemma~\ref{lem:canvaluetype}
-we know $\HOLFreeVar{v}$ is either \HOLtm{SumLV v'} or \HOLtm{SumRV v'} for some value $\HOLFreeVar{v'}$.
-In both cases we either have \HOLtm{value_type v' t1} or \HOLtm{value_type v' t2}. Then by Lemma~\ref{lem:envtype_lemma}
-we have either \HOLtm{envtype (G |+ (s1,t1)) (E |+ (s1,v'))} or \HOLtm{envtype (G |+ (s2,t2)) (E |+ (s2,v'))}. This allows us
-to apply the inductive hypothesis for $\HOLFreeVar{e1}$ or $\HOLFreeVar{e2}$ which solves the goal. Box
+For \HOLtm{Case e s1 e1 s2 e2} case, the inductive hypothesis tells us 
+that $\HOLFreeVar{e}$ evaluates to a value $\HOLFreeVar{v}$, where 
+\HOLtm{value_type v (sumT t1 t2)}. By Lemma~\ref{lem:canvaluetype}, we know 
+that $\HOLFreeVar{v}$ is either \HOLtm{SumLV v'} or \HOLtm{SumRV v'} for some 
+value $\HOLFreeVar{v'}$. 
+
+In both scenarios, we have either \HOLtm{value_type v' t1} or \HOLtm{value_type v' t2}. 
+Consequently, by Lemma~\ref{lem:envtype_lemma}, we find either 
+\HOLtm{envtype (G |+ (s1,t1)) (E |+ (s1,v'))} or \HOLtm{envtype (G |+ (s2,t2)) (E |+ (s2,v'))}. 
+This enables us to apply the inductive hypothesis for $\HOLFreeVar{e1}$ or $\HOLFreeVar{e2}$, 
+which solves the goal. \hfill \(\square\)

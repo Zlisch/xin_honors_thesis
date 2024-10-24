@@ -2,9 +2,11 @@
     "makefile.configureOnOpen": false,
     "cSpell.words": [
         "asynchrony",
+        "behaviour",
         "behaviours",
         "Kalas",
         "localised",
-        "normalisation"
+        "normalisation",
+        "normalising"
     ]
 }

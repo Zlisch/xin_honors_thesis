@@ -1,4 +1,4 @@
-$Turnstile$ 5 \ensuremath{\HOLTokenTurnstile}
+$Turnstile$ 0 \ensuremath{}
 @ 1 \varepsilon
 Bob 3 \mathrm{Bob}
 Alice 5 \mathrm{Alice}
@@ -102,7 +102,7 @@ vecv 1 \ve{v}
 (chortrans5) 0 }{
 (chortrans6) 1 \rhd
 (chortrans7) 0 }
-nillabs 1 \epsilon
+nillabs 1 \ensuremath{\epsilon}
 (lcom1) 1 .
 (lcom2) 1 \grossarrow{}
 (lcom3) 1 .
@@ -205,9 +205,7 @@ vdash 1 \ensuremath{\vdash}
 vdash_s 1 \ensuremath{\vdash_s}
 checkmark 1 \ensuremath{\checkmark}
 
-eval_exp 8 \ensuremath{\HOLConst{eval\_exp}}
-value_type 10 \ensuremath{\HOLConst{value\_type}}
-not_finish 10 \ensuremath{\HOLConst{not\_finish}}
+
 
 ws 1 \,
 
@@ -220,3 +218,17 @@ rightp 1 )
 
 (fvs1) 3 \freev{
 (fvs2) 0 }
+
+f_o 1 \ensuremath{\circ}
+
+(DELETEX1) 2 \setminus\{
+(DELETEX2) 1 \}
+
+(fdom1) 7 \text{domain}(
+(fdom2) 1 )
+
+(drestrict1) 1 \ensuremath{\downharpoonright_{
+(drestrict2) 0 }}
+
+(vt1) 1 \ensuremath{\vdash_s}
+(vt2) 3 \;:\;

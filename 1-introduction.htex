@@ -38,7 +38,7 @@ behaviours, if local computation is ever required by the system, one must descri
 the inputs and outputs of local computations. Current work either delegate this part to 
 an assumed well-behaved external implementation, for example, Kalas~\cite{pohjola_kalas_2022} and Pirouette~\cite{hirsch_pirouette_2022},
 or provide a basic framework where only Church numerals are considered, as in Core Choreography (CC)~\cite{cruz2017core}.
-This makes writing choregraphy program with local computation implementation  
+This makes writing choreography program with local computation implementation  
 an unpleasant experience. For instance, a choreography program in Kalas, where the client 
 computes modulo locally using input from the server and then sends the result back, will look like:
 
@@ -59,21 +59,21 @@ implementation of $\mathtt{mod}(\mathit{x})$, the string value of $\mathit{x}$ m
 first be converted to a number. Then client computes the modulo on the converted input.
 Afterward, the result is converted back to a string before updating the client process 
 variable $\mathit{v}$. We can easily see from this example that how data type conversions 
-between choregraphy and external language lead to cumbersome code.
+between choreography and external language lead to cumbersome code.
 
-Thus this thesis extends Kalas, a verified choregraphy language with machine-checked 
+Thus this thesis extends Kalas, a verified choreography language with machine-checked 
 end-to-end compilation, by introducing \richerlang, a simple language of expressions
 over types such as integers, strings and booleans. Using the extended Kalas, 
 local computations can be handled gracefully within a few lines of codes. The previous 
-choregraphy where client computes the modulo of input integer can be written as in 
+choreography where client computes the modulo of input integer can be written as in 
 Example~\ref{ex:modenriched}. 
 
 By providing a concrete local language syntax and semantics,
-we are able to formally anlayse the message exchange behaviours of choregraphy
+we are able to formally anlayse the message exchange behaviours of choreography 
 in terms of progress and type preservation when local computations are considered.
 We show that type soundness and strong normalisation properties of \richerlang\;
 lead to progress for the enriched Kalas. Our semantics and typing system also
-allow us to show type preservation for non-recursive and synchronised transitions in
+allow us to show type preservation for non-recursive and synchronous transitions in
 the enriched Kalas.
 
 \begin{example}[Local computation with \richerlang\;--- Modulo]\label{ex:modenriched}\rule{3mm}{0mm}
@@ -104,7 +104,7 @@ To summarise, this thesis provides three main contributions.
   Kalas. Common operators for our data types are included, such as addition, modulo, and negation.
   Integer-string convertor is implemented as well for the integration with Kalas. Last but not least, 
   we prove the enriched Kalas enjoys progress. We also show type preservation holds for non-recursive, 
-  synchronised transitions in the enriched Kalas.
+  synchronous transitions in the enriched Kalas.
 \end{itemize}
 
 % - Thesis Structure

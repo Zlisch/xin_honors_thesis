@@ -16,9 +16,15 @@ a substitution model for \richerlang
 
 - progress proof for asynchronus messages; 
 
-- prove termination for choregraphy
+- prove termination for choreography
+We can further combine Theorem~\ref{thm:chor_progress_lemma} and~\ref{thm:chor_preservation_lemma} to state the 
+\emph{termination} property for a typed choreography: If we have \HOLtm{chorTypecheckOK Γ Θ c}, \HOLtm{chorEnvtype Γ s},
+and \HOLtm{chorEnvsn Γ s}, then there exists a state-choreography pair \HOLtm{(s',c')} which is related to \HOLtm{(s,c)}
+in the reflective transitive closure of transition relation defined in Definition~\ref{def:enricheddynamicsRules}.
 
 - fixing confluence property scripts etc.
 
 - what if local language does not have SN property and we may do some special
-handling to recover the progress for choregraphy \ref{chap:strongNormalisation}
+handling to recover the progress for choreography \ref{chap:strongNormalisation}
+
+- Section~\ref{subsubsec:modifiedTransRules}

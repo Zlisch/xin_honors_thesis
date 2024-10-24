@@ -1,5 +1,5 @@
 \chapter{Related Work}\label{chap:relatedWork}
-% maybe 3 sections for choregraphy models: functional; (implementation for real use;) core models; exceptions
+% maybe 3 sections for choreography models: functional; (implementation for real use;) core models; exceptions
 % - we discuss in terms of how local computation is considered and how important properties such as
 % type preservation and progress is influenced by those decisions
 some intro ..
@@ -16,7 +16,7 @@ Typing system in this case might still be desired since it can discipline choreo
 other ways such as correct protocol implementation.
 
 Channel Choreography (ChC) by \cite{carbone_deadlock-freedom-by-design_2013} is a rich 
-choregraphy language where a choreography program consists of where a program consists of roles, threads, 
+choreography language where a choreography program consists of where a program consists of roles, threads, 
 and sessions that implement communication protocols. Deadlock freedom is guaranteed by its 
 semantics, while the typing system ensures correct protocol implementation by sessions. 
 The typing context includes three components: a service environment $\Gamma$, which stores 
@@ -52,12 +52,12 @@ typing environment, binding variables to types at a specific location.
 
 % There is also an interesting observation between Pirouette and Kalas in terms of how asynchronous 
 % behaviours are controlled. Pirouette uses a set of blocked locations to disallow a branching from 
-% current choregraphy in which multiple attempts to write to one target local variable may occur
+% current choreography in which multiple attempts to write to one target local variable may occur
 % in different orders, whereas Kalas uses an action label to record previous communication to 
 % disallow a branching where the target local variable is appear in the label.
 % might be incorrect
 
-Another state-of-art functional choregraphy language Chor$\lambda$ by \cite{cruz-filipe_functional_2022}
+Another state-of-art functional choreography language Chor$\lambda$ by \cite{cruz-filipe_functional_2022}
 uses a different approach than Pirouette, where choreographies are interpreted as terms in 
 $\lambda$-calculus. Chor$\lambda$ assumes local values for communications, without focusing 
 on how they are computed. This results in a distinct typing system: local value types are 
@@ -68,8 +68,8 @@ and semantic rules.
 \subsection{Handling Exceptions}
 % choreography in implementation? how they deal with local computations
 % Other choreography languages ... and exceptions ...
-- Choral: an object-oriented choregraphy implemented as a java library \citep{giallorenzo2024choral}. 
-It treats choregraphy as class and EPP as generating role classes from the choregraphy
+- Choral: an object-oriented choreography implemented as a java library \citep{giallorenzo2024choral}. 
+It treats choreography as class and EPP as generating role classes from the choreography
 implementation. It also offloads the local computation to Java. Higher-order functional
 choreography models such as Pirouette and Chor$\lambda$ can be viewed as formal model candidates for it.
 Its type checker is similar to the typing system in ChC where it has types for public channels
@@ -89,13 +89,40 @@ or ticked meaning no longer in the stack (sent/received) to implement send/recei
 semantics and typings; we do not consider message sending failure, but we do have exception caused by 
 local computation failure (e.g. division by zero) or bad message value type (not a string), and we
 record the exception using transition labels. But we do not consider any recover strategy and always
-transits the choregraphy into a termination state (nil)
+transits the choreography into a termination state (nil)
 
 \section{Some Title}
 - functional big-step semantics \cite{owens2016functional}
 
+Though \richerlang\; is an extension of simply typed lambda calculus (STLC),
+its functional big-step semantics and function closure makes its strong normalisation
+proof slightly different to a standard one. A standard proof for STLC with non-deterministic reductions, 
+small-step semantics, and substitutions would have to define an inductive notion $\HOLConst{SN}$ for strong normalisation
+and prove the notion $\HOLConst{SN}$ is sound that a term of $\HOLConst{SN}$ is truly strongly normalising.
+The definition of $\HOLConst{SN}$ also has to handle application of terms by introducing an extra constrain 
+called strong head reduction, since $[\HOLFreeVar{N}/\HOLFreeVar{x}]M$ being strongly normalising does not imply
+$(\lambda x:A. M) N$ or $N$ are also strongly normalising since there may be no occurrences of $\HOLFreeVar{x}$ in $\HOLFreeVar{N}$.
+Thus the strong head reduction requires $\HOLFreeVar{N}$ to have the notion of $\HOLConst{SN}$ as well.
+However, due to the differences of semantics mentioned above, strong normalisation proof for \richerlang{} 
+does not need to consider the reduction sequences nor need to consider the strong head reduction for application when using
+a substitution model. Our proof, is more closed to the strong normalisation proof for a simpler call-by-value STLC in HOL's repository by \cite{hol_cbv_lc},
+in a sense that they both adopt a functional big-step semantics and use an environment to store bindings for
+free variables, but \richerlang\; has richer data types compared to the STLC in HOL example.
+
+We don't need to address the issue of strong head reduction in $\HOLConst{sn\_v}$ cause 
+this is handled by $\HOLConst{envsn}$ (Definition~\ref{def:envsn}), as a standard 
+inductive strong normalisation notion of terms would have to. For example, when extending STLC 
+with disjoint sums, the strong normalisation notion used by \cite{abel2019poplmark} adapts by
+adding strong head reduction rules for the case term to discipline the expansion. Using our approach, 
+we don't need a separate rule to describe the evaluation of a sum case
+expression. Rather, when evaluating \HOLtm{Case e s1 e1 s2 e2}, we will have $\HOLConst{e}$ evaluates to 
+some $\HOLConst{v}$ and \HOLtm{sn_v t v} by re-establishing the $\HOLConst{envsn}$ property 
+for the corresponding (left or right branch of the sum case expression) inductive hypothesis.
+This is essentially what the strong head reduction rules for the case term do \citep{abel2019poplmark}.
+We only need to add a left sum value case and a right sum value case in $\HOLConst{sn\_v}$
+to describe what will make the sum value a good value to use in the future evaluation.
+
 - STLC; language with environment semantics
 - our typing is not unique
-
 - SN for STLC; Weak and strong SN in terms of non-deterministic; my language is deterministic
 

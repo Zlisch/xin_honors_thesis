@@ -49,6 +49,9 @@
     \Endofdef\end{definition}%
 }
 \newcommand{\provtrans}[4]{#1 \;\xrightarrow[{#3}]{#2}\;#4}
+\newcommand{\labllet}[3]{\textbf{let}\;#1@#2,}
+\newcommand{\rulelabel}[2]{\raisebox{#1}{\mbox{\textsc{#2}}}\;}
+\newcommand{\labtau}[2]{\tau_{#1}}
 
 %\definecolor{sgreen}{rgb}{0,0.3,0}
 \newcommand{\api}{applied pi-calculus}
@@ -242,7 +245,7 @@
 %\newcommand{\oftype}{\in}
 \newcommand{\match}[3]{[#1\!\!=\!\!#2]#3}
 \newcommand{\mismatch}[3]{[#1\!\!\neq\!\!#2]#3}
-\newcommand{\nil}{\mathbf{0}}
+\newcommand{\nil}{\ensuremath{\mathbf{0}}}
 %\newcommand{\config}[2]{#1 \,\rhd\, #2}
 %\newcommand{\configs}[3]{[#1,#2]\# #3}
 %\newcommand{\extend}{+}
@@ -429,7 +432,7 @@
 \newcommand{\swbisim}{\underset{{\rm smp}}{\wbisim}}
 \newcommand{\sbisim}{\underset{{\rm sym}}{\bisim}}
 \newcommand{\taubisim}[3]{#1 \frames #2 \underset{{\rm tau}}{\wbisim} #3}
-\newcommand{\freev}[1]{\mathrm{fv}(#1)}
+\newcommand{\freev}[1]{\ensuremath{\mathrm{fv}}(#1)}
 \newcommand{\freep}[1]{\mathrm{fp}(#1)}
 \newcommand{\writtenv}[1]{\mathrm{wv}(#1)}
 \newcommand{\boundv}[1]{\mathrm{bv}(#1)}
