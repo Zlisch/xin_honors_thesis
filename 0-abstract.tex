@@ -1,12 +1,11 @@
 \chapter*{Abstract}
-
 Distributed systems are ubiquitous but writing endpoint programs can be 
 error-prone since mismatched message sending and receiving can lead to 
 errors such as deadlock, where the system indefinitely awaits a message.
 Choreography offers a solution by providing a global description of how 
 messages are exchanged among endpoints, where message mismatches are disallowed ---
-a property called "deadlock-free by design." The global choreography 
-is then projected into process models for each endpoint via EndPoint Projection (EPP),
+a property called ``deadlock-free by design''. The global choreography 
+is then projected into process models for each endpoint,
 preserving the deadlock-free property.
 
 While many choreography languages focus on message exchange behaviors, few address 
@@ -18,22 +17,25 @@ latter leads to cumbersome code due to the addition of an external computation p
 typically involves conversions between choreography values and external data types.
 
 Hence in this thesis, we extend Kalas, a state-of-the-art choreography language with
-verified end-to-end compilation, with a local language \richerlang, such that
+verified end-to-end compilation, with a local language \richerlang{}, such that
 local computations are handled gracefully within a few lines of codes. Moreover,
 it also allows us to formally analyse the message exchange behaviours of choreography 
-when local computations are considered. 
+when local computations are considered. Our proofs show that the strong normalisation
+property of \richerlang{} implies \emph{progress} for the enriched Kalas, and that
+the combination of type soundness and strong normalisation of of \richerlang{} implies
+type preservation for non-recursive, synchronous transitions in the enriched Kalas.
 
-We design \richerlang\, as a simply typed lambda calculus with function closure. We use
-a functional bis-step semantics with clocks to ensure the evaluation function for
-\richerlang\, is total. We prove type soundness for the proposed semantics and typing rules. 
-We also provide a strong normalisation proof for \richerlang.
+% We design \richerlang\, as a simply typed lambda calculus with function closure. We use
+% a functional bis-step semantics with clocks to ensure the evaluation function for
+% \richerlang\, is total. We prove type soundness for the proposed semantics and typing rules. 
+% We also provide a strong normalisation proof for \richerlang.
 
-We extend the Kalas'\,\textit{let} transition with \richerlang\, expressions. Besides common data types 
-such as integer, string, and boolean, we also add function, pair, and sum types to the 
-local computation in choreography . Common operators for our data types are included, such as addition, modulo, 
-and negation. An integer-string converter is implemented as well to handle message strings 
-in Kalas. Last but not least, we prove the enriched Kalas enjoys progress. We also show
-type preservation holds for non-recursive, synchronous transitions.
+% We extend the Kalas'\,\textit{let} transition with \richerlang\, expressions. Besides common data types 
+% such as integer, string, and boolean, we also add function, pair, and sum types to the 
+% local computation in choreography . Common operators for our data types are included, such as addition, modulo, 
+% and negation. An integer-string converter is implemented as well to handle message strings 
+% in Kalas. Last but not least, we prove the enriched Kalas enjoys progress. We also show
+% type preservation holds for non-recursive, synchronous transitions.
 
 
 

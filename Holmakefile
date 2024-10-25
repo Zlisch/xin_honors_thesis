@@ -21,7 +21,7 @@ all: mainfile.pdf
 #    6-enrichedChor 7-conclusion 8-test
 NO_PREFIX_CHAPS = 0-abstract 0-acknowledgements 0-declaration 0-titlepage
 PREFIXED_CHAPS = 1-introduction 2-background 3-relatedWork 4-richerLang 5-strongNormalisation \
-                 6-enrichedChor 7-conclusion 8-test
+                 6-enrichedChor 7-conclusion 8-test z-appendix-1
 CHAPS = $(patsubst %,%.tex,$(NO_PREFIX_CHAPS)) $(patsubst %,out_tex/%.tex,$(PREFIXED_CHAPS))
 
 # Define explicit rules for generating .tex files from .htex files
@@ -47,6 +47,9 @@ out_tex/7-conclusion.tex: 7-conclusion.htex munge.exe overrides
 	./munge.exe -w60 -m';' overrides < $< > $@
 
 out_tex/8-test.tex: 8-test.htex munge.exe overrides
+	./munge.exe -w60 -m';' overrides < $< > $@
+
+out_tex/z-appendix-1.tex: z-appendix-1.htex munge.exe overrides
 	./munge.exe -w60 -m';' overrides < $< > $@
 
 # thesis.pdf : thesis.tex holtexbasic.sty thesis.bib

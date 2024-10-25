@@ -41,12 +41,12 @@ Theorem better_chortype_no_undefined_vars =
 Theorem better_chor_preservation_lemma =
         deadlockFreedomTheory.chor_preservation_lemma
           |> Q.SPECL [‘c’, ‘Θ’, ‘Γ’, ‘s’, ‘τ’, ‘l’, ‘s'’, ‘c'’]
-          |> REWRITE_RULE [chorPropsTheory.not_finish_def]
+          |> REWRITE_RULE []
                                                 
 Theorem better_chor_progress_lemma =
         deadlockFreedomTheory.chor_progress_lemma
           |> Q.SPECL [‘c’, ‘s’]
-          |> REWRITE_RULE [chorPropsTheory.not_finish_def]
+          |> REWRITE_RULE []
                                                 
 Theorem better_trans_letval =
         chorSemTheory.trans_letval |> Q.SPECL [‘v’, ‘s’, ‘x’, ‘p’, ‘e’, ‘c’, ‘cl’]
@@ -168,7 +168,7 @@ val _ = add_rule {term_name =  "typecheck", fixity = Suffix 451,
 val _ = add_rule {term_name =  "value_type", fixity = Prefix 501,
                   paren_style=  OnlyIfNecessary, 
                   block_style = (AroundEachPhrase, (PP.CONSISTENT,0)),
-                  pp_elements = [TOK "(vt1)", TM, TOK "(vt2)"]}                                                                        
+                  pp_elements = [TOK "(vt1)", TM, TOK "(vt2)"]}
                               
 val _ = add_rule {term_name = "LCom", fixity = Infixr 400,
                   paren_style = IfNotTop{realonly=false},

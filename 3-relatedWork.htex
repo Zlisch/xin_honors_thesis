@@ -96,7 +96,7 @@ We also consider local computation failures and include exceptions for errors su
 However, these exceptions are mainly recorded by transition labels, we do not implement any 
 recovery strategy and always transition the choreography into \HOLtm{Nil}, when an error occurs.
 
-\section{Approach to Strong Normalisation}
+\section{Approach to Strong Normalisation}\label{sec:othersn}
 Although \richerlang{} is an extension of the simply typed lambda calculus (STLC), 
 its functional big-step semantics and function closures make the proof of strong 
 normalisation slightly different from the standard approach.

@@ -94,9 +94,9 @@ To summarise, this thesis provides three main contributions.
   the proposed semantics and typing rules. \richerlang\; is implemented using the higher-order logic
   proof assistant HOL4 \citep{slind2008brief} and all the proofs are conducted within HOL4.
  
-  \item The second contribution is the strong normalization proof for \richerlang. We follow the 
-  standard practice for proving strong normalization in simply typed lambda calculus, 
-  with a specific case for function closure in the definition of the strong normalization relation.
+  \item The second contribution is the strong normalisation proof for \richerlang. We follow the 
+  standard practice for proving strong normalisation in simply typed lambda calculus, 
+  with a specific case for function closure in the definition of the strong normalisation relation.
 
   \item The third contribution is Kalas enriched with \richerlang. Besides common data types such as 
   integer, string, and boolean, we also add function, pair, and sum types to the local computation in 

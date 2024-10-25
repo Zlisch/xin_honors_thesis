@@ -2,8 +2,8 @@
 \section{Conclusion}
 In this thesis, we present a simply typed lambda calculus, \richerlang{}, 
 with functional big-step semantics and function closures. To restore 
-the property for transitions in the larger state  (Proposition~\ref{prop
-}) of Kalas, we adjust the evaluation rule in \richerlang{}. Specifically, 
+the property for transitions in the larger state  (Proposition~\ref{prop:transsubmap}) 
+of Kalas, we adjust the evaluation rule in \richerlang{}. Specifically, 
 when evaluating a function expression, we return a restricted function closure.
 
 We establish that \richerlang{} enjoys both type soundness and strong normalisation. 

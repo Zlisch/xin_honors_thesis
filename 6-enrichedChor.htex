@@ -1,5 +1,5 @@
 \chapter{Kalas Enriched with \richerlang}\label{chap:enrichedChor}
-We introduce the enrich Kalas, where local computations are handled by
+We introduce the enriched Kalas, where local computations are handled by
 \richerlang\;. As a result, the external function $f(v)$ in the previous 
 $\HOLConst{Let}$ rule of Kalas (Definition~\ref{def:kalas}) is replaced with
 a \richerlang\; expression $\HOLFreeVar{e}$. Messages in Kalas used to be
@@ -7,7 +7,7 @@ a list of strings, but now they are string values in \richerlang. Since
 evaluations in \richerlang\;may return an exception, we introduce new transition
 rules in the enriched Kalas to handle local computation failure.
 
-We provide typing rules for the enrich Kalas. Our choreography does not return
+We provide typing rules for the enriched Kalas. Our choreography does not return
 values and thus our rules only specify whether a choreography type checks. 
 Kalas uses \emph{states} to store values for variables located at a certain process,
 so we introduce a similar \emph{typing state} that stores types for variables located 
@@ -21,8 +21,8 @@ So $\HOLFreeVar{e}$ can be evaluated in the \emph{localised} environment and
 typed in the \emph{localised} typing environment.
 
 We prove that our enriched Kalas has an important property: \emph{progress}.
-The strong normalisation property of \richerlang\;is crucial for the progress proof,
-otherwise we would have had to solve the halting problem. We also prove that
+The strong normalisation property of \richerlang\;is crucial for the progress proof. 
+We also prove that
 the non-recursive, synchronous transitions in the enriched Kalas has type
 preservation property, where the type soundness and strong normalisation of
 local computations is required.
@@ -51,7 +51,7 @@ process $\HOLFreeVar{p}$. The message values are \richerlang's results (Definiti
 Other syntax are the same as Kalas' (Definition~\ref{def:kalas}).
 
 Free variables in a choreography are defined in Definition~\ref{def:enrichedFv}. 
-$\HOLConst{Nil}$ does not contain any free variables. $\HOLConst{Sel}$ and $\HOLConst{Fix}$ do not introduce any 
+\HOLtm{Nil} does not contain any free variables. $\HOLConst{Sel}$ and $\HOLConst{Fix}$ do not introduce any 
 new free variables. In \HOLtm{IfThen v p c1 c2}, the pair \HOLtm{(v,p)} 
 becomes free. In \HOLtm{Com p1 v1 p2 v2 c}, the variable \HOLtm{(v1,p1)} 
 is free, while \HOLtm{(v2,p2)} becomes bound. The free variables in \HOLtm{Let v p e c} 
@@ -59,7 +59,7 @@ are defined as the union of all free variables in the expression $\HOLFreeVar{e}
 located at $\HOLFreeVar{p}$ and the free variables in the sequencing choreography 
 $\HOLFreeVar{c}$, excluding \HOLtm{(v,p)}.
 
-For $\HOLConst{Nil}$, $\HOLConst{IfThen}$, $\HOLConst{Sel}$, and $\HOLConst{Fix}$, 
+For \HOLtm{Nil}, $\HOLConst{IfThen}$, $\HOLConst{Sel}$, and $\HOLConst{Fix}$, 
 the set of free variables in the current 
 choreography is a superset of the free variables in the subsequent choreography. 
 However, this does not necessarily hold for $\HOLConst{Com}$ and $\HOLConst{Let}$. 
@@ -80,9 +80,9 @@ Therefore, as a closed choreography progresses, it may become open.
 \subsection{Syntax and Typing Rules}\label{subsec:enrichedTypingRules}
 A typing state, $\HOLFreeVar{\Gamma}$, is a finite map that associates pairs 
 $(\HOLFreeVar{v}, \HOLFreeVar{p})$ with types from \richerlang's type system (see Definition~\ref{def:stypes}). 
-A type statement in the enriched Kalas is expressed as \HOLtm{chorTypecheckOK Γ Θ C}, 
+A type statement in the enriched Kalas is expressed as \HOLtm{chorTypecheckOK Γ Θ c}, 
 where $\HOLFreeVar{\Gamma}$ is the typing state, $\HOLFreeVar{\Theta}$ is a set of processes, 
-and $\HOLFreeVar{C}$ is the choreography being typed.
+and $\HOLFreeVar{c}$ is the choreography being typed.
 
 We also introduce the \emph{localised} typing environment, \HOLtm{localise Γ p}, 
 for typing \richerlang{} expressions. Since a \richerlang{} expression $\HOLFreeVar{e}$, 
@@ -121,9 +121,9 @@ formally defined in Definition~\ref{def:localise}.
 The typing rules for the enriched Kalas are presented in Definition~\ref{def:enrichedTypingRulesDef}. 
 \HOLtm{Nil} always type-checks, regardless of the context provided by 
 $\HOLFreeVar{\Gamma}$ and $\HOLFreeVar{\Theta}$. For \HOLtm{Com p1 v1 p2 v2 c}, the sender 
-$\HOLFreeVar{p1}$'s variable $\HOLFreeVar{v1}$ must have the type $\HOLConst{strT}$, and 
+$\HOLFreeVar{p_1}$'s variable $\HOLFreeVar{v_1}$ must have the type $\HOLConst{strT}$, and 
 the subsequent choreography $\HOLFreeVar{c}$ must be type-checked under the condition that 
-the receiver $\HOLFreeVar{p2}$'s variable $\HOLFreeVar{v2}$ holds a value of type $\HOLConst{strT}$. 
+the receiver $\HOLFreeVar{p_2}$'s variable $\HOLFreeVar{v_2}$ holds a value of type $\HOLConst{strT}$. 
 Note that self-communication is not permitted. In the case of $\HOLConst{Let}$, the 
 \richerlang{} expression $\HOLFreeVar{e}$ must be typed within a localised typing environment at 
 the process $\HOLFreeVar{p}$. The result of the local computation from $\HOLFreeVar{e}$ 
@@ -153,20 +153,19 @@ the rules from Definition~\ref{def:enrichedTypingRulesDef},
 given an initial typing state of $\Gamma = (\HOLFreeVar{var}, \HOLFreeVar{server}): \HOLConst{strT}$ 
 and a set of processes $\Theta = {\HOLFreeVar{server}, \HOLFreeVar{client}}$.
 
-%% TODO
-\begin{example}
-    - type the choreography in example 1
-\end{example}
+% \begin{example}
+%     - type the choreography in example 1
+% \end{example}
 
-If $\HOLFreeVar{server}$ stores a non-string value in $\HOLFreeVar{var}$, 
-the choreography cannot be typed because the condition \HOLtm{FLOOKUP Γ (var, server) = SOME strT} 
+If process $\HOLFreeVar{server}$ stores a non-string value in $\HOLFreeVar{var}$, 
+the choreography cannot be typed anymore since the condition \HOLtm{FLOOKUP Γ (var, server) = SOME strT} 
 would not be satisfied.
 
 \section{Dynamics}\label{sec:enricheddynamics}
 Our transition rules are similar to those of Kalas, with a few modifications. 
 The \textsc{CS-Com} rule requires that \HOLtm{(v1,p1)} holds a \richerlang{} value of 
 type $\HOLConst{StrV}$. If this condition is not met, a communication exception is 
-triggered, and the choreography transitions to $\HOLConst{Nil}$.
+triggered, and the choreography transitions to \HOLtm{Nil}.
 
 According to the \textsc{CS-Let} rule, if the expression $\HOLFreeVar{e}$ at 
 process $\HOLFreeVar{p}$ evaluates to a value $\HOLFreeVar{v}$ within the localised 
@@ -179,10 +178,10 @@ as discussed in Section~\ref{sec:otherProps}. The outcome of the local evaluatio
 is recorded in the transition label.
 
 The \textsc{C-Letexn} rule is similar to \textsc{C-Let}; if a local evaluation fails, 
-the choreography transitions to $\HOLConst{Nil}$. In \textsc{C-Iftrue} and \textsc{C-Iffalse}, 
+the choreography transitions to \HOLtm{Nil}. In \textsc{C-Iftrue} and \textsc{C-Iffalse}, 
 we rely on \richerlang's boolean values, and the rules are straightforward. If the value of 
 variable $\HOLFreeVar{v}$ at $\HOLFreeVar{p}$ is not a boolean, a choreography failure occurs, 
-causing a transition to $\HOLConst{Nil}$.
+causing a transition to \HOLtm{Nil}.
 
 \begin{definition}[Transition rules for Kalas enriched with \richerlang]\label{def:enricheddynamicsRules}
     \[\def\arraystretch{3.2}\qquad\begin{array}{c}
@@ -236,18 +235,18 @@ under $\HOLFreeVar{\Gamma}$.
 We state the progress property for Kalas enriched with \richerlang{} as the following:
 
 \begin{thm}[Progress]\label{thm:chor_progress_lemma}
-    Given a typing state $\HOLFreeVar{\Gamma}$, a set of processes $\HOLFreeVar{\Theta}$, and an initial state $\HOLFreeVar{s}$,
-    we state the progress property as 
+    Given a typing state $\HOLFreeVar{\Gamma}$, a set of processes $\HOLFreeVar{\Theta}$, an initial state $\HOLFreeVar{s}$,
+    and a choreography $\HOLFreeVar{c}$ that is not \HOLtm{Nil}, we state the progress property as 
     \begin{HOLmath}
         \HOLthm{pp.better_chor_progress_lemma}
     \end{HOLmath}
 \end{thm}
 
-It states that for a choreography $\HOLFreeVar{C}$ typed under the typing state 
+It states that for a choreography $\HOLFreeVar{c}$ typed under the typing state 
 $\HOLFreeVar{\Gamma}$, if the corresponding state $\HOLFreeVar{s}$ contains variables 
 typed in $\HOLFreeVar{\Gamma}$ with values that are both of the correct types and 
-strongly normalising, then $\HOLFreeVar{C}$ can either advance from state $\HOLFreeVar{s}$ 
-or be equal to $\HOLConst{Nil}$.
+strongly normalising, then $\HOLFreeVar{c}$ can either advance from state $\HOLFreeVar{s}$ 
+or be equal to \HOLtm{Nil}.
 
 One might expect that any closed choreography that can be typed will always make 
 progress, in line with the progress theorem. However, we know that a closed choreography 
@@ -267,11 +266,11 @@ variables, processes, and choreographies from a typed choreography.
 \begin{lem}[Generation lemma]\label{lem:enrichedGeneration}
     Given a typed choreography, we have 
     \begin{enumerate}
-        \item \begin{HOLmath}\HOLthm{chorTypeProps.chorTypecheckOK_let_thm}\end{HOLmath}
-        \item \begin{HOLmath}\HOLthm{chorTypeProps.chorTypecheckOK_if_thm}\end{HOLmath}
-        \item \begin{HOLmath}\HOLthm{chorTypeProps.chorTypecheckOK_com_thm}\end{HOLmath}
-        \item \begin{HOLmath}\HOLthm{chorTypeProps.chorTypecheckOK_sel_thm}\end{HOLmath}
-        \item \begin{HOLmath}\HOLthm{chorTypeProps.chorTypecheckOK_fix_thm}\end{HOLmath}
+        \item (Let) \begin{HOLmath}\HOLthm{chorTypeProps.chorTypecheckOK_let_thm}\end{HOLmath}
+        \item (If) \begin{HOLmath}\HOLthm{chorTypeProps.chorTypecheckOK_if_thm}\end{HOLmath}
+        \item (Com) \begin{HOLmath}\HOLthm{chorTypeProps.chorTypecheckOK_com_thm}\end{HOLmath}
+        \item (Sel) \begin{HOLmath}\HOLthm{chorTypeProps.chorTypecheckOK_sel_thm}\end{HOLmath}
+        \item (Fix) \begin{HOLmath}\HOLthm{chorTypeProps.chorTypecheckOK_fix_thm}\end{HOLmath}
     \end{enumerate}
 \end{lem}
 
@@ -284,10 +283,10 @@ This allows us to apply the strong normalisation theorem to $\HOLFreeVar{e}$.
 Lemma~\ref{lem:enrichedGeneration} is also used in the type preservation
 proof.
 
-The following lemma states that if a choreography $\HOLFreeVar{C}$ is typed under 
+The following lemma states that if a choreography $\HOLFreeVar{c}$ is typed under 
 some $\HOLFreeVar{\Gamma}$, then it does not exhibit any self-communication behaviours. 
 Furthermore, if we have \HOLtm{chorEnvtype Γ s}, then the state $\HOLFreeVar{s}$ contains 
-correctly typed values for all free variables in $\HOLFreeVar{C}$.
+correctly typed values for all free variables in $\HOLFreeVar{c}$.
 
 \begin{lem}[Well-formedness]\label{lem:chortypelemmas}
     Given a typing state $\HOLFreeVar{\Gamma}$, a set of processes $\HOLFreeVar{\Theta}$, a state $\HOLFreeVar{s}$,
@@ -302,7 +301,7 @@ correctly typed values for all free variables in $\HOLFreeVar{C}$.
 
 \subsubsection{Strong Normalisation in the Localised Environments}\label{subsubsec:snlocalisedEnv}
 As discussed in Section~\ref{subsec:snresult}, Corollary~\ref{cor:snthm} shows 
-the strong normalization property of the \richerlang{} evaluation function. However, it 
+the strong normalisation property of the \richerlang{} evaluation function. However, it 
 cannot be applied in the progress or type preservation proofs because we need to evaluate 
 expressions in the localised environment, and Corollary~\ref{cor:snthm} does not guarantee 
 that evaluation in a localised environment will terminate. Therefore, 
@@ -323,9 +322,9 @@ return a value or raise an exception.
 
 \subsection{Proof}\label{subsec:enrichedProgressProof}
 We prove Theorem~\ref{thm:chor_progress_lemma} through case analysis of the choreography 
-syntax. From \HOLtm{chorTypecheckOK Γ Θ C} and \HOLtm{chorEnvtype Γ s}, we know that 
-$\HOLFreeVar{C}$ does not contain any self-communications, and that state $\HOLFreeVar{s}$ 
-contains correctly typed values for all free variables in $\HOLFreeVar{C}$, as established in Lemma~\ref{lem:chortypelemmas}. 
+syntax. From \HOLtm{chorTypecheckOK Γ Θ c} and \HOLtm{chorEnvtype Γ s}, we know that 
+$\HOLFreeVar{c}$ does not contain any self-communications, and that state $\HOLFreeVar{s}$ 
+contains correctly typed values for all free variables in $\HOLFreeVar{c}$, as established in Lemma~\ref{lem:chortypelemmas}. 
 The cases for $\HOLConst{Sel}$ and $\HOLConst{Fix}$ follow directly from this result.
 
 In the case of \HOLtm{IfThen v p c1 c2}, we know that $\HOLFreeVar{s}$ stores a value 
@@ -368,7 +367,7 @@ one, as discussed in Section~\ref{subsec:progressFormalisation}.
 
 \emph{Proof:} We prove Theorem~\ref{thm:chor_preservation_lemma} by induction on the transition 
 relation defined in Definition~\ref{def:enricheddynamicsRules}. The cases for 
-$\HOLConst{Nil}$, $\HOLConst{Sel}$, and $\HOLConst{If}$ follow directly from 
+\HOLtm{Nil}, $\HOLConst{Sel}$, and $\HOLConst{If}$ follow directly from 
 Definitions~\ref{def:enrichedTypingRulesDef} and~\ref{def:enricheddynamicsRules}.
 
 To prove the cases for $\HOLConst{Com}$ and $\HOLConst{Let}$, we need the following 
@@ -385,15 +384,15 @@ lemma about $\HOLConst{chorEnvtype}$ and $\HOLConst{chorEnvsn}$:
 \emph{Proof:} Follows from Definition~\ref{def:chorEnvtype} and~\ref{def:chorEnvsn}. \hfill \(\square\)
 
 In the case of \HOLtm{Com p1 v1 p2 v2 c}, we know that \textsc{CS-Com} must apply 
-since the choreography type checks, indicating that the variable $\HOLFreeVar{v1}$ 
+since the choreography type checks, indicating that the variable $\HOLFreeVar{v_1}$ 
 at $\HOLFreeVar{p}$ maps to a string value \HOLtm{StrV d}. By Lemma~\ref{lem:enrichedGeneration}, 
 we have \HOLtm{chorTypecheckOK (Γ |+ ((v2,p2),strT)) Θ c}. Furthermore, by Lemma~\ref{lem:chorupdates}, 
 we obtain \begin{HOLmath}\HOLtm{chorEnvtype (Γ |+ ((v2,p2),strT)) (s |+ ((v2,p2),StrV d))}\end{HOLmath} and 
 \HOLtm{chorEnvsn (Γ |+ ((v2,p2),strT)) (s |+ ((v2,p2),StrV d))}, which match the goal.
 
 In the case of \HOLtm{Let x p e c}, if $\HOLFreeVar{e}$ evaluates to an exception, 
-the proof is straightforward, as we transition into $\HOLConst{Nil}$ when an exception 
-occurs, and $\HOLConst{Nil}$ can be typed by any $\HOLFreeVar{\Gamma}$ and $\HOLFreeVar{\Theta}$. 
+the proof is straightforward, as we transition into \HOLtm{Nil} when an exception 
+occurs, and \HOLtm{Nil} can be typed by any $\HOLFreeVar{\Gamma}$ and $\HOLFreeVar{\Theta}$. 
 When $\HOLFreeVar{e}$ evaluates to a value $\HOLFreeVar{v}$, Lemma~\ref{lem:enrichedGeneration} 
 tells us that \HOLtm{typecheck (localise Γ p) e t} holds, along with 
 \HOLtm{chorTypecheckOK (Γ |+ ((x,p),t)) Θ c}. If we can show that \HOLtm{value_type v t} 
@@ -403,14 +402,13 @@ Since $\HOLFreeVar{e}$ is typed in the localised typing environment \HOLtm{local
 Theorem~\ref{thm:richerLang_localise_sn} and the type soundness of \richerlang{} 
 (Theorem~\ref{thm:stype_soundness}) guarantee that $\HOLFreeVar{e}$ evaluates to 
 either a value $\HOLFreeVar{v'}$ or an exception. In the case of an exception, 
-as discussed above, the choreography transitions to $\HOLConst{Nil}$, making the 
+as discussed above, the choreography transitions to \HOLtm{Nil}, making the 
 proof straightforward. For the former scenario, we have 
 \HOLtm{value_type v' t} and \HOLtm{sn_v t v'}. Next, we need to show that 
 $\HOLFreeVar{v} = \HOLFreeVar{v'}$, which holds true since the evaluation function 
 for \richerlang{} is deterministic.
 
-%% TODO appendix
-We provide proof sketches for the parallel transitions (rules can be found in Appendix~?) 
+We provide proof sketches for the parallel transitions (rules can be found in Appendix~\ref{apdx:parallelksrules}) 
 even though we did not implement the proofs for parallel transitions in HOL4.
 
 For the case of $\HOLConst{If}$, consider a choreography \HOLtm{IfThen v p c1 c2}. We know 
@@ -418,20 +416,20 @@ the choreography type checks, and by Lemma~\ref{lem:enrichedGeneration}, we have
 \HOLtm{FLOOKUP Γ (v,p) = SOME boolT}, \HOLtm{chorTypecheckOK Γ Θ c1}, 
 and \HOLtm{chorTypecheckOK Γ Θ c2}.
 
-By the inductive hypotheses for $\HOLFreeVar{c1}$ and $\HOLFreeVar{c2}$, we 
+By the inductive hypotheses for $\HOLFreeVar{c_1}$ and $\HOLFreeVar{c_2}$, we 
 obtain \HOLtm{chorTypecheckOK Γ1 Θ c1'} and \HOLtm{chorTypecheckOK Γ2 Θ c2'}. 
 Additionally, we have \HOLtm{chorEnvsn Γ1 s'}, \HOLtm{chorEnvsn Γ2 s'}, 
 \HOLtm{chorEnvtype Γ1 s'}, and \HOLtm{chorEnvtype Γ2 s'}.
 
 By Definitions~\ref{def:chorEnvsn} and~\ref{def:chorEnvtype}, we know that 
-$\HOLFreeVar{\Gamma1}$ and $\HOLFreeVar{\Gamma2}$ assign the same 
+$\HOLFreeVar{\Gamma_1}$ and $\HOLFreeVar{\Gamma_2}$ assign the same 
 type to variables in the intersection of their domains. Therefore, we can construct 
-a $\HOLFreeVar{\Gamma'}$ that includes all mappings from $\HOLFreeVar{\Gamma1}$ and 
-$\HOLFreeVar{\Gamma2}$ without encountering any contradictions. Consequently, we have 
+a $\HOLFreeVar{\Gamma'}$ that includes all mappings from $\HOLFreeVar{\Gamma_1}$ and 
+$\HOLFreeVar{\Gamma_2}$ without encountering any contradictions. Consequently, we have 
 \HOLtm{chorEnvsn Γ' s'} and \HOLtm{chorEnvtype Γ' s'}.
 
-By \textsc{If-swap}, we can ensure that the parallel transitions at $\HOLFreeVar{c1}$ 
-and $\HOLFreeVar{c2}$ do not involve the variable $\HOLFreeVar{v}$ at $\HOLFreeVar{p}$. 
+By \textsc{If-swap}, we can ensure that the parallel transitions at $\HOLFreeVar{c_1}$ 
+and $\HOLFreeVar{c_2}$ do not involve the variable $\HOLFreeVar{v}$ at $\HOLFreeVar{p}$. 
 Thus, \HOLtm{FLOOKUP s (v,p) = FLOOKUP s' (v,p)}. As a result, \HOLtm{IfThen v p c1' c2'} 
 can be typed by \HOLtm{Γ'|+((v,p), boolT)}. Similar analyses apply to the other parallel 
 transition rules. \hfill \(\square\)
@@ -516,7 +514,7 @@ typing into the statement of Proposition~\ref{prop:transsubmap}, the changes mad
 
 \subsection{Synchronous Transitions}
 We have fixed the proof for Proposition~\ref{prop:Trm_trans} in Kalas' repository, 
-which may be important for Endpoint Projection. 
+which is one of the Kalas properties proved in the original development. 
 The proposition states that if the state \HOLFreeVar{s} contains values for 
 all free variables of \HOLFreeVar{c}, and \HOLFreeVar{c} does not involve any 
 self-communications, then for any label \HOLtm{τ}, the choreography can always 
@@ -540,7 +538,6 @@ as \HOLtm{Nil}.
     \end{HOLmath}
 \end{prop}
 
-%% TODO apendix
 The function $\HOLConst{syncTrm}$ takes a counter $\HOLFreeVar{k}$, 
 a state-choreography pair \HOLtm{s,c}, and a label \HOLtm{τ}. It advances 
 the choreography synchronously until the label \HOLtm{τ} is consumed, returning 
@@ -559,8 +556,8 @@ Additionally, \HOLtm{is_bad_label τ} checks if \HOLtm{τ} is equal to \HOLtm{LL
 which should not occur given the strong normalisation property of \richerlang. Lastly, 
 \HOLtm{trans_sync (s,c) (s',c')} is defined as the reflective transitive closure on 
 synchronous transitions (i.e., transitions where the list of asynchronous labels is empty; 
-see also Definition~\ref{def:enricheddynamicsRules} and the rules for parallel transitions in Appendix~?). 
-Definitions for $\HOLConst{chor\_match}$ and $\HOLConst{chor\_tl}$ can be found in Appendix~?.
+see also Definition~\ref{def:enricheddynamicsRules}. Rules for parallel transitions 
+and definition for $\HOLConst{chor\_tl}$ can be found in Appendix~\ref{apdx:parallelksrules}.
 
 The proof for Proposition~\ref{prop:Trm_trans} follows from the definitions above. For the 
 $\HOLConst{Let}$ case, \HOLtm{is_bad_label τ} helps us filter out \HOLtm{LLet v p e Timeout},

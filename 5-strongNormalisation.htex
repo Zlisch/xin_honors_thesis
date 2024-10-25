@@ -1,18 +1,17 @@
 \chapter{Strong Normalisation}\label{chap:strongNormalisation}
-We find that the strong normalization property of \richerlang{} is essential 
+We find that the strong normalisation property of \richerlang{} is essential 
 for re-establishing the progress property in the enriched choreography. 
 Without it, if local computation in one of the processes fails to terminate, 
 the choreography will deadlock, waiting indefinitely for that process to complete.
 
-%% TODO literature review section ref
 The differences between our approach to proving strong normalisation and a more 
 standard method involving simply typed lambda calculus with non-deterministic 
-reductions, small-step semantics, and substitutions are discussed in Section~?. 
+reductions, small-step semantics, and substitutions are discussed in Section~\ref{sec:othersn}. 
 In brief, a straightforward induction over Definition~\ref{def:typecheck} fails 
 in the case of \HOLtm{App e1 e2}, because the $\HOLFreeVar{e}$ in the 
-function closure \HOLtm{Clos s e E} of $\HOLFreeVar{e1}$ can be arbitrarily large. 
+function closure \HOLtm{Clos s e E} of $\HOLFreeVar{e_1}$ can be arbitrarily large. 
 Instead, we use induction over the types of values, which leads us to define 
-\emph{strongly normalizing values}, as introduced in Definition~\ref{def:sn_v}.
+\emph{strongly normalising values}, as introduced in Definition~\ref{def:sn_v}.
 
 \richerlang's evaluation function is deterministic by using a functional big-step semantics, so the strong normalisation 
 proof for \richerlang\; is equivalent to the weak normalisation proof.
@@ -27,21 +26,29 @@ recursive cases of our evaluation function (Definition~\ref{def:sdynamicsrules})
 the values of sub-expressions are evaluated first and then used to evaluate 
 the current expression. Therefore, we define \HOLtm{sn_v t v} as an inductive 
 notion of strongly normalising values, indicating that these values demonstrate 
-strong normalization behaviour of specific types during evaluation.
+strong normalisation behaviour of specific types during evaluation.
 
-\begin{definition}\label{def:sn_v}
-    - sn_v
+\begin{definition}[Strongly normalising values]\label{def:sn_v}
+    \begin{HOLmath}
+        \HOLthm[def,conj1]{typeSN.sn_v_def}\\
+        \HOLthm[def,conj2]{typeSN.sn_v_def}\\
+        \HOLthm[def,conj3]{typeSN.sn_v_def}\\
+        \HOLthm[def,conj4]{typeSN.sn_v_def}\\
+        \HOLthm[def,conj5]{typeSN.sn_v_def}\\
+        \HOLthm[def,conj6]{typeSN.sn_v_def}\\
+        \HOLthm[def,conj7]{typeSN.sn_v_def}
+    \end{HOLmath}
 \end{definition}
 
 Literal values are always strongly normalising. For a closure value \HOLtm{Clos s e E} 
 of type \HOLtm{fnT t1 t2} to be strongly normalising, we require that if the expression 
 $\HOLFreeVar{e}$ in \HOLtm{E|+(s,v)} is evaluated, given that the value $\HOLFreeVar{v}$ 
-of type $\HOLFreeVar{t1}$ is strongly normalising, then the evaluation of $\HOLFreeVar{e}$ 
-must always return a strongly normalising value of type $\HOLFreeVar{t2}$ or result in an 
+of type $\HOLFreeVar{t_1}$ is strongly normalising, then the evaluation of $\HOLFreeVar{e}$ 
+must always return a strongly normalising value of type $\HOLFreeVar{t_2}$ or result in an 
 exception. A pair value \HOLtm{PairV v1 v2} of type \HOLtm{pairT t1 t2} is strongly 
-normalising if and only if both $\HOLFreeVar{v1}$ and $\HOLFreeVar{v2}$ are strongly 
+normalising if and only if both $\HOLFreeVar{v_1}$ and $\HOLFreeVar{v_2}$ are strongly 
 normalising. A \HOLtm{SumLV v} value of type \HOLtm{sumT t1 t2} is strongly normalising if 
-and only if $\HOLFreeVar{v}$ is strongly normalising according to type $\HOLFreeVar{t1}$. 
+and only if $\HOLFreeVar{v}$ is strongly normalising according to type $\HOLFreeVar{t_1}$. 
 The condition for \HOLtm{sn_v (sumT t1 t2) (SumRV v)} is defined similarly.
 
 \subsubsection{Environments}
@@ -51,8 +58,11 @@ the dynamic environment. This constraint requires the dynamic environment to sto
 strongly normalising values that correspond to the variables and types specified by 
 the typing environment.
 
-\begin{definition}\label{def:envsn}
-    - envsn
+\begin{definition}[Environment of strongly normalising typed values]\label{def:envsn}
+    Given a typing environment $\HOLFreeVar{G}$ and a dynamic environment $\HOLFreeVar{E}$,
+    \begin{HOLmath}
+        \HOLthm[def]{typeSN.envsn_def}
+    \end{HOLmath}
 \end{definition}
 
 \subsubsection{Evaluation of Expressions}
@@ -61,7 +71,8 @@ under the environment $\HOLFreeVar{E}$ as strongly normalising if and only if, f
 some initial clock $\HOLFreeVar{c}$, the evaluation returns a strongly normalising 
 value or an exception.
 
-\begin{definition}\label{def:sn_exec}
+\begin{definition}[Strong normalisation for evaluation of expressions]\label{def:sn_exec}
+  Given an expression $\HOLFreeVar{e}$ of type $\HOLFreeVar{t}$ and an environment $\HOLFreeVar{E}$,
   \begin{HOLmath}
     \HOLthm[def]{typeSN.sn_exec_def}
   \end{HOLmath}
@@ -72,8 +83,11 @@ environment $\HOLFreeVar{G}$ with type $\HOLFreeVar{t}$, as strongly normalising
 and only if the evaluation of $\HOLFreeVar{e}$ is strongly normalising under any dynamic 
 environment $\HOLFreeVar{E}$ that satisfies \HOLtm{envsn (DRESTRICT G (free_vars e)) E}.
 
-\begin{definition}\label{def:sn_e}
-    - sn_e
+\begin{definition}[Strong normalisation for evaluation of typed expressions]\label{def:sn_e}
+    Given an expression $\HOLFreeVar{e}$ of type $\HOLFreeVar{t}$, typed within the typing environment $\HOLFreeVar{G}$,
+    \begin{HOLmath}
+        \HOLthm[def]{typeSN.sn_e_def}
+    \end{HOLmath}
 \end{definition}
 
 We use \HOLtm{DRESTRICT G (free_vars e)} instead of $\HOLFreeVar{G}$ to accommodate 
@@ -103,7 +117,9 @@ environment that aligns with the restricted dynamic environment in a function
 closure. We require this restricted typing environment to include types for at 
 most all free variables of the expression being evaluated. After introducing this 
 restriction, the condition for the inductive hypothesis of $\HOLFreeVar{e}$ becomes 
-\HOLtm{envsn (DRESTRICT G (free_vars e) |+ (s,t)) (DRESTRICT E (free_vars e) |+ (s,v))}, 
+\begin{HOLmath}
+    \HOLtm{envsn (DRESTRICT G (free_vars e) |+ (s,t)) (DRESTRICT E (free_vars e) |+ (s,v))}, 
+\end{HOLmath}
 which can be deduced from \HOLtm{envsn (DRESTRICT G (free_vars e DELETE s)) E}, 
 the new premise of the current goal following the restriction of the typing environment.
 
@@ -120,8 +136,14 @@ is used to prove the $\HOLConst{If}$, $\HOLConst{App}$, and $\HOLConst{Case}$ ca
 in the Fundamental Lemma proof, as it enables us to represent the boolean guard value, function 
 closure value, and sum value in their concrete syntax rather than simply referring to them as $\HOLFreeVar{v}$.
 
-\begin{lem}\label{lem:canvaluesn}
-    - sn_v_*
+\begin{lem}[Canonical forms for strongly normalising values]\label{lem:canvaluesn}
+    \quad
+    \begin{enumerate}
+        \item (Boolean) \begin{HOLmath}\HOLthm{typeSN.sn_v_boolT}\end{HOLmath}
+        \item (Pair) \begin{HOLmath}\HOLthm{typeSN.sn_v_pairT}\end{HOLmath}
+        \item (Closure) \begin{HOLmath}\HOLthm{typeSN.sn_v_fnT}\end{HOLmath}
+        \item (Sum) \begin{HOLmath}\HOLthm{typeSN.sn_v_sumT}\end{HOLmath}
+    \end{enumerate}
 \end{lem}
 
 \emph{Proof:} Immediately follows from Definition~\ref{def:sn_v}. \hfill \(\square\)
@@ -132,12 +154,12 @@ $\HOLFreeVar{G}$ with a larger or smaller $\HOLFreeVar{E}$ while maintaining
 the \HOLConst{envsn} relation.
 
 \begin{lem}\label{lem:envsnlemmas}
-    envsn lemmas
+    Given typing environments $\HOLFreeVar{G}$, $\HOLFreeVar{G'}$, dynamic environments $\HOLFreeVar{E}$, $\HOLFreeVar{E'}$, a value $\HOLFreeVar{v}$, and a type $\HOLFreeVar{t}$, we have 
     \begin{enumerate}
-        \item envsn_g_submap \label{lem:envsnlemmas1}
-        \item envsn_update \label{lem:envsnlemmas2}
-        \item envsn_e_submap2 \label{lem:envsnlemmas3}
-        \item envsn_e_submap \label{lem:envsnlemmas4}
+        \item \begin{HOLmath}\HOLthm{typeSN.envsn_g_submap}\end{HOLmath} \label{lem:envsnlemmas1}
+        \item \begin{HOLmath}\HOLthm{typeSN.envsn_update}\end{HOLmath} \label{lem:envsnlemmas2}
+        \item \begin{HOLmath}\HOLthm{typeSN.envsn_e_submap2}\end{HOLmath} \label{lem:envsnlemmas3}
+        \item \begin{HOLmath}\HOLthm{typeSN.envsn_e_submap}\end{HOLmath} \label{lem:envsnlemmas4}
     \end{enumerate}
 \end{lem}
 
@@ -148,8 +170,8 @@ $\HOLFreeVar{G'}$ that is
 smaller than $\HOLFreeVar{G}$. This is particularly useful when we have 
 \HOLtm{envsn (DRESTRICT G (free_vars e)) E} and wish to deduce 
 \HOLtm{envsn (DRESTRICT G (free_vars e1)) E} and \HOLtm{envsn (DRESTRICT G (free_vars e2)) E} 
-in order to apply the inductive hypotheses for the sub-expressions $\HOLFreeVar{e1}$ 
-and $\HOLFreeVar{e2}$ of $\HOLFreeVar{e}$. This is because the free variables of an 
+in order to apply the inductive hypotheses for the sub-expressions $\HOLFreeVar{e_1}$ 
+and $\HOLFreeVar{e_2}$ of $\HOLFreeVar{e}$. This is because the free variables of an 
 expression are typically defined as the union of the free variables of each of its 
 sub-expressions. Property~\ref{lem:envsnlemmas2} is used in the $\HOLConst{Let}$ and $\HOLConst{Sum}$ cases 
 of the Fundamental Lemma proof.
@@ -181,22 +203,24 @@ still encompasses all variables included in the typing environment.
 
 Finally, we require the last two lemmas to address the $\HOLConst{BinOp}$ and 
 $\HOLConst{Uop}$ cases. In the \HOLtm{BinOp bop e1 e2} case, if the inductive 
-hypotheses indicate that $\HOLFreeVar{e1}$ and $\HOLFreeVar{e2}$ both evaluate 
-to values $\HOLFreeVar{v1}$ and $\HOLFreeVar{v2}$, respectively, we need Lemma~\ref{lem:bop_sn_lemma} 
+hypotheses indicate that $\HOLFreeVar{e_1}$ and $\HOLFreeVar{e_2}$ both evaluate 
+to values $\HOLFreeVar{v_1}$ and $\HOLFreeVar{v_2}$, respectively, we need Lemma~\ref{lem:bop_sn_lemma} 
 to ensure that, given \HOLtm{sn_v t1 v1} and \HOLtm{sn_v t2 v2}, the expression 
 \HOLtm{eval_bop bop v1 v2} always returns either a value or an exception. The same 
 reasoning applies to the $\HOLConst{Uop}$ case.
 
-\begin{lem}\label{lem:bop_sn_lemma}
-    - bop_sn
+\begin{lem}[Strong normalisation for $\HOLConst{eval\_bop}$]\label{lem:bop_sn_lemma}
+    Given values $\HOLFreeVar{v_1}$, $\HOLFreeVar{v_2}$, types $\HOLFreeVar{t_1}$, $\HOLFreeVar{t_2}$, and a binary operator $\HOLFreeVar{bop}$, we have
+    \begin{HOLmath}\HOLthm{typeSN.bop_sn_lemma}\end{HOLmath}
 \end{lem}
 
 \emph{Proof:} $\HOLConst{boptype}$ is non-recursive. We prove by performing
 cases analyses based on $\HOLConst{boptype}$ rules and each case follows
 from Lemma~\ref{lem:canvaluesn}. \hfill \(\square\)
 
-\begin{lem}\label{lem:uop_sn_lemma}
-    - uop_sn
+\begin{lem}[Strong normalisation for $\HOLConst{eval\_uop}$]\label{lem:uop_sn_lemma}
+    Given a values $\HOLFreeVar{v}$, a type $\HOLFreeVar{t}$, and a unary operator $\HOLFreeVar{uop}$, we have
+    \begin{HOLmath}\HOLthm{typeSN.uop_sn_lemma}\end{HOLmath}
 \end{lem}
 
 \emph{Proof:} Same as the above. \hfill \(\square\)
@@ -204,8 +228,9 @@ from Lemma~\ref{lem:canvaluesn}. \hfill \(\square\)
 \section{The Fundamental Lemma}
 Using the definitions from Section~\ref{sec:defsn}, we state the Fundamental Lemma as:
 
-\begin{lem}\label{lem:sn_lemma}
-    - sn_lemma
+\begin{lem}[The Fundamental Lemma]\label{lem:sn_lemma}
+    Given an expression $\HOLFreeVar{e}$ of type $\HOLFreeVar{t}$ in typing environment $\HOLFreeVar{G}$, we have 
+    \begin{HOLmath}\HOLthm{typeSN.sn_lemma}\end{HOLmath}
 \end{lem}
 
 \subsection{Strategy}\label{subsec:strategysn}
@@ -246,8 +271,8 @@ The proof strategy itself is fairly straightforward; however, the evaluation of 
 requires evaluating sub-expressions first (as outlined in Definition~\ref{def:sdynamicsrules}). 
 This results in numerous similar cases, each requiring slightly different tactics, which 
 contributes to the length of the HOL proof. For instance, the expression \HOLtm{BinOp bop e1 e2} 
-requires that we first evaluate $\HOLFreeVar{e1}$ and $\HOLFreeVar{e2}$ before calling $\HOLConst{eval\_bop}$ 
-with the evaluated values. This leads to four distinct cases, as both $\HOLFreeVar{e1}$ and $\HOLFreeVar{e2}$ 
+requires that we first evaluate $\HOLFreeVar{e_1}$ and $\HOLFreeVar{e_2}$ before calling $\HOLConst{eval\_bop}$ 
+with the evaluated values. This leads to four distinct cases, as both $\HOLFreeVar{e_1}$ and $\HOLFreeVar{e_2}$ 
 can evaluate to either a value or an exception.
 
 Additionally, as discussed in Lemma~\ref{lem:envsnlemmas} (~\ref{lem:envsnlemmas3}), 
@@ -283,18 +308,18 @@ hypothesis for $\HOLFreeVar{e}$ can be deduced from the premise of the current g
 strategy outlined in Section~\ref{subsec:strategysn}. According to Definition~\ref{def:sn_e}, 
 the condition for \HOLtm{sn_exec t E (If bg e1 e2)} requires \HOLtm{envsn (DRESTRICT G (free_vars (If bg e1 e2))) E}. 
 Since the free variables of \HOLtm{If bg e1 e2} are the union of those in $\HOLFreeVar{bg}$, 
-$\HOLFreeVar{e1}$, and $\HOLFreeVar{e2}$, Lemma~\ref{lem:envsnlemmas} (~\ref{lem:envsnlemmas1}) 
+$\HOLFreeVar{e_1}$, and $\HOLFreeVar{e_2}$, Lemma~\ref{lem:envsnlemmas} (~\ref{lem:envsnlemmas1}) 
 allows us to establish \HOLtm{envsn (DRESTRICT G (free_vars bg)) E}, \HOLtm{envsn (DRESTRICT G (free_vars e1)) E}, 
 and \HOLtm{envsn (DRESTRICT G (free_vars e2)) E}. With these, we can apply the inductive 
-hypotheses for $\HOLFreeVar{bg}$, $\HOLFreeVar{e1}$, and $\HOLFreeVar{e2}$.
+hypotheses for $\HOLFreeVar{bg}$, $\HOLFreeVar{e_1}$, and $\HOLFreeVar{e_2}$.
 
 Since each of them can evaluate to either a value or an exception, this generates 
 $2^3$ cases. If $\HOLFreeVar{bg}$ evaluates to an exception, then \HOLtm{If bg e1 e2} 
-will evaluate to an exception regardless of the outcomes of $\HOLFreeVar{e1}$ and 
-$\HOLFreeVar{e2}$. If $\HOLFreeVar{bg}$ evaluates to a value $\HOLFreeVar{v}$, we apply 
+will evaluate to an exception regardless of the outcomes of $\HOLFreeVar{e_1}$ and 
+$\HOLFreeVar{e_2}$. If $\HOLFreeVar{bg}$ evaluates to a value $\HOLFreeVar{v}$, we apply 
 the canonical form lemma (Lemma~\ref{lem:canvaluesn}) to express $\HOLFreeVar{v}$ as 
 \HOLtm{BoolV b}. Depending on the value of $\HOLFreeVar{b}$ 
-and the evaluation results of $\HOLFreeVar{e1}$ and $\HOLFreeVar{e2}$ (which could be either 
+and the evaluation results of $\HOLFreeVar{e_1}$ and $\HOLFreeVar{e_2}$ (which could be either 
 a value or an exception as given by the corresponding inductive hypothesis), we use Lemma~\ref{lem:clock_value_increment} and~\ref{lem:clock_exn_increment}, 
 instantiated with the clock value $c_{bg} + c_1 + c_2$, to prove the goal.
 
@@ -302,20 +327,20 @@ instantiated with the clock value $c_{bg} + c_1 + c_2$, to prove the goal.
 case is similar to the $\HOLConst{If}$ case and follows the strategy outlined 
 in Section~\ref{subsec:strategysn}. From the premise of the current goal, we 
 can deduce the necessary $\HOLConst{envsn}$ 
-conditions to use the inductive hypotheses for $\HOLFreeVar{e1}$ and $\HOLFreeVar{e2}$ by
-applying Lemma~\ref{lem:envsnlemmas} (~\ref{lem:envsnlemmas1}). Since both $\HOLFreeVar{e1}$ 
-and $\HOLFreeVar{e2}$ can evaluate to either a 
+conditions to use the inductive hypotheses for $\HOLFreeVar{e_1}$ and $\HOLFreeVar{e_2}$ by
+applying Lemma~\ref{lem:envsnlemmas} (~\ref{lem:envsnlemmas1}). Since both $\HOLFreeVar{e_1}$ 
+and $\HOLFreeVar{e_2}$ can evaluate to either a 
 value or an exception, this generates $2^2$ cases.
 
-If either $\HOLFreeVar{e1}$ or $\HOLFreeVar{e2}$ evaluates to an exception, we use 
+If either $\HOLFreeVar{e_1}$ or $\HOLFreeVar{e_2}$ evaluates to an exception, we use 
 Lemma~\ref{lem:clock_value_increment} and~\ref{lem:clock_exn_increment} with the clock 
-value $c_1 + c_2$ to prove the goal. If both $\HOLFreeVar{e1}$ and 
-$\HOLFreeVar{e2}$ evaluate to values $\HOLFreeVar{v1}$ and $\HOLFreeVar{v2}$ respectively, 
+value $c_1 + c_2$ to prove the goal. If both $\HOLFreeVar{e_1}$ and 
+$\HOLFreeVar{e_2}$ evaluate to values $\HOLFreeVar{v_1}$ and $\HOLFreeVar{v_2}$ respectively, 
 the inductive hypotheses provide \HOLtm{sn_v t1 v1} and \HOLtm{sn_v t2 v2}. We then 
 instantiate Lemma~\ref{lem:clock_value_increment} with a clock value of $c_1 + c_2$ 
-so that $\HOLFreeVar{e1}$ and $\HOLFreeVar{e2}$ 
-are evaluated with the same clock value, reaching the same results $\HOLFreeVar{v1}$ 
-and $\HOLFreeVar{v2}$. Finally, Lemma~\ref{lem:bop_sn_lemma} guarantees that \HOLtm{eval_bop v1 v2} 
+so that $\HOLFreeVar{e_1}$ and $\HOLFreeVar{e_2}$ 
+are evaluated with the same clock value, reaching the same results $\HOLFreeVar{v_1}$ 
+and $\HOLFreeVar{v_2}$. Finally, Lemma~\ref{lem:bop_sn_lemma} guarantees that \HOLtm{eval_bop v1 v2} 
 will return either a value or an exception, completing the proof.
 
 \emph{Unary operation.} Same as the binary operation case.
@@ -323,19 +348,19 @@ will return either a value or an exception, completing the proof.
 \emph{Let expression.} Consider a Let expression \HOLtm{Let s e1 e2}. Similar to the previous cases, we use 
 Lemma~\ref{lem:envsnlemmas} (~\ref{lem:envsnlemmas1}) to deduce the $\HOLConst{envsn}$ conditions 
 required for applying the inductive hypothesis of 
-$\HOLFreeVar{e1}$. If $\HOLFreeVar{e1}$ evaluates to an exception, the proof is complete. If $\HOLFreeVar{e1}$ 
-evaluates to a value $\HOLFreeVar{v}$, we need to show that evaluating $\HOLFreeVar{e2}$ within \HOLtm{E|+(s,v)} 
-will either return a value or an exception. This outcome aligns with the inductive hypothesis for $\HOLFreeVar{e2}$.
+$\HOLFreeVar{e_1}$. If $\HOLFreeVar{e_1}$ evaluates to an exception, the proof is complete. If $\HOLFreeVar{e_1}$ 
+evaluates to a value $\HOLFreeVar{v}$, we need to show that evaluating $\HOLFreeVar{e_2}$ within \HOLtm{E|+(s,v)} 
+will either return a value or an exception. This outcome aligns with the inductive hypothesis for $\HOLFreeVar{e_2}$.
 
 By applying Lemma~\ref{lem:envsnlemmas} (~\ref{lem:envsnlemmas2}), we establish 
 \HOLtm{envsn (G|+(s,t1)) (E|+(s,v))}. This allows us to use the inductive hypothesis 
-for $\HOLFreeVar{e2}$, confirming that evaluating $\HOLFreeVar{e2}$ within \HOLtm{E|+(s,v)} will result 
+for $\HOLFreeVar{e_2}$, confirming that evaluating $\HOLFreeVar{e_2}$ within \HOLtm{E|+(s,v)} will result 
 in either a value or an exception. Finally, by instantiating Lemma~\ref{lem:clock_value_increment} and~\ref{lem:clock_exn_increment} 
 with a clock value of $c_1 + c_2$, we complete the proof.
 
 As discussed in Section~\ref{sec:snauxlemmas} regarding Lemma~\ref{lem:envsnlemmas} (~\ref{lem:envsnlemmas3}), 
-if $\HOLFreeVar{s}$ is not used in $\HOLFreeVar{e2}$, meaning $\HOLFreeVar{s}$ 
-is not a free variable in $\HOLFreeVar{e2}$, the inductive hypothesis for $\HOLFreeVar{e2}$ 
+if $\HOLFreeVar{s}$ is not used in $\HOLFreeVar{e_2}$, meaning $\HOLFreeVar{s}$ 
+is not a free variable in $\HOLFreeVar{e_2}$, the inductive hypothesis for $\HOLFreeVar{e_2}$ 
 requires \HOLtm{envsn G (E |+ (s,v))}. Lemma~\ref{lem:envsnlemmas} (~\ref{lem:envsnlemmas3}) allows 
 us to deduce \HOLtm{envsn G (E |+ (s,v))} in this situation.
 
@@ -346,8 +371,8 @@ is similar to the $\HOLConst{If}$ case.
 strategy outlined in Section~\ref{subsec:strategysn}, where Lemma~\ref{lem:envsnlemmas} (~\ref{lem:envsnlemmas1}) 
 is used to apply the inductive hypothesis for $\HOLFreeVar{e}$. However, 
 additional case analyses are needed to determine whether $\HOLFreeVar{s1}$ is a 
-free variable in $\HOLFreeVar{e1}$ and whether $\HOLFreeVar{s2}$ is a free variable 
-in $\HOLFreeVar{e2}$. This additional analysis is similar to what is required in 
+free variable in $\HOLFreeVar{e_1}$ and whether $\HOLFreeVar{s2}$ is a free variable 
+in $\HOLFreeVar{e_2}$. This additional analysis is similar to what is required in 
 the $\HOLConst{Let}$ case, where either Lemma~\ref{lem:envsnlemmas} (~\ref{lem:envsnlemmas3}) 
 or Lemma~\ref{lem:envsnlemmas} (~\ref{lem:envsnlemmas2}) is used to apply the inductive hypothesis 
 for each situation. \hfill \(\square\)
@@ -355,7 +380,8 @@ for each situation. \hfill \(\square\)
 \subsection{Strong Normalisation}\label{subsec:snresult}
 We now state the strong normalisation property for \richerlang{}:
 
-\begin{cor}\label{cor:snthm}
+\begin{cor}[Strong normalisation for \richerlang{}]\label{cor:snthm}
+    Given a closed expression $\HOLFreeVar{e}$ of type $\HOLFreeVar{t}$, we have 
     \begin{HOLmath}
         \HOLthm{typeSN.richerLang_sn}
     \end{HOLmath}

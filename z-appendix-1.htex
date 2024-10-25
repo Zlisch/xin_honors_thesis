@@ -1,0 +1,25 @@
+\chapter{Appendix}\label{chap:appendix1}
+
+\subsubsection{Well-founded lexicographic induction principle for Definition~\ref{def:sdynamicsrules}}\label{apdx:lex_ind_eval_exp}
+\begin{HOLmath}\HOLthm{envSem.eval_exp_ind}\end{HOLmath}
+
+\subsubsection{Definition of $\HOLConst{eval_uop}$}\label{apdx:eval_uop_def}
+\begin{HOLmath}\HOLthm[def]{richerLang.eval_uop_def}\end{HOLmath}
+
+\subsubsection{Definition of $\HOLConst{eval_bop}$}\label{apdx:eval_bop_def}
+\begin{HOLmath}\HOLthm[def]{richerLang.eval_bop_def}\end{HOLmath}
+
+\subsubsection{Parallel transitions for Kalas enriched with Sprinkles}\label{apdx:parallelksrules}
+\[\def\arraystretch{3.2}\qquad\begin{array}{c}
+
+    \rulelabel{2.5ex}{CS-IfSwap}\HOLthm[rule,width=2000]{chorSem.trans_if_swap}
+    \\
+    \rulelabel{2.5ex}{CS-ComSwap}\HOLthm[rule,width=2000]{chorSem.trans_com_swap}
+    \\
+    \rulelabel{2.5ex}{CS-SelSwap}\HOLthm[rule,width=2000]{chorSem.trans_sel_swap}
+    \\
+    \rulelabel{2.5ex}{CS-LetSwap}\HOLthm[rule,width=2000]{chorSem.trans_let_swap}
+\end{array}\]
+
+\subsubsection{Definition of $\HOLConst{chor\_tl}$}\label{apdx:chor_tl}
+\begin{HOLmath}\HOLthm[def]{chorProps.chor_tl_def}\end{HOLmath}

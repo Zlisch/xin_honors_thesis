@@ -86,12 +86,6 @@ T ::= \HOLtm{intT} \mid \HOLtm{strT} \mid \HOLtm{boolT} \mid
   \HOLthm[def,conj2]{typeSN.sn_v_def} \\
 \end{HOLmath}
 
-\begin{HOLmath}
-  \HOLthm[def,conj1]{envSem.eval_exp_def} \\
-  \HOLthm[def,conj9]{envSem.eval_exp_def} \\
-  \HOLthm[def,conj10]{envSem.eval_exp_def} \\
-\end{HOLmath}
-
 % \newcommand{\rulelabel}[2]{\raisebox{#1}{\mbox{\textsc{#2}}}\;}
 \begin{table*}[tb]
 
