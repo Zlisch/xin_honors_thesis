@@ -13,7 +13,7 @@ Kalas uses \emph{states} to store values for variables located at a certain proc
 so we introduce a similar \emph{typing state} that stores types for variables located 
 at a certain process. 
 
-Since a local expression $\HOLFreeVar{e}$ neither cares neither about values 
+Since a local expression $\HOLFreeVar{e}$ cares neither about values 
 of variables in other processes nor about their types, we introduce the concept of 
 \emph{localised} environment and \emph{localised} typing environment to describe
 the result of filtering out values or types of variables in other processes.
